@@ -1,0 +1,193 @@
+import React, { useState } from 'react';
+import { base44 } from '@/api/base44Client';
+import { useQuery } from '@tanstack/react-query';
+import { Link } from 'react-router-dom';
+import { createPageUrl } from '../utils';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { 
+  PlayCircle, 
+  Users, 
+  DollarSign,
+  Trophy,
+  Calendar,
+  Clock,
+  Search,
+  Filter
+} from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+
+export default function Lobby() {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterEstado, setFilterEstado] = useState('todas');
+
+  const { data: partidas = [], isLoading } = useQuery({
+    queryKey: ['partidas-lobby'],
+    queryFn: () => base44.entities.Partida.list('-fecha_inicio'),
+    refetchInterval: 5000,
+  });
+
+  const filteredPartidas = partidas.filter(p => {
+    const matchSearch = p.nombre?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchEstado = filterEstado === 'todas' || p.estado === filterEstado;
+    return matchSearch && matchEstado;
+  });
+
+  const getEstadoBadge = (estado) => {
+    const badges = {
+      pendiente: { bg: 'bg-amber-100', text: 'text-amber-700', label: 'Próximamente' },
+      en_curso: { bg: 'bg-green-100', text: 'text-green-700', label: 'En Vivo' },
+      finalizada: { bg: 'bg-slate-100', text: 'text-slate-700', label: 'Finalizada' },
+    };
+    const badge = badges[estado] || badges.pendiente;
+    return (
+      <span className={`px-3 py-1 rounded-full text-xs font-semibold ${badge.bg} ${badge.text}`}>
+        {badge.label}
+      </span>
+    );
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
+      <div className="max-w-7xl mx-auto p-6 space-y-6">
+        {/* Header */}
+        <div className="text-center py-8">
+          <h1 className="text-5xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-3">
+            Lobby de Bingo
+          </h1>
+          <p className="text-slate-600 text-lg">Únete a una partida y gana increíbles premios</p>
+        </div>
+
+        {/* Filtros */}
+        <div className="flex flex-col md:flex-row gap-4">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
+            <Input
+              placeholder="Buscar partidas..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 h-12 border-slate-200 focus:border-indigo-500"
+            />
+          </div>
+          <Select value={filterEstado} onValueChange={setFilterEstado}>
+            <SelectTrigger className="w-full md:w-48 h-12">
+              <Filter className="w-4 h-4 mr-2" />
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="todas">Todas</SelectItem>
+              <SelectItem value="pendiente">Próximamente</SelectItem>
+              <SelectItem value="en_curso">En Vivo</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Lista de Partidas */}
+        {isLoading ? (
+          <div className="text-center py-20">
+            <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+            <p className="text-slate-600 mt-4">Cargando partidas...</p>
+          </div>
+        ) : filteredPartidas.length === 0 ? (
+          <Card className="border-0 shadow-xl">
+            <CardContent className="py-20 text-center">
+              <PlayCircle className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+              <p className="text-slate-500 text-lg">No hay partidas disponibles</p>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="grid gap-6">
+            {filteredPartidas.map((partida) => (
+              <Card key={partida.id} className="border-0 shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden">
+                <CardContent className="p-0">
+                  <div className="flex flex-col md:flex-row">
+                    {/* Info Principal */}
+                    <div className="flex-1 p-6">
+                      <div className="flex items-start justify-between mb-4">
+                        <div>
+                          <h3 className="text-2xl font-bold text-slate-900 mb-2">{partida.nombre}</h3>
+                          {getEstadoBadge(partida.estado)}
+                        </div>
+                        <div className="text-right">
+                          <p className="text-sm text-slate-500 font-medium">Premio</p>
+                          <p className="text-3xl font-bold text-green-600">
+                            ${partida.premio_total?.toFixed(2)}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div className="flex items-center gap-2">
+                          <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                            <Calendar className="w-5 h-5 text-blue-600" />
+                          </div>
+                          <div>
+                            <p className="text-xs text-slate-500">Fecha</p>
+                            <p className="text-sm font-semibold text-slate-900">
+                              {partida.fecha_inicio ? new Date(partida.fecha_inicio).toLocaleDateString() : 'N/A'}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                            <Clock className="w-5 h-5 text-purple-600" />
+                          </div>
+                          <div>
+                            <p className="text-xs text-slate-500">Hora</p>
+                            <p className="text-sm font-semibold text-slate-900">
+                              {partida.fecha_inicio ? new Date(partida.fecha_inicio).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'N/A'}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <div className="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center">
+                            <DollarSign className="w-5 h-5 text-amber-600" />
+                          </div>
+                          <div>
+                            <p className="text-xs text-slate-500">Entrada</p>
+                            <p className="text-sm font-semibold text-slate-900">
+                              ${partida.monto_entrada?.toFixed(2)}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                            <Users className="w-5 h-5 text-green-600" />
+                          </div>
+                          <div>
+                            <p className="text-xs text-slate-500">Jugadores</p>
+                            <p className="text-sm font-semibold text-slate-900">
+                              {partida.cartones_vendidos || 0} / {partida.max_jugadores || '∞'}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Acción */}
+                    <div className="bg-gradient-to-br from-indigo-600 to-purple-600 p-6 flex items-center justify-center md:w-48">
+                      <Link to={createPageUrl('SalaBingo') + `?partida=${partida.id}`}>
+                        <Button 
+                          size="lg"
+                          className="bg-white text-indigo-600 hover:bg-slate-50 shadow-lg"
+                          disabled={partida.estado === 'finalizada'}
+                        >
+                          <PlayCircle className="w-5 h-5 mr-2" />
+                          {partida.estado === 'en_curso' ? 'Jugar Ahora' : 'Unirse'}
+                        </Button>
+                      </Link>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

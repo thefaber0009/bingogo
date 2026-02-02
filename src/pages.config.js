@@ -54,6 +54,8 @@ import Premios from './pages/Premios';
 import Notificaciones from './pages/Notificaciones';
 import PartidaEnVivo from './pages/PartidaEnVivo';
 import Perfil from './pages/Perfil';
+import Lobby from './pages/Lobby';
+import SalaBingo from './pages/SalaBingo';
 import __Layout from './Layout.jsx';
 
 
@@ -65,6 +67,8 @@ export const PAGES = {
     "Notificaciones": Notificaciones,
     "PartidaEnVivo": PartidaEnVivo,
     "Perfil": Perfil,
+    "Lobby": Lobby,
+    "SalaBingo": SalaBingo,
 }
 
 export const pagesConfig = {
