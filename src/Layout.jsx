@@ -8,7 +8,8 @@ import {
   Trophy, 
   Bell,
   LogOut,
-  PlayCircle
+  PlayCircle,
+  User
 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 
@@ -32,6 +33,10 @@ export default function Layout({ children, currentPageName }) {
     { name: 'Notificaciones', icon: Bell, path: 'Notificaciones' },
   ];
 
+  const userItems = [
+    { name: 'Mi Perfil', icon: User, path: 'Perfil' },
+  ];
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
       {/* Sidebar */}
@@ -49,25 +54,53 @@ export default function Layout({ children, currentPageName }) {
             </div>
           </div>
 
-          <nav className="space-y-2">
-            {navItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = currentPageName === item.path;
-              return (
-                <Link
-                  key={item.path}
-                  to={createPageUrl(item.path)}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${
-                    isActive
-                      ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-200'
-                      : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-                  }`}
-                >
-                  <Icon className="w-5 h-5" />
-                  <span className="font-medium">{item.name}</span>
-                </Link>
-              );
-            })}
+          <nav className="space-y-6">
+            <div className="space-y-2">
+              {navItems.map((item) => {
+                const Icon = item.icon;
+                const isActive = currentPageName === item.path;
+                return (
+                  <Link
+                    key={item.path}
+                    to={createPageUrl(item.path)}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${
+                      isActive
+                        ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-200'
+                        : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                    }`}
+                  >
+                    <Icon className="w-5 h-5" />
+                    <span className="font-medium">{item.name}</span>
+                  </Link>
+                );
+              })}
+            </div>
+
+            <div className="pt-6 border-t border-slate-200">
+              <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 px-4">
+                Cuenta
+              </p>
+              <div className="space-y-2">
+                {userItems.map((item) => {
+                  const Icon = item.icon;
+                  const isActive = currentPageName === item.path;
+                  return (
+                    <Link
+                      key={item.path}
+                      to={createPageUrl(item.path)}
+                      className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${
+                        isActive
+                          ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-200'
+                          : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                      }`}
+                    >
+                      <Icon className="w-5 h-5" />
+                      <span className="font-medium">{item.name}</span>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
           </nav>
         </div>
 

@@ -53,6 +53,7 @@ import Usuarios from './pages/Usuarios';
 import Premios from './pages/Premios';
 import Notificaciones from './pages/Notificaciones';
 import PartidaEnVivo from './pages/PartidaEnVivo';
+import Perfil from './pages/Perfil';
 import __Layout from './Layout.jsx';
 
 
@@ -63,6 +64,7 @@ export const PAGES = {
     "Premios": Premios,
     "Notificaciones": Notificaciones,
     "PartidaEnVivo": PartidaEnVivo,
+    "Perfil": Perfil,
 }
 
 export const pagesConfig = {
