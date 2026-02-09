@@ -18,7 +18,8 @@ import CartonBingo from '../components/bingo/CartonBingo';
 export default function SalaBingo() {
   const [marcados, setMarcados] = useState([]);
   const [autoMarcar, setAutoMarcar] = useState(true);
-  const [hayBingo, setHayBingo] = useState(false);
+  const [modosGanados, setModosGanados] = useState([]);
+  const [mostrarCompra, setMostrarCompra] = useState(false);
   
   const queryClient = useQueryClient();
   const urlParams = new URLSearchParams(window.location.search);
@@ -42,6 +43,7 @@ export default function SalaBingo() {
       jugador_id: user.id 
     }),
     enabled: !!partidaId && !!user?.id,
+    refetchInterval: 3000,
   });
 
   const { data: bolas = [] } = useQuery({
@@ -51,7 +53,7 @@ export default function SalaBingo() {
     refetchInterval: 2000,
   });
 
-  const miCarton = cartones[0];
+  const [cartonActivo, setCartonActivo] = useState(0);
 
   // Función para generar números aleatorios de bingo
   const generarCarton = () => {
@@ -85,21 +87,68 @@ export default function SalaBingo() {
   };
 
   const crearCartonMutation = useMutation({
-    mutationFn: async () => {
-      const nuevoCarton = {
-        jugador_id: user.id,
-        partida_id: partidaId,
-        numeros: generarCarton(),
-        estado: 'activo',
-        comprado: true,
-        marcados: []
-      };
-      return base44.entities.Carton.create(nuevoCarton);
+    mutationFn: async (cantidad) => {
+      const promesas = [];
+      for (let i = 0; i < cantidad; i++) {
+        const nuevoCarton = {
+          jugador_id: user.id,
+          partida_id: partidaId,
+          numeros: generarCarton(),
+          estado: 'activo',
+          comprado: true,
+          marcados: []
+        };
+        promesas.push(base44.entities.Carton.create(nuevoCarton));
+      }
+      return Promise.all(promesas);
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['misCartones', partidaId, user?.id]);
+      setMostrarCompra(false);
     }
   });
+
+  const verificarModoJuego = (carton, tipo) => {
+    if (!carton?.numeros || marcados.length < 5) return false;
+    
+    const numeros = carton.numeros;
+    if (!Array.isArray(numeros[0])) return false;
+
+    const esMarcado = (n) => n === 0 || marcados.includes(n);
+
+    switch (tipo) {
+      case 'linea_horizontal':
+        return numeros.some(fila => fila.every(esMarcado));
+      
+      case 'linea_vertical':
+        for (let col = 0; col < 5; col++) {
+          if (numeros.every(fila => esMarcado(fila[col]))) return true;
+        }
+        return false;
+      
+      case 'diagonal':
+        const diag1 = numeros.every((fila, i) => esMarcado(fila[i]));
+        const diag2 = numeros.every((fila, i) => esMarcado(fila[4 - i]));
+        return diag1 || diag2;
+      
+      case 'cuatro_esquinas':
+        return esMarcado(numeros[0][0]) && esMarcado(numeros[0][4]) &&
+               esMarcado(numeros[4][0]) && esMarcado(numeros[4][4]);
+      
+      case 'carton_lleno':
+        return numeros.every(fila => fila.every(esMarcado));
+      
+      case 'cruz_pequena':
+        return numeros[2].every(esMarcado) && 
+               numeros.every(fila => esMarcado(fila[2]));
+      
+      case 'letra_x':
+        return numeros.every((fila, i) => esMarcado(fila[i]) && esMarcado(fila[4 - i]));
+      
+      default:
+        return false;
+    }
+  };
 
   // Auto-marcar números cuando salen bolas
   useEffect(() => {
@@ -109,49 +158,25 @@ export default function SalaBingo() {
     }
   }, [bolas, autoMarcar]);
 
-  // Verificar si hay BINGO
+  // Verificar modos de juego ganados
   useEffect(() => {
-    if (!miCarton || marcados.length < 5) return;
+    if (!partida?.modos_juego || cartones.length === 0 || marcados.length < 5) return;
     
-    const numeros = miCarton.numeros || [];
-    if (!Array.isArray(numeros[0])) return;
-
-    // Verificar líneas horizontales
-    for (let fila of numeros) {
-      const todosMarcados = fila.every(n => n === 0 || marcados.includes(n));
-      if (todosMarcados) {
-        setHayBingo(true);
-        return;
+    const modosActuales = [];
+    
+    for (const carton of cartones) {
+      for (const modo of partida.modos_juego) {
+        if (!modo.completado && verificarModoJuego(carton, modo.tipo)) {
+          modosActuales.push({
+            ...modo,
+            carton_id: carton.id
+          });
+        }
       }
     }
-
-    // Verificar líneas verticales
-    for (let col = 0; col < 5; col++) {
-      const todosMarcados = numeros.every(fila => {
-        const n = fila[col];
-        return n === 0 || marcados.includes(n);
-      });
-      if (todosMarcados) {
-        setHayBingo(true);
-        return;
-      }
-    }
-
-    // Verificar diagonales
-    const diagonal1 = numeros.every((fila, i) => {
-      const n = fila[i];
-      return n === 0 || marcados.includes(n);
-    });
     
-    const diagonal2 = numeros.every((fila, i) => {
-      const n = fila[4 - i];
-      return n === 0 || marcados.includes(n);
-    });
-
-    if (diagonal1 || diagonal2) {
-      setHayBingo(true);
-    }
-  }, [marcados, miCarton]);
+    setModosGanados(modosActuales);
+  }, [marcados, cartones, partida]);
 
   const handleMarcar = (numero) => {
     if (marcados.includes(numero)) {
@@ -161,8 +186,12 @@ export default function SalaBingo() {
     }
   };
 
-  const declararBingo = () => {
-    alert('¡BINGO! Se notificará al administrador para validar tu victoria.');
+  const declararBingo = (modo) => {
+    alert(`¡${modo.nombre}! Se notificará al administrador para validar tu victoria. Premio: $${modo.premio}`);
+  };
+
+  const comprarCartones = (cantidad) => {
+    crearCartonMutation.mutate(cantidad);
   };
 
   if (!partidaId) {
@@ -180,31 +209,60 @@ export default function SalaBingo() {
     );
   }
 
-  if (!miCarton) {
+  if (cartones.length === 0 || mostrarCompra) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 to-purple-50">
-        <Card className="max-w-md border-0 shadow-xl">
-          <CardContent className="py-12 text-center">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 to-purple-50 p-6">
+        <Card className="max-w-2xl w-full border-0 shadow-xl">
+          <CardContent className="py-12">
             <Trophy className="w-16 h-16 text-indigo-300 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-slate-900 mb-2">¡Únete a la partida!</h2>
-            <p className="text-slate-600 mb-2">{partida?.nombre}</p>
-            <p className="text-sm text-slate-500 mb-6">
-              Costo del cartón: <span className="font-bold text-green-600">${partida?.monto_entrada?.toFixed(2)}</span>
-            </p>
+            <h2 className="text-3xl font-bold text-slate-900 mb-2 text-center">{partida?.nombre}</h2>
+            <p className="text-slate-600 mb-8 text-center">Selecciona cuántos cartones deseas comprar</p>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+              {/* Compra individual */}
+              <Card className="border-2 border-indigo-200 hover:border-indigo-400 transition-all cursor-pointer"
+                    onClick={() => comprarCartones(1)}>
+                <CardContent className="p-6 text-center">
+                  <p className="text-sm text-slate-600 mb-2">1 Cartón</p>
+                  <p className="text-3xl font-bold text-indigo-600 mb-2">
+                    ${partida?.precio_carton?.toFixed(2)}
+                  </p>
+                  <Button disabled={crearCartonMutation.isLoading} className="w-full">
+                    Comprar
+                  </Button>
+                </CardContent>
+              </Card>
+
+              {/* Combos */}
+              {partida?.combos?.map((combo, idx) => (
+                <Card key={idx} className="border-2 border-amber-200 hover:border-amber-400 transition-all cursor-pointer bg-amber-50"
+                      onClick={() => comprarCartones(combo.cantidad)}>
+                  <CardContent className="p-6 text-center relative">
+                    <div className="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                      {combo.descuento}% OFF
+                    </div>
+                    <p className="text-sm text-slate-600 mb-2">{combo.cantidad} Cartones</p>
+                    <div className="mb-2">
+                      <p className="text-lg text-slate-400 line-through">
+                        ${(combo.cantidad * partida.precio_carton).toFixed(2)}
+                      </p>
+                      <p className="text-3xl font-bold text-green-600">
+                        ${combo.precio?.toFixed(2)}
+                      </p>
+                    </div>
+                    <Button disabled={crearCartonMutation.isLoading} className="w-full bg-amber-600 hover:bg-amber-700">
+                      Comprar Combo
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
             <div className="flex gap-3 justify-center">
-              <Button 
-                onClick={() => crearCartonMutation.mutate()}
-                disabled={crearCartonMutation.isLoading}
-                className="bg-gradient-to-r from-indigo-600 to-purple-600"
-                size="lg"
-              >
-                <ShoppingCart className="w-4 h-4 mr-2" />
-                {crearCartonMutation.isLoading ? 'Creando...' : 'Comprar Cartón'}
-              </Button>
               <Link to={createPageUrl('Lobby')}>
                 <Button variant="outline" size="lg">
                   <ArrowLeft className="w-4 h-4 mr-2" />
-                  Volver
+                  Volver al Lobby
                 </Button>
               </Link>
             </div>
@@ -231,44 +289,73 @@ export default function SalaBingo() {
             </div>
           </div>
           <div className="flex items-center gap-3">
+            {cartones.length < (partida?.max_cartones_por_jugador || 4) && (
+              <Button
+                variant="outline"
+                onClick={() => setMostrarCompra(true)}
+              >
+                <ShoppingCart className="w-4 h-4 mr-2" />
+                Comprar más ({cartones.length}/{partida?.max_cartones_por_jugador})
+              </Button>
+            )}
             <Button
               variant="outline"
               onClick={() => setAutoMarcar(!autoMarcar)}
               className={autoMarcar ? 'bg-green-50 border-green-200' : ''}
             >
               <CheckCircle className={`w-4 h-4 mr-2 ${autoMarcar ? 'text-green-600' : ''}`} />
-              {autoMarcar ? 'Marcado Automático' : 'Marcado Manual'}
+              {autoMarcar ? 'Auto' : 'Manual'}
             </Button>
           </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Cartón Principal */}
-          <div className="lg:col-span-2">
-            <div className="mb-4">
-              <CartonBingo 
-                carton={miCarton}
-                marcados={marcados}
-                onMarcar={handleMarcar}
-                autoMarcar={autoMarcar}
-              />
-            </div>
-            
-            {hayBingo && (
-              <Card className="border-0 shadow-xl bg-gradient-to-r from-amber-400 to-orange-500 animate-pulse">
-                <CardContent className="p-6 text-center">
-                  <Trophy className="w-12 h-12 text-white mx-auto mb-3" />
-                  <h2 className="text-2xl font-bold text-white mb-2">¡BINGO!</h2>
-                  <p className="text-white/90 mb-4">¡Has completado un patrón ganador!</p>
-                  <Button 
-                    size="lg"
-                    onClick={declararBingo}
-                    className="bg-white text-orange-600 hover:bg-slate-50"
+          {/* Cartones */}
+          <div className="lg:col-span-2 space-y-4">
+            {/* Selector de cartones */}
+            {cartones.length > 1 && (
+              <div className="flex gap-2 overflow-x-auto pb-2">
+                {cartones.map((c, idx) => (
+                  <Button
+                    key={c.id}
+                    variant={cartonActivo === idx ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setCartonActivo(idx)}
+                    className="flex-shrink-0"
                   >
-                    Declarar BINGO
+                    Cartón {idx + 1}
                   </Button>
-                </CardContent>
-              </Card>
+                ))}
+              </div>
+            )}
+
+            <CartonBingo 
+              carton={cartones[cartonActivo]}
+              marcados={marcados}
+              onMarcar={handleMarcar}
+              autoMarcar={autoMarcar}
+            />
+            
+            {/* Modos Ganados */}
+            {modosGanados.length > 0 && (
+              <div className="space-y-2">
+                {modosGanados.map((modo, idx) => (
+                  <Card key={idx} className="border-0 shadow-xl bg-gradient-to-r from-amber-400 to-orange-500 animate-pulse">
+                    <CardContent className="p-6 text-center">
+                      <Trophy className="w-12 h-12 text-white mx-auto mb-3" />
+                      <h2 className="text-2xl font-bold text-white mb-2">¡{modo.nombre}!</h2>
+                      <p className="text-white/90 mb-4">Premio: ${modo.premio}</p>
+                      <Button 
+                        size="lg"
+                        onClick={() => declararBingo(modo)}
+                        className="bg-white text-orange-600 hover:bg-slate-50"
+                      >
+                        Reclamar Premio
+                      </Button>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
             )}
           </div>
 
@@ -321,14 +408,46 @@ export default function SalaBingo() {
               </CardContent>
             </Card>
 
-            {/* Info de la Partida */}
-            <Card className="border-0 shadow-xl bg-gradient-to-br from-green-50 to-emerald-50">
+            {/* Modos de Juego */}
+            <Card className="border-0 shadow-xl">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <Trophy className="w-5 h-5 text-amber-600" />
+                  Modos de Juego
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {partida?.modos_juego?.length > 0 ? (
+                  <div className="space-y-3">
+                    {partida.modos_juego.map((modo, idx) => (
+                      <div key={idx} className={`p-3 rounded-lg ${modo.completado ? 'bg-slate-100' : 'bg-gradient-to-r from-green-50 to-emerald-50'}`}>
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="font-semibold text-slate-900">{modo.nombre}</span>
+                          {modo.completado && (
+                            <span className="text-xs text-slate-500">✓ Completado</span>
+                          )}
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs text-slate-600 capitalize">{modo.tipo.replace(/_/g, ' ')}</span>
+                          <span className="text-lg font-bold text-green-600">${modo.premio}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-slate-500 text-center">No hay modos configurados</p>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Mis Cartones */}
+            <Card className="border-0 shadow-xl bg-gradient-to-br from-indigo-50 to-purple-50">
               <CardContent className="p-6">
-                <div className="space-y-4">
+                <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-slate-600">Premio</span>
-                    <span className="text-2xl font-bold text-green-600">
-                      ${partida?.premio_total?.toFixed(2)}
+                    <span className="text-sm text-slate-600">Mis Cartones</span>
+                    <span className="text-2xl font-bold text-indigo-600">
+                      {cartones.length}
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
