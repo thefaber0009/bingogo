@@ -15,9 +15,13 @@ import {
   Users,
   PlayCircle,
   CheckCircle,
-  Clock
+  Clock,
+  Ticket,
+  Trophy
 } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import ModosJuegoForm from '../components/partidas/ModosJuegoForm';
+import CombosForm from '../components/partidas/CombosForm';
 
 export default function Partidas() {
   const [open, setOpen] = useState(false);
@@ -25,10 +29,11 @@ export default function Partidas() {
   const [formData, setFormData] = useState({
     nombre: '',
     fecha_inicio: '',
-    monto_entrada: '',
-    premio_total: '',
-    tipo_premio: 'efectivo',
+    precio_carton: '',
+    max_cartones_por_jugador: 4,
     max_jugadores: '',
+    modos_juego: [],
+    combos: [],
   });
 
   const queryClient = useQueryClient();
@@ -67,10 +72,11 @@ export default function Partidas() {
     setFormData({
       nombre: '',
       fecha_inicio: '',
-      monto_entrada: '',
-      premio_total: '',
-      tipo_premio: 'efectivo',
+      precio_carton: '',
+      max_cartones_por_jugador: 4,
       max_jugadores: '',
+      modos_juego: [],
+      combos: [],
     });
     setEditingPartida(null);
   };
@@ -79,9 +85,9 @@ export default function Partidas() {
     e.preventDefault();
     const data = {
       ...formData,
-      monto_entrada: parseFloat(formData.monto_entrada),
-      premio_total: parseFloat(formData.premio_total),
-      max_jugadores: parseInt(formData.max_jugadores),
+      precio_carton: parseFloat(formData.precio_carton),
+      max_cartones_por_jugador: parseInt(formData.max_cartones_por_jugador),
+      max_jugadores: parseInt(formData.max_jugadores) || null,
     };
 
     if (editingPartida) {
@@ -96,10 +102,11 @@ export default function Partidas() {
     setFormData({
       nombre: partida.nombre,
       fecha_inicio: partida.fecha_inicio?.split('T')[0] || '',
-      monto_entrada: partida.monto_entrada?.toString() || '',
-      premio_total: partida.premio_total?.toString() || '',
-      tipo_premio: partida.tipo_premio || 'efectivo',
+      precio_carton: partida.precio_carton?.toString() || '',
+      max_cartones_por_jugador: partida.max_cartones_por_jugador || 4,
       max_jugadores: partida.max_jugadores?.toString() || '',
+      modos_juego: partida.modos_juego || [],
+      combos: partida.combos || [],
     });
     setOpen(true);
   };
@@ -134,13 +141,13 @@ export default function Partidas() {
               Nueva Partida
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl">
+          <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>{editingPartida ? 'Editar Partida' : 'Nueva Partida'}</DialogTitle>
             </DialogHeader>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
+                <div className="col-span-2 space-y-2">
                   <Label htmlFor="nombre">Nombre de la Partida</Label>
                   <Input
                     id="nombre"
@@ -160,39 +167,26 @@ export default function Partidas() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="monto_entrada">Precio por Cartón</Label>
+                  <Label htmlFor="precio_carton">Precio por Cartón ($)</Label>
                   <Input
-                    id="monto_entrada"
+                    id="precio_carton"
                     type="number"
                     step="0.01"
-                    value={formData.monto_entrada}
-                    onChange={(e) => setFormData({ ...formData, monto_entrada: e.target.value })}
+                    value={formData.precio_carton}
+                    onChange={(e) => setFormData({ ...formData, precio_carton: e.target.value })}
                     required
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="premio_total">Premio Total</Label>
+                  <Label htmlFor="max_cartones_por_jugador">Cartones Máximos por Jugador</Label>
                   <Input
-                    id="premio_total"
+                    id="max_cartones_por_jugador"
                     type="number"
-                    step="0.01"
-                    value={formData.premio_total}
-                    onChange={(e) => setFormData({ ...formData, premio_total: e.target.value })}
+                    min="1"
+                    value={formData.max_cartones_por_jugador}
+                    onChange={(e) => setFormData({ ...formData, max_cartones_por_jugador: e.target.value })}
                     required
                   />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="tipo_premio">Tipo de Premio</Label>
-                  <Select value={formData.tipo_premio} onValueChange={(v) => setFormData({ ...formData, tipo_premio: v })}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="efectivo">Efectivo</SelectItem>
-                      <SelectItem value="creditos">Créditos</SelectItem>
-                      <SelectItem value="fisico">Físico</SelectItem>
-                    </SelectContent>
-                  </Select>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="max_jugadores">Máximo de Jugadores</Label>
@@ -204,7 +198,19 @@ export default function Partidas() {
                   />
                 </div>
               </div>
-              <div className="flex justify-end gap-3 pt-4">
+
+              <ModosJuegoForm 
+                modos={formData.modos_juego}
+                onChange={(modos) => setFormData({ ...formData, modos_juego: modos })}
+              />
+
+              <CombosForm 
+                combos={formData.combos}
+                precioCarton={parseFloat(formData.precio_carton) || 0}
+                onChange={(combos) => setFormData({ ...formData, combos: combos })}
+              />
+
+              <div className="flex justify-end gap-3 pt-4 border-t">
                 <Button type="button" variant="outline" onClick={() => setOpen(false)}>
                   Cancelar
                 </Button>
@@ -232,7 +238,7 @@ export default function Partidas() {
                       <h3 className="text-xl font-bold text-slate-900">{partida.nombre}</h3>
                       {getEstadoBadge(partida.estado)}
                     </div>
-                    <div className="grid grid-cols-4 gap-6">
+                    <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                       <div className="flex items-center gap-2">
                         <Calendar className="w-4 h-4 text-slate-400" />
                         <div>
@@ -245,8 +251,15 @@ export default function Partidas() {
                       <div className="flex items-center gap-2">
                         <DollarSign className="w-4 h-4 text-slate-400" />
                         <div>
-                          <p className="text-xs text-slate-500">Entrada</p>
-                          <p className="text-sm font-medium">${partida.monto_entrada?.toFixed(2)}</p>
+                          <p className="text-xs text-slate-500">Cartón</p>
+                          <p className="text-sm font-medium">${partida.precio_carton?.toFixed(2)}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Ticket className="w-4 h-4 text-slate-400" />
+                        <div>
+                          <p className="text-xs text-slate-500">Máx/jugador</p>
+                          <p className="text-sm font-medium">{partida.max_cartones_por_jugador}</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
@@ -257,10 +270,10 @@ export default function Partidas() {
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <DollarSign className="w-4 h-4 text-slate-400" />
+                        <Trophy className="w-4 h-4 text-slate-400" />
                         <div>
-                          <p className="text-xs text-slate-500">Premio</p>
-                          <p className="text-sm font-medium text-green-600">${partida.premio_total?.toFixed(2)}</p>
+                          <p className="text-xs text-slate-500">Modos</p>
+                          <p className="text-sm font-medium text-green-600">{partida.modos_juego?.length || 0}</p>
                         </div>
                       </div>
                     </div>
