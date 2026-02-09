@@ -8,7 +8,8 @@ import {
   Trophy,
   Users,
   ArrowLeft,
-  CheckCircle
+  CheckCircle,
+  ShoppingCart
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '../utils';
@@ -51,6 +52,54 @@ export default function SalaBingo() {
   });
 
   const miCarton = cartones[0];
+
+  // Función para generar números aleatorios de bingo
+  const generarCarton = () => {
+    const carton = [];
+    const rangos = [
+      [1, 15],   // B
+      [16, 30],  // I
+      [31, 45],  // N
+      [46, 60],  // G
+      [61, 75]   // O
+    ];
+
+    for (let col = 0; col < 5; col++) {
+      const columna = [];
+      const [min, max] = rangos[col];
+      const numerosDisponibles = Array.from({ length: max - min + 1 }, (_, i) => i + min);
+      
+      for (let row = 0; row < 5; row++) {
+        if (col === 2 && row === 2) {
+          columna.push(0); // Centro libre
+        } else {
+          const idx = Math.floor(Math.random() * numerosDisponibles.length);
+          columna.push(numerosDisponibles.splice(idx, 1)[0]);
+        }
+      }
+      carton.push(columna);
+    }
+
+    // Transponer para tener filas en lugar de columnas
+    return carton[0].map((_, i) => carton.map(col => col[i]));
+  };
+
+  const crearCartonMutation = useMutation({
+    mutationFn: async () => {
+      const nuevoCarton = {
+        jugador_id: user.id,
+        partida_id: partidaId,
+        numeros: generarCarton(),
+        estado: 'activo',
+        comprado: true,
+        marcados: []
+      };
+      return base44.entities.Carton.create(nuevoCarton);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['misCartones', partidaId, user?.id]);
+    }
+  });
 
   // Auto-marcar números cuando salen bolas
   useEffect(() => {
@@ -136,15 +185,29 @@ export default function SalaBingo() {
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 to-purple-50">
         <Card className="max-w-md border-0 shadow-xl">
           <CardContent className="py-12 text-center">
-            <Trophy className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-slate-900 mb-2">No tienes cartones</h2>
-            <p className="text-slate-600 mb-6">Compra un cartón para jugar en esta partida</p>
-            <Link to={createPageUrl('Lobby')}>
-              <Button className="bg-gradient-to-r from-indigo-600 to-purple-600">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Volver al Lobby
+            <Trophy className="w-16 h-16 text-indigo-300 mx-auto mb-4" />
+            <h2 className="text-2xl font-bold text-slate-900 mb-2">¡Únete a la partida!</h2>
+            <p className="text-slate-600 mb-2">{partida?.nombre}</p>
+            <p className="text-sm text-slate-500 mb-6">
+              Costo del cartón: <span className="font-bold text-green-600">${partida?.monto_entrada?.toFixed(2)}</span>
+            </p>
+            <div className="flex gap-3 justify-center">
+              <Button 
+                onClick={() => crearCartonMutation.mutate()}
+                disabled={crearCartonMutation.isLoading}
+                className="bg-gradient-to-r from-indigo-600 to-purple-600"
+                size="lg"
+              >
+                <ShoppingCart className="w-4 h-4 mr-2" />
+                {crearCartonMutation.isLoading ? 'Creando...' : 'Comprar Cartón'}
               </Button>
-            </Link>
+              <Link to={createPageUrl('Lobby')}>
+                <Button variant="outline" size="lg">
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  Volver
+                </Button>
+              </Link>
+            </div>
           </CardContent>
         </Card>
       </div>

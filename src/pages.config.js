@@ -48,27 +48,27 @@
  * The mainPage value must match a key in the PAGES object exactly.
  */
 import Home from './pages/Home';
-import Partidas from './pages/Partidas';
-import Usuarios from './pages/Usuarios';
-import Premios from './pages/Premios';
+import Lobby from './pages/Lobby';
 import Notificaciones from './pages/Notificaciones';
 import PartidaEnVivo from './pages/PartidaEnVivo';
+import Partidas from './pages/Partidas';
 import Perfil from './pages/Perfil';
-import Lobby from './pages/Lobby';
+import Premios from './pages/Premios';
 import SalaBingo from './pages/SalaBingo';
+import Usuarios from './pages/Usuarios';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "Home": Home,
-    "Partidas": Partidas,
-    "Usuarios": Usuarios,
-    "Premios": Premios,
+    "Lobby": Lobby,
     "Notificaciones": Notificaciones,
     "PartidaEnVivo": PartidaEnVivo,
+    "Partidas": Partidas,
     "Perfil": Perfil,
-    "Lobby": Lobby,
+    "Premios": Premios,
     "SalaBingo": SalaBingo,
+    "Usuarios": Usuarios,
 }
 
 export const pagesConfig = {
