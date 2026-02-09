@@ -9,7 +9,10 @@ import {
   Users,
   ArrowLeft,
   CheckCircle,
-  ShoppingCart
+  ShoppingCart,
+  Search,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '../utils';
@@ -20,6 +23,9 @@ export default function SalaBingo() {
   const [autoMarcar, setAutoMarcar] = useState(true);
   const [modosGanados, setModosGanados] = useState([]);
   const [mostrarCompra, setMostrarCompra] = useState(false);
+  const [paginaActual, setPaginaActual] = useState(0);
+  const [busqueda, setBusqueda] = useState('');
+  const cartonesPorPagina = 5;
   
   const queryClient = useQueryClient();
   const urlParams = new URLSearchParams(window.location.search);
@@ -209,16 +215,53 @@ export default function SalaBingo() {
     );
   }
 
+  // Filtrar cartones por búsqueda
+  const cartonesFiltrados = cartones.filter((carton, idx) => {
+    if (!busqueda) return true;
+    const numeroCarton = (idx + 1).toString();
+    return numeroCarton.includes(busqueda);
+  });
+
+  // Paginación
+  const totalPaginas = Math.ceil(cartonesFiltrados.length / cartonesPorPagina);
+  const cartonesEnPagina = cartonesFiltrados.slice(
+    paginaActual * cartonesPorPagina,
+    (paginaActual + 1) * cartonesPorPagina
+  );
+
   if (cartones.length === 0 || mostrarCompra) {
+    const combosRapidos = [3, 5, 7, 10].filter(c => c <= (partida?.max_cartones_por_jugador || 4));
+    
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 to-purple-50 p-6">
-        <Card className="max-w-2xl w-full border-0 shadow-xl">
+        <Card className="max-w-4xl w-full border-0 shadow-xl">
           <CardContent className="py-12">
             <Trophy className="w-16 h-16 text-indigo-300 mx-auto mb-4" />
             <h2 className="text-3xl font-bold text-slate-900 mb-2 text-center">{partida?.nombre}</h2>
             <p className="text-slate-600 mb-8 text-center">Selecciona cuántos cartones deseas comprar</p>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            {/* Combos Rápidos */}
+            {combosRapidos.length > 0 && (
+              <div className="mb-8">
+                <p className="text-sm font-medium text-slate-700 mb-3 text-center">Combos Rápidos</p>
+                <div className="flex gap-3 justify-center flex-wrap">
+                  {combosRapidos.map((cantidad) => (
+                    <Button
+                      key={cantidad}
+                      variant="outline"
+                      size="lg"
+                      onClick={() => comprarCartones(cantidad)}
+                      disabled={crearCartonMutation.isLoading}
+                      className="min-w-[100px]"
+                    >
+                      {cantidad} Cartones
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
               {/* Compra individual */}
               <Card className="border-2 border-indigo-200 hover:border-indigo-400 transition-all cursor-pointer"
                     onClick={() => comprarCartones(1)}>
@@ -312,29 +355,79 @@ export default function SalaBingo() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Cartones */}
           <div className="lg:col-span-2 space-y-4">
-            {/* Selector de cartones */}
-            {cartones.length > 1 && (
-              <div className="flex gap-2 overflow-x-auto pb-2">
-                {cartones.map((c, idx) => (
-                  <Button
-                    key={c.id}
-                    variant={cartonActivo === idx ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => setCartonActivo(idx)}
-                    className="flex-shrink-0"
-                  >
-                    Cartón {idx + 1}
-                  </Button>
-                ))}
+            {/* Búsqueda y controles */}
+            <div className="flex gap-3 items-center">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
+                <Input
+                  placeholder="Buscar cartón por número..."
+                  value={busqueda}
+                  onChange={(e) => {
+                    setBusqueda(e.target.value);
+                    setPaginaActual(0);
+                  }}
+                  className="pl-10"
+                />
+              </div>
+              <div className="text-sm text-slate-600">
+                {cartones.length} cartón{cartones.length !== 1 ? 'es' : ''}
+              </div>
+            </div>
+
+            {/* Grid de Cartones */}
+            <div className="grid grid-cols-1 gap-4">
+              {cartonesEnPagina.map((carton, idx) => {
+                const numeroCarton = cartonesFiltrados.indexOf(carton) + 1;
+                return (
+                  <div key={carton.id} className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-semibold text-slate-900">Cartón #{numeroCarton}</h3>
+                    </div>
+                    <CartonBingo 
+                      carton={carton}
+                      marcados={marcados}
+                      onMarcar={handleMarcar}
+                      autoMarcar={autoMarcar}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Paginación */}
+            {totalPaginas > 1 && (
+              <div className="flex items-center justify-center gap-2 pt-4">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => setPaginaActual(Math.max(0, paginaActual - 1))}
+                  disabled={paginaActual === 0}
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </Button>
+                <div className="flex gap-1">
+                  {Array.from({ length: totalPaginas }, (_, i) => (
+                    <Button
+                      key={i}
+                      variant={paginaActual === i ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => setPaginaActual(i)}
+                      className="min-w-[40px]"
+                    >
+                      {i + 1}
+                    </Button>
+                  ))}
+                </div>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => setPaginaActual(Math.min(totalPaginas - 1, paginaActual + 1))}
+                  disabled={paginaActual === totalPaginas - 1}
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </Button>
               </div>
             )}
-
-            <CartonBingo 
-              carton={cartones[cartonActivo]}
-              marcados={marcados}
-              onMarcar={handleMarcar}
-              autoMarcar={autoMarcar}
-            />
             
             {/* Modos Ganados */}
             {modosGanados.length > 0 && (
