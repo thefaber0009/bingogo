@@ -14,19 +14,47 @@ import {
   Calendar,
   Clock,
   Search,
-  Filter
+  Filter,
+  Ticket,
+  Tag
 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 export default function Lobby() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterEstado, setFilterEstado] = useState('todas');
+  
+  const { data: user } = useQuery({
+    queryKey: ['user'],
+    queryFn: () => base44.auth.me(),
+  });
 
   const { data: partidas = [], isLoading } = useQuery({
     queryKey: ['partidas-lobby'],
     queryFn: () => base44.entities.Partida.list('-fecha_inicio'),
     refetchInterval: 5000,
   });
+
+  const { data: cartones = [] } = useQuery({
+    queryKey: ['cartones-lobby'],
+    queryFn: () => base44.entities.Carton.list(),
+    refetchInterval: 5000,
+  });
+
+  const getCartonesDisponibles = (partidaId) => {
+    const cartonesPartida = cartones.filter(c => c.partida_id === partidaId);
+    const cartonesComprados = cartonesPartida.filter(c => c.comprado).length;
+    return cartonesPartida.length - cartonesComprados;
+  };
+
+  const getCartonesVendidos = (partidaId) => {
+    return cartones.filter(c => c.partida_id === partidaId && c.comprado).length;
+  };
+
+  const getMisCartones = (partidaId) => {
+    if (!user) return 0;
+    return cartones.filter(c => c.partida_id === partidaId && c.jugador_id === user.id && c.comprado).length;
+  };
 
   const filteredPartidas = partidas.filter(p => {
     const matchSearch = p.nombre?.toLowerCase().includes(searchTerm.toLowerCase());
@@ -120,7 +148,7 @@ export default function Lobby() {
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                         <div className="flex items-center gap-2">
                           <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
                             <Calendar className="w-5 h-5 text-blue-600" />
@@ -150,7 +178,7 @@ export default function Lobby() {
                             <DollarSign className="w-5 h-5 text-amber-600" />
                           </div>
                           <div>
-                            <p className="text-xs text-slate-500">Cartón</p>
+                            <p className="text-xs text-slate-500">Precio Cartón</p>
                             <p className="text-sm font-semibold text-slate-900">
                               ${partida.precio_carton?.toFixed(2)}
                             </p>
@@ -159,16 +187,45 @@ export default function Lobby() {
 
                         <div className="flex items-center gap-2">
                           <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                            <Users className="w-5 h-5 text-green-600" />
+                            <Ticket className="w-5 h-5 text-green-600" />
                           </div>
                           <div>
-                            <p className="text-xs text-slate-500">Jugadores</p>
+                            <p className="text-xs text-slate-500">Cartones Vendidos</p>
                             <p className="text-sm font-semibold text-slate-900">
-                              {partida.cartones_vendidos || 0} / {partida.max_jugadores || '∞'}
+                              {getCartonesVendidos(partida.id)}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
+                            <Users className="w-5 h-5 text-indigo-600" />
+                          </div>
+                          <div>
+                            <p className="text-xs text-slate-500">Mis Cartones</p>
+                            <p className="text-sm font-semibold text-indigo-600">
+                              {getMisCartones(partida.id)}
                             </p>
                           </div>
                         </div>
                       </div>
+
+                      {/* Combos disponibles */}
+                      {partida.combos && partida.combos.length > 0 && (
+                        <div className="mt-4 pt-4 border-t border-slate-200">
+                          <p className="text-xs text-slate-500 mb-2 font-medium">Combos Disponibles:</p>
+                          <div className="flex gap-2 flex-wrap">
+                            {partida.combos.map((combo, idx) => (
+                              <div key={idx} className="inline-flex items-center gap-1 px-3 py-1 bg-amber-50 border border-amber-200 rounded-full text-xs">
+                                <Tag className="w-3 h-3 text-amber-600" />
+                                <span className="font-semibold">{combo.cantidad} cartones</span>
+                                <span className="text-slate-600">por ${combo.precio?.toFixed(2)}</span>
+                                <span className="text-red-600 font-semibold">({combo.descuento}% OFF)</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
 
                     {/* Acción */}
