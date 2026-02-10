@@ -110,9 +110,12 @@ export default function Lobby() {
                           {getEstadoBadge(partida.estado)}
                         </div>
                         <div className="text-right">
-                          <p className="text-sm text-slate-500 font-medium">Premio</p>
+                          <p className="text-sm text-slate-500 font-medium">Modos de Juego</p>
                           <p className="text-3xl font-bold text-green-600">
-                            ${partida.premio_total?.toFixed(2)}
+                            {partida.modos_juego?.length || 0}
+                          </p>
+                          <p className="text-xs text-slate-500 mt-1">
+                            Premio Total: ${partida.modos_juego?.reduce((sum, m) => sum + (m.premio || 0), 0).toFixed(2) || '0.00'}
                           </p>
                         </div>
                       </div>
@@ -147,9 +150,9 @@ export default function Lobby() {
                             <DollarSign className="w-5 h-5 text-amber-600" />
                           </div>
                           <div>
-                            <p className="text-xs text-slate-500">Entrada</p>
+                            <p className="text-xs text-slate-500">Cartón</p>
                             <p className="text-sm font-semibold text-slate-900">
-                              ${partida.monto_entrada?.toFixed(2)}
+                              ${partida.precio_carton?.toFixed(2)}
                             </p>
                           </div>
                         </div>
