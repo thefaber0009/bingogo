@@ -94,6 +94,21 @@ export default function SalaBingo() {
 
   const crearCartonMutation = useMutation({
     mutationFn: async (cantidad) => {
+      // Verificar límite de cartones por jugador
+      if (cartones.length + cantidad > (partida?.max_cartones_por_jugador || 4)) {
+        throw new Error(`No puedes comprar más de ${partida?.max_cartones_por_jugador} cartones`);
+      }
+
+      // Verificar disponibilidad total
+      const cartonesVendidos = await base44.entities.Carton.filter({ 
+        partida_id: partidaId, 
+        comprado: true 
+      });
+      
+      if (cartonesVendidos.length + cantidad > (partida?.cantidad_total_cartones || 0)) {
+        throw new Error('No hay suficientes cartones disponibles');
+      }
+
       const promesas = [];
       for (let i = 0; i < cantidad; i++) {
         const nuevoCarton = {
@@ -106,11 +121,22 @@ export default function SalaBingo() {
         };
         promesas.push(base44.entities.Carton.create(nuevoCarton));
       }
-      return Promise.all(promesas);
+      const result = await Promise.all(promesas);
+
+      // Actualizar contador de cartones vendidos
+      await base44.entities.Partida.update(partidaId, {
+        cartones_vendidos: cartonesVendidos.length + cantidad
+      });
+
+      return result;
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['misCartones', partidaId, user?.id]);
+      queryClient.invalidateQueries(['partida', partidaId]);
       setMostrarCompra(false);
+    },
+    onError: (error) => {
+      alert(error.message || 'Error al comprar cartones');
     }
   });
 

@@ -148,7 +148,7 @@ export default function Lobby() {
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                      <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
                         <div className="flex items-center gap-2">
                           <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
                             <Calendar className="w-5 h-5 text-blue-600" />
@@ -186,13 +186,25 @@ export default function Lobby() {
                         </div>
 
                         <div className="flex items-center gap-2">
+                          <div className="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center">
+                            <Ticket className="w-5 h-5 text-slate-600" />
+                          </div>
+                          <div>
+                            <p className="text-xs text-slate-500">Total Cartones</p>
+                            <p className="text-sm font-semibold text-slate-900">
+                              {partida.cantidad_total_cartones || 0}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2">
                           <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
                             <Ticket className="w-5 h-5 text-green-600" />
                           </div>
                           <div>
-                            <p className="text-xs text-slate-500">Cartones Vendidos</p>
-                            <p className="text-sm font-semibold text-slate-900">
-                              {getCartonesVendidos(partida.id)}
+                            <p className="text-xs text-slate-500">Vendidos</p>
+                            <p className="text-sm font-semibold text-green-700">
+                              {getCartonesVendidos(partida.id)} / {partida.cantidad_total_cartones || 0}
                             </p>
                           </div>
                         </div>

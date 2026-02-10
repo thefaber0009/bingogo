@@ -30,6 +30,7 @@ export default function Partidas() {
     nombre: '',
     fecha_inicio: '',
     precio_carton: '',
+    cantidad_total_cartones: '',
     max_cartones_por_jugador: 4,
     max_jugadores: '',
     modos_juego: [],
@@ -73,6 +74,7 @@ export default function Partidas() {
       nombre: '',
       fecha_inicio: '',
       precio_carton: '',
+      cantidad_total_cartones: '',
       max_cartones_por_jugador: 4,
       max_jugadores: '',
       modos_juego: [],
@@ -81,11 +83,12 @@ export default function Partidas() {
     setEditingPartida(null);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const data = {
       ...formData,
       precio_carton: parseFloat(formData.precio_carton),
+      cantidad_total_cartones: parseInt(formData.cantidad_total_cartones),
       max_cartones_por_jugador: parseInt(formData.max_cartones_por_jugador),
       max_jugadores: parseInt(formData.max_jugadores) || null,
     };
@@ -103,6 +106,7 @@ export default function Partidas() {
       nombre: partida.nombre,
       fecha_inicio: partida.fecha_inicio?.split('T')[0] || '',
       precio_carton: partida.precio_carton?.toString() || '',
+      cantidad_total_cartones: partida.cantidad_total_cartones?.toString() || '',
       max_cartones_por_jugador: partida.max_cartones_por_jugador || 4,
       max_jugadores: partida.max_jugadores?.toString() || '',
       modos_juego: partida.modos_juego || [],
@@ -178,6 +182,17 @@ export default function Partidas() {
                   />
                 </div>
                 <div className="space-y-2">
+                  <Label htmlFor="cantidad_total_cartones">Cantidad Total de Cartones</Label>
+                  <Input
+                    id="cantidad_total_cartones"
+                    type="number"
+                    min="1"
+                    value={formData.cantidad_total_cartones}
+                    onChange={(e) => setFormData({ ...formData, cantidad_total_cartones: e.target.value })}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
                   <Label htmlFor="max_cartones_por_jugador">Cartones Máximos por Jugador</Label>
                   <Input
                     id="max_cartones_por_jugador"
@@ -238,7 +253,7 @@ export default function Partidas() {
                       <h3 className="text-xl font-bold text-slate-900">{partida.nombre}</h3>
                       {getEstadoBadge(partida.estado)}
                     </div>
-                    <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                    <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
                       <div className="flex items-center gap-2">
                         <Calendar className="w-4 h-4 text-slate-400" />
                         <div>
@@ -258,6 +273,13 @@ export default function Partidas() {
                       <div className="flex items-center gap-2">
                         <Ticket className="w-4 h-4 text-slate-400" />
                         <div>
+                          <p className="text-xs text-slate-500">Total Cartones</p>
+                          <p className="text-sm font-medium text-indigo-600">{partida.cantidad_total_cartones || 0}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Ticket className="w-4 h-4 text-slate-400" />
+                        <div>
                           <p className="text-xs text-slate-500">Máx/jugador</p>
                           <p className="text-sm font-medium">{partida.max_cartones_por_jugador}</p>
                         </div>
@@ -265,8 +287,8 @@ export default function Partidas() {
                       <div className="flex items-center gap-2">
                         <Users className="w-4 h-4 text-slate-400" />
                         <div>
-                          <p className="text-xs text-slate-500">Jugadores</p>
-                          <p className="text-sm font-medium">{partida.cartones_vendidos || 0} / {partida.max_jugadores || '∞'}</p>
+                          <p className="text-xs text-slate-500">Vendidos</p>
+                          <p className="text-sm font-medium">{partida.cartones_vendidos || 0}</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
