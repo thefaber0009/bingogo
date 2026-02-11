@@ -60,37 +60,120 @@ export default function PartidaEnVivo() {
       </div>
 
       {!selectedPartidaId ? (
-        <Card className="border-0 shadow-lg">
-          <CardContent className="py-12 text-center">
-            <PlayCircle className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-            <p className="text-slate-500">Selecciona una partida para comenzar el monitoreo</p>
+        <Card className="border-0 shadow-lg bg-gradient-to-br from-slate-50 to-slate-100">
+          <CardContent className="py-16 text-center">
+            <div className="w-20 h-20 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <PlayCircle className="w-10 h-10 text-indigo-600" />
+            </div>
+            <p className="text-slate-700 font-semibold text-lg">Selecciona una partida</p>
+            <p className="text-slate-500 text-sm mt-2">Elige una sala para comenzar a administrar el juego</p>
           </CardContent>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Controles */}
-          <div className="lg:col-span-3">
-            <Card className="border-0 shadow-lg">
-              <CardHeader>
-                <CardTitle>Controles de Partida</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center gap-3">
-                  <Button className="bg-green-600 hover:bg-green-700">
-                    <PlayCircle className="w-4 h-4 mr-2" />
-                    Iniciar
+        <div className="space-y-6">
+          {/* Controles - Sorteo Actual */}
+          <Card className="border-0 shadow-lg">
+            <CardHeader className="bg-gradient-to-r from-slate-900 to-slate-800 text-white rounded-t-xl">
+              <CardTitle className="text-xl">SORTEO ACTUAL</CardTitle>
+            </CardHeader>
+            <CardContent className="p-8">
+              <div className="space-y-6">
+                <div className="flex flex-wrap items-center gap-4">
+                  <div className="flex-1 min-w-48">
+                    <label className="text-xs font-semibold text-slate-600 block mb-2">Modo automático</label>
+                    <div className="flex items-center gap-3">
+                      <span className="text-sm text-slate-700 font-medium">Intervalo:</span>
+                      <select className="border border-slate-300 rounded px-3 py-2 text-sm">
+                        <option>3 segundos</option>
+                        <option>5 segundos</option>
+                        <option>10 segundos</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div className="flex items-end gap-2 flex-wrap">
+                    <Button className="bg-blue-600 hover:bg-blue-700 h-10">
+                      Activar
+                    </Button>
+                    <Button className="bg-red-600 hover:bg-red-700 h-10">
+                      Desactivar
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-3 pt-4 border-t border-slate-200">
+                  <Button className="bg-yellow-500 hover:bg-yellow-600 text-slate-900 font-bold h-10">
+                    🎲 Sacar nuevo número
                   </Button>
-                  <Button variant="outline">
-                    <PauseCircle className="w-4 h-4 mr-2" />
-                    Pausar
+                  <Button variant="outline" className="h-10">
+                    <RotateCcw className="w-4 h-4 mr-2" />
+                    Reiniciar
                   </Button>
-                  <Button variant="outline" className="text-red-600 hover:text-red-700">
-                    <StopCircle className="w-4 h-4 mr-2" />
-                    Finalizar
+                  <Button className="bg-indigo-600 hover:bg-indigo-700 h-10">
+                    <Zap className="w-4 h-4 mr-2" />
+                    Iniciar sorteo automático
                   </Button>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Números Sorteados + Info */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Bolas Cantadas */}
+            <div className="lg:col-span-2">
+              <Card className="border-0 shadow-lg">
+                <CardHeader className="bg-gradient-to-r from-slate-900 to-slate-800 text-white rounded-t-xl">
+                  <CardTitle className="flex items-center justify-between">
+                    <span>Números sorteados: {bolas.length}</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-8">
+                  {bolas.length > 0 ? (
+                    <div className="grid grid-cols-10 gap-2">
+                      {bolas.map((bola) => (
+                        <div
+                          key={bola.id}
+                          className="aspect-square rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg shadow-lg hover:shadow-xl transition-shadow"
+                        >
+                          {bola.numero}
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-center text-slate-500 py-8">Sin números sorteados aún</p>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Jugadores + Info */}
+            <div className="space-y-6">
+              <Card className="border-0 shadow-lg">
+                <CardHeader className="bg-gradient-to-r from-slate-900 to-slate-800 text-white rounded-t-xl">
+                  <CardTitle className="flex items-center gap-2 text-base">
+                    <Users className="w-5 h-5" />
+                    Jugadores
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-6">
+                  <div className="text-3xl font-bold text-indigo-600">{cartones.length}</div>
+                  <p className="text-sm text-slate-600 mt-1">cartones activos</p>
+                </CardContent>
+              </Card>
+
+              <Card className="border-0 shadow-lg">
+                <CardHeader className="bg-gradient-to-r from-slate-900 to-slate-800 text-white rounded-t-xl">
+                  <CardTitle className="flex items-center gap-2 text-base">
+                    <Ticket className="w-5 h-5" />
+                    Cartones
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-6">
+                  <div className="text-3xl font-bold text-purple-600">{cartones.length}</div>
+                  <p className="text-sm text-slate-600 mt-1">en juego</p>
+                </CardContent>
+              </Card>
+            </div>
           </div>
 
           {/* Jugadores Conectados */}
