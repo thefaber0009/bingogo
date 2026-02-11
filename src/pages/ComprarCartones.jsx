@@ -143,14 +143,19 @@ export default function ComprarCartones() {
         throw new Error('No hay suficientes cartones disponibles');
       }
 
+      // Obtener el siguiente número de cartón para este jugador en esta partida
+      const proximoNumero = misCartones.length + 1;
+
       const promesas = [];
       for (let i = 0; i < cantidad; i++) {
         const nuevoCarton = {
           jugador_id: user.id,
           partida_id: partidaId,
+          numero_carton: proximoNumero + i,
           numeros: generarCarton(),
           estado: 'activo',
           comprado: true,
+          pagado: false,
           marcados: []
         };
         promesas.push(base44.entities.Carton.create(nuevoCarton));

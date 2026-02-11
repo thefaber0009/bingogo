@@ -254,7 +254,7 @@ export default function MisCartones() {
 
                 {/* Cartones de la Sala */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                  {cartonesPartida.map((carton, idx) => {
+                  {cartonesPartida.sort((a, b) => a.numero_carton - b.numero_carton).map((carton) => {
                     const tiempoRestante = tiemposCarton[carton.id] || 300;
                     const tiempoAgotado = tiempoRestante === 0;
                     const estaPagado = carton.pagado === true;
@@ -278,7 +278,7 @@ export default function MisCartones() {
                         <div className="flex items-center justify-between mb-2">
                           <CardTitle className="text-lg flex items-center gap-2">
                             <Ticket className={`w-5 h-5 ${cartonesHabilitados[carton.id] && estaPagado ? 'text-green-600' : 'text-slate-400'}`} />
-                            Cartón #{idx + 1}
+                            Cartón #{carton.numero_carton} - {carton.id.substring(0, 8).toUpperCase()}
                           </CardTitle>
                           <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-slate-100">
                             <Clock className={`w-4 h-4 ${tiempoAgotado ? 'text-red-600' : 'text-slate-600'}`} />
