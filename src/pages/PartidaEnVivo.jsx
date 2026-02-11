@@ -39,20 +39,20 @@ export default function PartidaEnVivo() {
   const partidaActual = partidas.find(p => p.id === selectedPartidaId);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 pb-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900">Panel en Tiempo Real</h1>
-          <p className="text-slate-600 mt-1">Monitorea y controla partidas en vivo</p>
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Juego en Vivo</h1>
+          <p className="text-slate-600 mt-2">Control y administración de partidas en tiempo real</p>
         </div>
         <Select value={selectedPartidaId} onValueChange={setSelectedPartidaId}>
-          <SelectTrigger className="w-64">
+          <SelectTrigger className="w-72 h-11 text-base">
             <SelectValue placeholder="Seleccionar partida" />
           </SelectTrigger>
           <SelectContent>
             {partidasActivas.map((p) => (
               <SelectItem key={p.id} value={p.id}>
-                {p.nombre} - {p.estado}
+                {p.nombre} ({p.estado === 'en_curso' ? 'Activa' : 'Pendiente'})
               </SelectItem>
             ))}
           </SelectContent>
