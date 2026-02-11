@@ -330,7 +330,7 @@ export default function ComprarCartones() {
             <div className="bg-white rounded-2xl shadow-lg p-6 space-y-4">
               <h3 className="font-bold text-slate-900 mb-4">▼ Filtrar Cartones</h3>
               <div className="flex gap-2 flex-wrap">
-                {['todos', 'disponibles', 'seleccionados', 'ocupados'].map((filtro) => (
+                {['todos', 'seleccionados'].map((filtro) => (
                   <button
                     key={filtro}
                     onClick={() => { setFiltroCartones(filtro); setPaginaActual(1); }}
