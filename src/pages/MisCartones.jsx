@@ -321,6 +321,112 @@ export default function MisCartones() {
             );
           })}
         </div>
+
+        {/* Resumen de Compra */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2">
+            <Card className="border-0 shadow-xl">
+              <CardHeader className="pb-4">
+                <CardTitle className="flex items-center gap-2">
+                  <Clock className="w-5 h-5 text-indigo-600" />
+                  Historial de Compras
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b border-slate-200">
+                        <th className="text-left py-3 px-4 font-semibold text-slate-600">Fecha</th>
+                        <th className="text-left py-3 px-4 font-semibold text-slate-600">Sala</th>
+                        <th className="text-left py-3 px-4 font-semibold text-slate-600">Cantidad</th>
+                        <th className="text-left py-3 px-4 font-semibold text-slate-600">Total</th>
+                        <th className="text-left py-3 px-4 font-semibold text-slate-600">Estado</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {partidas.map((part) => {
+                        const cartonesPartida = cartonAgrupadosPorPartida[part.id] || [];
+                        const subtotal = cartonesPartida.length * (part.precio_carton || 0);
+                        const fecha = new Date(part.fecha_inicio || new Date()).toLocaleDateString('es-ES', {day: '2-digit', month: '2-digit'});
+                        
+                        return (
+                          <tr key={part.id} className="border-b border-slate-100 hover:bg-slate-50">
+                            <td className="py-3 px-4 text-slate-700">{fecha}</td>
+                            <td className="py-3 px-4">
+                              <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-semibold">
+                                🎫 {part.nombre}
+                              </span>
+                            </td>
+                            <td className="py-3 px-4 font-semibold text-slate-900">{cartonesPartida.length} cartones</td>
+                            <td className="py-3 px-4 font-semibold text-slate-900">${subtotal.toFixed(2)}</td>
+                            <td className="py-3 px-4">
+                              <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-semibold">
+                                ✓ COMPLETADO
+                              </span>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Resumen de Pago */}
+          <Card className="border-0 shadow-xl h-fit">
+            <CardHeader className="pb-4">
+              <CardTitle className="flex items-center gap-2">
+                <ShoppingCart className="w-5 h-5 text-indigo-600" />
+                Resumen de Compra
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg p-4 text-center mb-4">
+                <p className="text-sm text-slate-600 mb-1">Total Cartones</p>
+                <p className="text-3xl font-bold text-indigo-600">{totalCartones}</p>
+              </div>
+
+              <div className="space-y-2 border-t border-slate-200 pt-4">
+                <div className="flex justify-between text-sm">
+                  <span className="text-slate-600">Cartones:</span>
+                  <span className="font-semibold text-slate-900">{totalCartones}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-slate-600">Combos:</span>
+                  <span className="font-semibold text-slate-900">0</span>
+                </div>
+              </div>
+
+              <div className="bg-slate-100 rounded-lg p-3 space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-slate-600">Subtotal:</span>
+                  <span className="font-semibold text-slate-900">${totalCosto.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-slate-600">Descuento:</span>
+                  <span className="font-semibold text-slate-900">$0</span>
+                </div>
+                <div className="border-t border-slate-300 pt-2 flex justify-between">
+                  <span className="font-bold text-slate-900">Total:</span>
+                  <span className="font-bold text-lg text-indigo-600">${totalCosto.toFixed(2)}</span>
+                </div>
+              </div>
+
+              <Button 
+                className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 h-11 rounded-lg mt-4"
+              >
+                💳 Pagar ${totalCosto.toFixed(2)}
+              </Button>
+
+              <p className="text-xs text-slate-500 text-center">
+                🔔 Los cartones se reservan por 5 minutos
+              </p>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );
