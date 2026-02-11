@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
@@ -9,7 +9,9 @@ import {
   Ticket,
   DollarSign,
   Tag,
-  CheckCircle
+  CheckCircle,
+  Users,
+  Clock
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '../utils';
