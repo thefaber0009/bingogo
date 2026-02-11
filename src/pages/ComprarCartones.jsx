@@ -57,14 +57,45 @@ export default function ComprarCartones() {
     enabled: !!partidaId,
   });
 
-  const { data: todosLosCartones = [] } = useQuery({
-    queryKey: ['todosLosCartones', partidaId],
-    queryFn: () => base44.entities.Carton.filter({ 
-      partida_id: partidaId,
-      estado: 'activo'
-    }),
-    enabled: !!partidaId,
-  });
+  // Generar cartones disponibles (virtualmente, sin persistir aún)
+  const generarCartonVirtual = (numero) => {
+    const carton = [];
+    const rangos = [
+      [1, 15],   // B
+      [16, 30],  // I
+      [31, 45],  // N
+      [46, 60],  // G
+      [61, 75]   // O
+    ];
+
+    for (let col = 0; col < 5; col++) {
+      const columna = [];
+      const [min, max] = rangos[col];
+      const numerosDisponibles = Array.from({ length: max - min + 1 }, (_, i) => i + min);
+      
+      for (let row = 0; row < 5; row++) {
+        if (col === 2 && row === 2) {
+          columna.push(0);
+        } else {
+          const idx = Math.floor(Math.random() * numerosDisponibles.length);
+          columna.push(numerosDisponibles.splice(idx, 1)[0]);
+        }
+      }
+      carton.push(columna);
+    }
+
+    return carton[0].map((_, i) => carton.map(col => col[i]));
+  };
+
+  const cartonesDisponiblesParaComprar = Array.from(
+    { length: Math.max(0, (partida?.cantidad_total_cartones || 0) - cartonesVendidos.length) },
+    (_, idx) => ({
+      id: `virtual_${idx}`,
+      numeroVirtual: idx + 1,
+      numeros: generarCartonVirtual(idx),
+      comprado: false
+    })
+  );
 
   const generarCarton = () => {
     const carton = [];
