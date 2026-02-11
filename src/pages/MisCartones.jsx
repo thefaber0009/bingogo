@@ -168,34 +168,15 @@ export default function MisCartones() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Link to={createPageUrl('ComprarCartones') + `?partida=${partidaId}`}>
+            <Link to={createPageUrl('Lobby')}>
               <Button variant="outline" size="icon">
                 <ArrowLeft className="w-5 h-5" />
               </Button>
             </Link>
             <div>
               <h1 className="text-3xl font-bold text-slate-900">Mis Cartones</h1>
-              <p className="text-slate-600">{partida?.nombre}</p>
+              <p className="text-slate-600">Visualiza tus cartones por sala</p>
             </div>
-          </div>
-          <div className="flex items-center gap-3">
-            {cartones.length < (partida?.max_cartones_por_jugador || 4) && (
-              <Link to={createPageUrl('ComprarCartones') + `?partida=${partidaId}`}>
-                <Button variant="outline">
-                  <ShoppingCart className="w-4 h-4 mr-2" />
-                  Comprar más ({cartones.length}/{partida?.max_cartones_por_jugador})
-                </Button>
-              </Link>
-            )}
-            <Button 
-              onClick={entrarASala}
-              size="lg"
-              disabled={cartonesActivos === 0}
-              className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
-            >
-              <Play className="w-5 h-5 mr-2" />
-              Entrar a Jugar ({cartonesActivos}/{cartones.length})
-            </Button>
           </div>
         </div>
 
@@ -207,7 +188,7 @@ export default function MisCartones() {
               <div>
                 <p className="font-semibold text-slate-900 mb-1">Habilita tus cartones para jugar</p>
                 <p className="text-sm text-slate-600">
-                  Activa o desactiva los cartones que deseas usar en esta partida. 
+                  Activa o desactiva los cartones que deseas usar en cada sala. 
                   Solo los cartones habilitados estarán activos durante el juego.
                 </p>
               </div>
@@ -215,44 +196,7 @@ export default function MisCartones() {
           </CardContent>
         </Card>
 
-        {/* Estadísticas rápidas */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card className="border-0 shadow-lg">
-            <CardContent className="p-6 text-center">
-              <Ticket className="w-8 h-8 text-indigo-600 mx-auto mb-2" />
-              <p className="text-sm text-slate-600 mb-1">Total Cartones</p>
-              <p className="text-3xl font-bold text-indigo-600">{cartones.length}</p>
-            </CardContent>
-          </Card>
-          <Card className="border-0 shadow-lg">
-            <CardContent className="p-6 text-center">
-              <CheckCircle className="w-8 h-8 text-green-600 mx-auto mb-2" />
-              <p className="text-sm text-slate-600 mb-1">Habilitados</p>
-              <p className="text-3xl font-bold text-green-600">{cartonesActivos}</p>
-            </CardContent>
-          </Card>
-          <Card className="border-0 shadow-lg">
-            <CardContent className="p-6 text-center">
-              <Circle className="w-8 h-8 text-slate-400 mx-auto mb-2" />
-              <p className="text-sm text-slate-600 mb-1">Deshabilitados</p>
-              <p className="text-3xl font-bold text-slate-600">{cartones.length - cartonesActivos}</p>
-            </CardContent>
-          </Card>
-          <Card className="border-0 shadow-lg bg-gradient-to-br from-purple-50 to-indigo-50">
-            <CardContent className="p-6 text-center">
-              <div className="text-sm text-slate-600 mb-1">Estado</div>
-              <div className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
-                partida?.estado === 'en_curso' ? 'bg-green-100 text-green-700' :
-                partida?.estado === 'pendiente' ? 'bg-amber-100 text-amber-700' :
-                'bg-slate-100 text-slate-700'
-              }`}>
-                {partida?.estado}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Lista de Cartones */}
+        {/* Salas con Cartones */}
          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
            {cartones.map((carton, idx) => {
              const tiempoRestante = tiemposCarton[carton.id] || 300;
