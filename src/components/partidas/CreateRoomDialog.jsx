@@ -34,6 +34,7 @@ export default function CreateRoomDialog({ open, onOpenChange, onSubmit, isLoadi
     capacidad: 'ilimitada',
     limiteJugadores: '',
     fechaInicio: '',
+    horaInicio: '',
     salaRecurrente: false,
     diasRecurrencia: [],
     horaRecurrencia: '',
@@ -91,11 +92,15 @@ export default function CreateRoomDialog({ open, onOpenChange, onSubmit, isLoadi
       return;
     }
     
+    const fechaHora = formData.horaInicio 
+      ? `${formData.fechaInicio}T${formData.horaInicio}:00`
+      : `${formData.fechaInicio}T00:00:00`;
+
     const submitData = {
       nombre: formData.nombre,
       tipo: selectedType,
       cantidad_total_cartones: parseInt(formData.cantidadCartones),
-      fecha_inicio: new Date(formData.fechaInicio).toISOString(),
+      fecha_inicio: new Date(fechaHora).toISOString(),
       precio_carton: 1, // Precio base por defecto
       duracion_maxima: formData.duracionMaxima ? parseInt(formData.duracionMaxima) : null,
       combos: formData.combos.filter(c => c.nombre && c.cantidad && c.precio),
@@ -116,6 +121,7 @@ export default function CreateRoomDialog({ open, onOpenChange, onSubmit, isLoadi
       capacidad: 'ilimitada',
       limiteJugadores: '',
       fechaInicio: '',
+      horaInicio: '',
       salaRecurrente: false,
       diasRecurrencia: [],
       horaRecurrencia: '',
@@ -242,29 +248,37 @@ export default function CreateRoomDialog({ open, onOpenChange, onSubmit, isLoadi
                   )}
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="fechaInicio">Programación de la Sala</Label>
-                    <p className="text-xs text-slate-500 mb-2">Fecha de Inicio</p>
-                    <Input
-                      id="fechaInicio"
-                      type="date"
-                      value={formData.fechaInicio}
-                      onChange={(e) => setFormData({ ...formData, fechaInicio: e.target.value })}
-                    />
-                  </div>
-                  <div className="flex flex-col justify-end">
-                    <p className="text-xs text-slate-500 mb-2">¿Sala Recurrente?</p>
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={formData.salaRecurrente}
-                        onChange={(e) => setFormData({ ...formData, salaRecurrente: e.target.checked })}
-                      />
-                      <span className="text-sm">Activar</span>
-                    </label>
-                  </div>
-                </div>
+                <div className="grid grid-cols-3 gap-4">
+                   <div>
+                     <Label htmlFor="fechaInicio">Programación de la Sala</Label>
+                     <p className="text-xs text-slate-500 mb-2">Fecha de Inicio</p>
+                     <Input
+                       id="fechaInicio"
+                       type="date"
+                       value={formData.fechaInicio}
+                       onChange={(e) => setFormData({ ...formData, fechaInicio: e.target.value })}
+                     />
+                   </div>
+                   <div>
+                     <p className="text-xs text-slate-500 mb-2">Hora</p>
+                     <Input
+                       type="time"
+                       value={formData.horaInicio}
+                       onChange={(e) => setFormData({ ...formData, horaInicio: e.target.value })}
+                     />
+                   </div>
+                   <div className="flex flex-col justify-end">
+                     <p className="text-xs text-slate-500 mb-2">¿Sala Recurrente?</p>
+                     <label className="flex items-center gap-2 cursor-pointer">
+                       <input
+                         type="checkbox"
+                         checked={formData.salaRecurrente}
+                         onChange={(e) => setFormData({ ...formData, salaRecurrente: e.target.checked })}
+                       />
+                       <span className="text-sm">Activar</span>
+                     </label>
+                   </div>
+                 </div>
 
                 {formData.salaRecurrente && (
                   <div className="space-y-3 border-t pt-3">
