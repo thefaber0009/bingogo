@@ -178,42 +178,46 @@ export default function CreateRoomDialog({ open, onOpenChange, onSubmit, isLoadi
               onClick={() => toggleSection('advanced')}
               className="w-full p-4 flex items-center justify-between hover:bg-slate-50"
             >
-              <span className="font-semibold">Configuración Avanzada</span>
+              <span className="font-semibold flex items-center gap-2">
+                ⚙️ Configuración Avanzada
+              </span>
               <ChevronDown className={`w-5 h-5 transition-transform ${expandedSections.advanced ? 'rotate-180' : ''}`} />
             </button>
             {expandedSections.advanced && (
-              <div className="p-4 border-t space-y-4 bg-slate-50">
+              <div className="p-4 border-t space-y-6 bg-slate-50">
                 <div>
-                  <Label>Duración Máxima (minutos)</Label>
+                  <Label htmlFor="duracion">Duración Máxima (minutos)</Label>
                   <Input
+                    id="duracion"
                     type="number"
                     placeholder="Ej: 60"
                     min="10"
                     value={formData.duracionMaxima}
                     onChange={(e) => setFormData({ ...formData, duracionMaxima: e.target.value })}
                   />
+                  <p className="text-xs text-slate-500 mt-1">Tiempo máximo para completar todos los juegos en esta sala</p>
                 </div>
 
                 <div>
                   <Label>Capacidad de Jugadores</Label>
-                  <div className="flex gap-4">
-                    <label className="flex items-center gap-2">
+                  <div className="flex gap-4 mt-2">
+                    <label className="flex items-center gap-2 cursor-pointer">
                       <input
                         type="radio"
                         value="ilimitada"
                         checked={formData.capacidad === 'ilimitada'}
                         onChange={(e) => setFormData({ ...formData, capacidad: e.target.value })}
                       />
-                      Ilimitada
+                      <span className="text-sm">Ilimitada</span>
                     </label>
-                    <label className="flex items-center gap-2">
+                    <label className="flex items-center gap-2 cursor-pointer">
                       <input
                         type="radio"
                         value="limitada"
                         checked={formData.capacidad === 'limitada'}
                         onChange={(e) => setFormData({ ...formData, capacidad: e.target.value })}
                       />
-                      Limitada
+                      <span className="text-sm">Limitada</span>
                     </label>
                   </div>
                   {formData.capacidad === 'limitada' && (
@@ -227,79 +231,149 @@ export default function CreateRoomDialog({ open, onOpenChange, onSubmit, isLoadi
                     />
                   )}
                 </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="fechaInicio">Programación de la Sala</Label>
+                    <p className="text-xs text-slate-500 mb-2">Fecha de Inicio</p>
+                    <Input
+                      id="fechaInicio"
+                      type="date"
+                      value={formData.fechaInicio}
+                      onChange={(e) => setFormData({ ...formData, fechaInicio: e.target.value })}
+                    />
+                  </div>
+                  <div className="flex flex-col justify-end">
+                    <p className="text-xs text-slate-500 mb-2">¿Sala Recurrente?</p>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={formData.salaRecurrente}
+                        onChange={(e) => setFormData({ ...formData, salaRecurrente: e.target.checked })}
+                      />
+                      <span className="text-sm">Activar</span>
+                    </label>
+                  </div>
+                </div>
               </div>
             )}
           </div>
 
-          {/* Combos */}
-          <div>
-            <div className="flex justify-between items-center mb-3">
-              <Label>Combos de Cartones</Label>
-              <Button size="sm" variant="outline" onClick={addCombo}>
-                <Plus className="w-4 h-4 mr-1" />
-                Agregar
-              </Button>
+          {/* Modos de Juego y Combos */}
+          <div className="space-y-4">
+            <div>
+              <Label className="mb-3 block">Modos de Juego con Premios</Label>
+              <p className="text-xs text-slate-500 mb-3">Configure juegos de esta manera</p>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                {GAME_MODES.map(mode => (
+                  <div key={mode} className="border rounded-lg p-3 bg-white hover:bg-slate-50 transition-colors">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={formData.modos[mode] || false}
+                        onChange={() => toggleMode(mode)}
+                      />
+                      <span className="text-xs font-medium flex-1">{mode}</span>
+                    </label>
+                    <Input
+                      type="number"
+                      placeholder="Precio"
+                      min="0"
+                      className="w-full mt-2 h-8 text-xs"
+                      onChange={(e) => {
+                        // Opcionalmente guardar el precio del modo
+                      }}
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className="space-y-2">
-              {formData.combos.map((combo, idx) => (
-                <div key={idx} className="flex gap-2">
-                  <Input
-                    placeholder="Nombre"
-                    value={combo.nombre}
-                    onChange={(e) => {
-                      const newCombos = [...formData.combos];
-                      newCombos[idx].nombre = e.target.value;
-                      setFormData({ ...formData, combos: newCombos });
-                    }}
-                  />
-                  <Input
-                    type="number"
-                    placeholder="Cantidad"
-                    min="2"
-                    className="w-24"
-                    value={combo.cantidad}
-                    onChange={(e) => {
-                      const newCombos = [...formData.combos];
-                      newCombos[idx].cantidad = e.target.value;
-                      setFormData({ ...formData, combos: newCombos });
-                    }}
-                  />
-                  <Input
-                    type="number"
-                    placeholder="Precio"
-                    min="0"
-                    className="w-24"
-                    value={combo.precio}
-                    onChange={(e) => {
-                      const newCombos = [...formData.combos];
-                      newCombos[idx].precio = e.target.value;
-                      setFormData({ ...formData, combos: newCombos });
-                    }}
-                  />
-                  {formData.combos.length > 1 && (
-                    <Button size="sm" variant="destructive" onClick={() => removeCombo(idx)}>
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  )}
-                </div>
-              ))}
+
+            {/* Combos de Cartones */}
+            <div className="border-t pt-4">
+              <div className="flex justify-between items-center mb-3">
+                <Label>Combos de Cartones</Label>
+                <Button size="sm" variant="outline" onClick={addCombo}>
+                  <Plus className="w-4 h-4 mr-1" />
+                  Agregar Combo
+                </Button>
+              </div>
+              <p className="text-xs text-slate-500 mb-3">Configure combos para ver el resumen</p>
+              <div className="space-y-2">
+                {formData.combos.map((combo, idx) => (
+                  <div key={idx} className="border rounded-lg p-3 bg-white flex gap-2 items-end">
+                    <div className="flex-1">
+                      <p className="text-xs text-slate-500 mb-1">Nombre</p>
+                      <Input
+                        placeholder="Ej: Pack 5"
+                        value={combo.nombre}
+                        className="h-8 text-sm"
+                        onChange={(e) => {
+                          const newCombos = [...formData.combos];
+                          newCombos[idx].nombre = e.target.value;
+                          setFormData({ ...formData, combos: newCombos });
+                        }}
+                      />
+                    </div>
+                    <div className="w-24">
+                      <p className="text-xs text-slate-500 mb-1">Cantidad</p>
+                      <Input
+                        type="number"
+                        placeholder="2"
+                        min="2"
+                        className="h-8 text-sm"
+                        value={combo.cantidad}
+                        onChange={(e) => {
+                          const newCombos = [...formData.combos];
+                          newCombos[idx].cantidad = e.target.value;
+                          setFormData({ ...formData, combos: newCombos });
+                        }}
+                      />
+                    </div>
+                    <div className="w-24">
+                      <p className="text-xs text-slate-500 mb-1">$ Precio</p>
+                      <Input
+                        type="number"
+                        placeholder="0"
+                        min="0"
+                        className="h-8 text-sm"
+                        value={combo.precio}
+                        onChange={(e) => {
+                          const newCombos = [...formData.combos];
+                          newCombos[idx].precio = e.target.value;
+                          setFormData({ ...formData, combos: newCombos });
+                        }}
+                      />
+                    </div>
+                    {formData.combos.length > 1 && (
+                      <Button size="sm" variant="ghost" onClick={() => removeCombo(idx)} className="h-8">
+                        <Trash2 className="w-4 h-4 text-red-600" />
+                      </Button>
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
-          {/* Modos de Juego */}
-          <div>
-            <Label className="mb-3 block">Modos de Juego</Label>
-            <div className="grid grid-cols-2 gap-3">
-              {GAME_MODES.map(mode => (
-                <label key={mode} className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={formData.modos[mode] || false}
-                    onChange={() => toggleMode(mode)}
-                  />
-                  <span className="text-sm">{mode}</span>
-                </label>
-              ))}
+          {/* Resumen de Configuración */}
+          <div className="border rounded-lg p-4 bg-slate-50 space-y-4">
+            <h3 className="font-semibold text-sm">Resumen de Configuración</h3>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <p className="text-xs text-slate-500">Modos de Juego</p>
+                <p className="text-sm font-semibold">{Object.values(formData.modos).filter(Boolean).length} configurado(s)</p>
+                <Button variant="ghost" size="sm" className="h-auto p-0 text-xs text-slate-600">
+                  Selecciona modos y establece precios para ver el resumen
+                </Button>
+              </div>
+              <div className="space-y-2">
+                <p className="text-xs text-slate-500">Combos de Cartones</p>
+                <p className="text-sm font-semibold">{formData.combos.filter(c => c.nombre).length} combo(s)</p>
+                <Button variant="ghost" size="sm" className="h-auto p-0 text-xs text-slate-600">
+                  Configura combos para ver el resumen
+                </Button>
+              </div>
             </div>
           </div>
 
