@@ -35,6 +35,11 @@ export default function Perfil() {
     enabled: !!user,
   });
 
+  const { data: partidas = [] } = useQuery({
+    queryKey: ['partidas'],
+    queryFn: () => base44.entities.Partida.list(),
+  });
+
   const { data: premios = [] } = useQuery({
     queryKey: ['userPremios', user?.id],
     queryFn: () => base44.entities.Premio.filter({ jugador_id: user.id }),
@@ -243,6 +248,59 @@ export default function Perfil() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Mis Cartones Activos */}
+      {cartones.length > 0 && (
+        <Card className="border-0 shadow-lg">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <GamepadIcon className="w-5 h-5 text-indigo-600" />
+              Mis Cartones Activos
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-slate-200">
+                    <th className="text-left py-3 px-4 font-semibold text-slate-600">Cartón</th>
+                    <th className="text-left py-3 px-4 font-semibold text-slate-600">Sala</th>
+                    <th className="text-left py-3 px-4 font-semibold text-slate-600">Estado</th>
+                    <th className="text-left py-3 px-4 font-semibold text-slate-600">Pagado</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {cartones.map((carton) => {
+                    const partida = partidas.find(p => p.id === carton.partida_id);
+                    return (
+                      <tr key={carton.id} className="border-b border-slate-100 hover:bg-slate-50">
+                        <td className="py-3 px-4 font-semibold text-slate-900">#{carton.numero_carton} - {carton.id.substring(0, 8).toUpperCase()}</td>
+                        <td className="py-3 px-4 text-slate-700">{partida?.nombre || 'N/A'}</td>
+                        <td className="py-3 px-4">
+                          <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                            carton.estado === 'activo' ? 'bg-green-100 text-green-700' :
+                            carton.estado === 'ganador' ? 'bg-amber-100 text-amber-700' :
+                            'bg-slate-100 text-slate-700'
+                          }`}>
+                            {carton.estado}
+                          </span>
+                        </td>
+                        <td className="py-3 px-4">
+                          <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                            carton.pagado ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'
+                          }`}>
+                            {carton.pagado ? '✓ Pagado' : '✗ Pendiente'}
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Historial de Premios */}
       {premios.length > 0 && (
