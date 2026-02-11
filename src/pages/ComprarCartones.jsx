@@ -59,7 +59,6 @@ export default function ComprarCartones() {
 
   // Generar cartones disponibles (virtualmente, sin persistir aún)
   const generarCartonVirtual = (numero) => {
-    const carton = [];
     const rangos = [
       [1, 15],   // B
       [16, 30],  // I
@@ -68,23 +67,23 @@ export default function ComprarCartones() {
       [61, 75]   // O
     ];
 
-    for (let col = 0; col < 5; col++) {
-      const columna = [];
-      const [min, max] = rangos[col];
-      const numerosDisponibles = Array.from({ length: max - min + 1 }, (_, i) => i + min);
-      
-      for (let row = 0; row < 5; row++) {
+    // Crear matriz 5x5
+    const carton = [];
+    for (let row = 0; row < 5; row++) {
+      const fila = [];
+      for (let col = 0; col < 5; col++) {
         if (col === 2 && row === 2) {
-          columna.push(0);
+          fila.push(0); // Centro libre
         } else {
-          const idx = Math.floor(Math.random() * numerosDisponibles.length);
-          columna.push(numerosDisponibles.splice(idx, 1)[0]);
+          const [min, max] = rangos[col];
+          const num = Math.floor(Math.random() * (max - min + 1)) + min;
+          fila.push(num);
         }
       }
-      carton.push(columna);
+      carton.push(fila);
     }
 
-    return carton[0].map((_, i) => carton.map(col => col[i]));
+    return carton;
   };
 
   const cartonesDisponiblesParaComprar = Array.from(
