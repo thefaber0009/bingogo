@@ -222,11 +222,9 @@ export default function ComprarCartones() {
     c <= (partida?.max_cartones_por_jugador || 4) - misCartones.length
   );
 
-  const cartonesTodosConFiltro = todosLosCartones.filter(c => {
+  const cartonesTodosConFiltro = cartonesDisponiblesParaComprar.filter(c => {
     let cumpleFiltro = true;
-    if (filtroCartones === 'disponibles') cumpleFiltro = !c.comprado;
-    else if (filtroCartones === 'seleccionados') cumpleFiltro = cartonesSeleccionados.includes(c.id);
-    else if (filtroCartones === 'ocupados') cumpleFiltro = c.comprado;
+    if (filtroCartones === 'seleccionados') cumpleFiltro = cartonesSeleccionados.includes(c.id);
     
     if (busquedaNumero) {
       const numBuscado = parseInt(busquedaNumero);
