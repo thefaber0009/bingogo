@@ -20,7 +20,7 @@ export default function ComprarCartones() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [cartonesSeleccionados, setCartonesSeleccionados] = useState([]);
-  const [filtroCartones, setFiltroCartones] = useState('todos');
+  const [filtroCartones, setFiltroCartones] = useState('disponibles');
   const [paginaActual, setPaginaActual] = useState(1);
   const [busquedaNumero, setBusquedaNumero] = useState('');
   const CARTONES_POR_PAGINA = 5;
@@ -236,8 +236,14 @@ export default function ComprarCartones() {
 
   const cartonesTodosConFiltro = cartonesDisponiblesParaComprar.filter(c => {
     let cumpleFiltro = true;
-    if (filtroCartones === 'seleccionados') cumpleFiltro = cartonesSeleccionados.includes(c.id);
-    
+    if (filtroCartones === 'seleccionados') {
+      cumpleFiltro = cartonesSeleccionados.includes(c.id);
+    } else if (filtroCartones === 'disponibles') {
+      cumpleFiltro = true; // Todos los cartones mostrados son disponibles
+    } else if (filtroCartones === 'vendidos') {
+      cumpleFiltro = false; // No mostrar vendidos en esta vista
+    }
+
     if (busquedaNumero) {
       const numBuscado = parseInt(busquedaNumero);
       if (!isNaN(numBuscado)) {
@@ -342,7 +348,7 @@ export default function ComprarCartones() {
             <div className="bg-white rounded-2xl shadow-lg p-6 space-y-4">
               <h3 className="font-bold text-slate-900 mb-4">▼ Filtrar Cartones</h3>
               <div className="flex gap-2 flex-wrap">
-                {['todos', 'seleccionados'].map((filtro) => (
+                {['disponibles', 'vendidos', 'seleccionados'].map((filtro) => (
                   <button
                     key={filtro}
                     onClick={() => { setFiltroCartones(filtro); setPaginaActual(1); }}
@@ -352,7 +358,9 @@ export default function ComprarCartones() {
                         : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                     }`}
                   >
-                    {filtro}
+                    {filtro === 'disponibles' ? `Disponibles (${cartonesDisponiblesParaComprar.length})` :
+                     filtro === 'vendidos' ? `Vendidos (${cartonesVendidos.length})` :
+                     'Seleccionados'}
                   </button>
                 ))}
               </div>
