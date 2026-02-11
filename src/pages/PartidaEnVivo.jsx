@@ -176,109 +176,40 @@ export default function PartidaEnVivo() {
             </div>
           </div>
 
-          {/* Jugadores Conectados */}
-          <Card className="border-0 shadow-lg">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Users className="w-5 h-5 text-indigo-600" />
-                Jugadores Conectados
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-                  <span className="text-sm font-medium">Total de jugadores</span>
-                  <span className="text-2xl font-bold text-indigo-600">
-                    {cartones.length}
-                  </span>
-                </div>
-                <div className="text-sm text-slate-500 text-center py-4">
-                  Monitoreo en tiempo real requiere WebSockets
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Cartones Activos */}
-          <Card className="border-0 shadow-lg">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Ticket className="w-5 h-5 text-purple-600" />
-                Cartones Activos
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-                  <span className="text-sm font-medium">Total de cartones</span>
-                  <span className="text-2xl font-bold text-purple-600">
-                    {cartones.length}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
-                  <span className="text-sm font-medium">Activos</span>
-                  <span className="text-lg font-bold text-green-600">
-                    {cartones.filter(c => c.estado === 'activo').length}
-                  </span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Bolas Cantadas */}
-          <Card className="border-0 shadow-lg">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Circle className="w-5 h-5 text-blue-600" />
-                Bolas Cantadas
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-wrap gap-2">
-                {bolas.length > 0 ? (
-                  bolas.map((bola) => (
-                    <div
-                      key={bola.id}
-                      className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-sm shadow-lg"
-                    >
-                      {bola.numero}
-                    </div>
-                  ))
-                ) : (
-                  <p className="text-sm text-slate-500 w-full text-center py-4">
-                    No hay bolas cantadas aún
-                  </p>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Info de Partida */}
+          {/* Sorteo Anterior */}
           {partidaActual && (
-            <div className="lg:col-span-3">
-              <Card className="border-0 shadow-lg bg-gradient-to-br from-indigo-50 to-purple-50">
-                <CardContent className="p-6">
-                  <div className="grid grid-cols-4 gap-6">
-                    <div>
-                      <p className="text-sm text-slate-600 font-medium">Nombre</p>
-                      <p className="text-lg font-bold text-slate-900 mt-1">{partidaActual.nombre}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-slate-600 font-medium">Estado</p>
-                      <p className="text-lg font-bold text-slate-900 mt-1 capitalize">{partidaActual.estado}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-slate-600 font-medium">Premio</p>
-                      <p className="text-lg font-bold text-green-600 mt-1">${partidaActual.premio_total?.toFixed(2)}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-slate-600 font-medium">Entrada</p>
-                      <p className="text-lg font-bold text-slate-900 mt-1">${partidaActual.monto_entrada?.toFixed(2)}</p>
-                    </div>
+            <Card className="border-0 shadow-lg">
+              <CardHeader className="bg-gradient-to-r from-slate-900 to-slate-800 text-white rounded-t-xl">
+                <CardTitle className="text-xl">INFORMACIÓN DEL JUEGO</CardTitle>
+              </CardHeader>
+              <CardContent className="p-8">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                  <div>
+                    <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Nombre</p>
+                    <p className="text-lg font-bold text-slate-900 mt-2">{partidaActual.nombre}</p>
                   </div>
-                </CardContent>
-              </Card>
-            </div>
+                  <div>
+                    <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Estado</p>
+                    <p className={`text-lg font-bold mt-2 ${
+                      partidaActual.estado === 'en_curso' ? 'text-green-600' :
+                      partidaActual.estado === 'pendiente' ? 'text-amber-600' :
+                      'text-slate-600'
+                    }`}>
+                      {partidaActual.estado === 'en_curso' ? 'Activa' : 
+                       partidaActual.estado === 'pendiente' ? 'Pendiente' : 'Finalizada'}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Cartones</p>
+                    <p className="text-lg font-bold text-slate-900 mt-2">{partidaActual.cantidad_total_cartones}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Cartones Vendidos</p>
+                    <p className="text-lg font-bold text-slate-900 mt-2">{partidaActual.cartones_vendidos || 0}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           )}
         </div>
       )}
