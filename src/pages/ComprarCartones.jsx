@@ -121,11 +121,11 @@ export default function ComprarCartones() {
 
   const comprarYEntrar = async (cantidad) => {
     await crearCartonMutation.mutateAsync(cantidad);
-    navigate(createPageUrl('SalaBingo') + `?partida=${partidaId}`);
+    navigate(createPageUrl('MisCartones') + `?partida=${partidaId}`);
   };
 
-  const entrarASala = () => {
-    navigate(createPageUrl('SalaBingo') + `?partida=${partidaId}`);
+  const entrarAPanelCartones = () => {
+    navigate(createPageUrl('MisCartones') + `?partida=${partidaId}`);
   };
 
   if (!partidaId) {
@@ -201,11 +201,11 @@ export default function ComprarCartones() {
               <CheckCircle className="w-8 h-8 text-green-600 mx-auto mb-2" />
               <p className="text-green-700 font-semibold">Ya tienes {misCartones.length} cartón{misCartones.length !== 1 ? 'es' : ''} comprado{misCartones.length !== 1 ? 's' : ''}</p>
               <Button 
-                onClick={entrarASala}
+                onClick={entrarAPanelCartones}
                 className="mt-3 bg-green-600 hover:bg-green-700"
                 size="lg"
               >
-                Entrar a la Sala de Bingo
+                Ver Mis Cartones
               </Button>
             </div>
           )}
@@ -304,11 +304,11 @@ export default function ComprarCartones() {
             </Link>
             {misCartones.length > 0 && (
               <Button 
-                onClick={entrarASala}
+                onClick={entrarAPanelCartones}
                 size="lg"
                 className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
               >
-                Ir a la Sala de Bingo
+                Ver Mis Cartones
               </Button>
             )}
           </div>

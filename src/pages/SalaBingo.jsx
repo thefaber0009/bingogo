@@ -249,9 +249,9 @@ export default function SalaBingo() {
         <Card className="max-w-md">
           <CardContent className="py-12 text-center">
             <Ticket className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-            <p className="text-slate-600 mb-4">No tienes cartones para esta partida</p>
-            <Link to={createPageUrl('ComprarCartones') + `?partida=${partidaId}`}>
-              <Button>Comprar Cartones</Button>
+            <p className="text-slate-600 mb-4">No tienes cartones habilitados para esta partida</p>
+            <Link to={createPageUrl('MisCartones') + `?partida=${partidaId}`}>
+              <Button>Ver Mis Cartones</Button>
             </Link>
           </CardContent>
         </Card>
@@ -365,7 +365,7 @@ export default function SalaBingo() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Link to={createPageUrl('Lobby')}>
+            <Link to={createPageUrl('MisCartones') + `?partida=${partidaId}`}>
               <Button variant="outline" size="icon">
                 <ArrowLeft className="w-5 h-5" />
               </Button>
@@ -376,14 +376,12 @@ export default function SalaBingo() {
             </div>
           </div>
           <div className="flex items-center gap-3">
-            {cartones.length < (partida?.max_cartones_por_jugador || 4) && (
-              <Link to={createPageUrl('ComprarCartones') + `?partida=${partidaId}`}>
-                <Button variant="outline">
-                  <ShoppingCart className="w-4 h-4 mr-2" />
-                  Comprar más ({cartones.length}/{partida?.max_cartones_por_jugador})
-                </Button>
-              </Link>
-            )}
+            <Link to={createPageUrl('MisCartones') + `?partida=${partidaId}`}>
+              <Button variant="outline">
+                <Ticket className="w-4 h-4 mr-2" />
+                Mis Cartones ({cartones.length})
+              </Button>
+            </Link>
             <Button
               variant="outline"
               onClick={() => setAutoMarcar(!autoMarcar)}
