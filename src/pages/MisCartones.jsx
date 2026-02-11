@@ -19,6 +19,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '../utils';
 import CartonBingo from '../components/bingo/CartonBingo';
 import { Switch } from '@/components/ui/switch';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { CreditCard, Wallet } from 'lucide-react';
 
 export default function MisCartones() {
   const navigate = useNavigate();
@@ -67,6 +69,7 @@ export default function MisCartones() {
 
   const [cartonesHabilitados, setCartonesHabilitados] = useState({});
   const [tiemposCarton, setTiemposCarton] = useState({});
+  const [dialogoPagoAbierto, setDialogoPagoAbierto] = useState(false);
 
   useEffect(() => {
     // Inicializar tiempos de los cartones (5 minutos = 300 segundos)
@@ -428,6 +431,7 @@ export default function MisCartones() {
               </div>
 
               <Button 
+                onClick={() => setDialogoPagoAbierto(true)}
                 className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 h-11 rounded-lg mt-4"
               >
                 💳 Pagar ${totalCosto.toFixed(2)}
@@ -439,6 +443,55 @@ export default function MisCartones() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Diálogo de Opciones de Pago */}
+        <Dialog open={dialogoPagoAbierto} onOpenChange={setDialogoPagoAbierto}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Elegir Método de Pago</DialogTitle>
+              <DialogDescription>
+                Selecciona cómo deseas pagar ${totalCosto.toFixed(2)}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-3">
+              <button
+                onClick={() => {
+                  // Lógica para pago en línea
+                  setDialogoPagoAbierto(false);
+                }}
+                className="w-full border-2 border-indigo-300 hover:bg-indigo-50 hover:border-indigo-600 rounded-lg p-4 text-left transition-all"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center">
+                    <CreditCard className="w-6 h-6 text-indigo-600" />
+                  </div>
+                  <div>
+                    <p className="font-bold text-slate-900">Pago en Línea</p>
+                    <p className="text-xs text-slate-600">Tarjeta de crédito o débito</p>
+                  </div>
+                </div>
+              </button>
+
+              <button
+                onClick={() => {
+                  // Lógica para transferencia a billetera virtual
+                  setDialogoPagoAbierto(false);
+                }}
+                className="w-full border-2 border-purple-300 hover:bg-purple-50 hover:border-purple-600 rounded-lg p-4 text-left transition-all"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                    <Wallet className="w-6 h-6 text-purple-600" />
+                  </div>
+                  <div>
+                    <p className="font-bold text-slate-900">Billetera Virtual</p>
+                    <p className="text-xs text-slate-600">Transferencia bancaria</p>
+                  </div>
+                </div>
+              </button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
