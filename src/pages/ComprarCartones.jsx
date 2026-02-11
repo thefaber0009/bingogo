@@ -191,12 +191,24 @@ export default function ComprarCartones() {
     c <= (partida?.max_cartones_por_jugador || 4) - misCartones.length
   );
 
-  const cartonesParaMostrar = todosLosCartones.filter(c => {
-    if (filtroCartones === 'disponibles') return !c.comprado;
-    if (filtroCartones === 'seleccionados') return cartonesSeleccionados.includes(c.id);
-    if (filtroCartones === 'ocupados') return c.comprado;
-    return true;
+  const cartonesTodosConFiltro = todosLosCartones.filter(c => {
+    let cumpleFiltro = true;
+    if (filtroCartones === 'disponibles') cumpleFiltro = !c.comprado;
+    else if (filtroCartones === 'seleccionados') cumpleFiltro = cartonesSeleccionados.includes(c.id);
+    else if (filtroCartones === 'ocupados') cumpleFiltro = c.comprado;
+    
+    if (busquedaNumero) {
+      const numBuscado = parseInt(busquedaNumero);
+      if (!isNaN(numBuscado)) {
+        cumpleFiltro = cumpleFiltro && c.numeros?.flat?.().includes(numBuscado);
+      }
+    }
+    return cumpleFiltro;
   });
+
+  const totalPaginas = Math.ceil(cartonesTodosConFiltro.length / CARTONES_POR_PAGINA);
+  const indiceInicio = (paginaActual - 1) * CARTONES_POR_PAGINA;
+  const cartonesParaMostrar = cartonesTodosConFiltro.slice(indiceInicio, indiceInicio + CARTONES_POR_PAGINA);
 
   const precioSeleccionados = cartonesSeleccionados.length * (partida?.precio_carton || 0);
 
