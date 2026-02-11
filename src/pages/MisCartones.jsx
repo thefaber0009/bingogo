@@ -132,22 +132,7 @@ export default function MisCartones() {
     navigate(createPageUrl('SalaBingo') + `?partida=${partidaId}`);
   };
 
-  if (!partidaId) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Card className="max-w-md">
-          <CardContent className="py-12 text-center">
-            <p className="text-slate-600">No se especificó una partida</p>
-            <Link to={createPageUrl('Lobby')}>
-              <Button className="mt-4">Volver al Lobby</Button>
-            </Link>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  if (loadingPartida || loadingCartones) {
+  if (loadingCartones) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -158,17 +143,17 @@ export default function MisCartones() {
     );
   }
 
-  if (cartones.length === 0) {
+  if (todosLosCartones.length === 0) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 to-purple-50 p-6">
         <Card className="max-w-md border-0 shadow-xl">
           <CardContent className="py-12 text-center">
             <Ticket className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-            <p className="text-slate-600 mb-4">No tienes cartones para esta partida</p>
-            <Link to={createPageUrl('ComprarCartones') + `?partida=${partidaId}`}>
+            <p className="text-slate-600 mb-4">No tienes cartones en ninguna partida</p>
+            <Link to={createPageUrl('Lobby')}>
               <Button className="bg-gradient-to-r from-indigo-600 to-purple-600">
                 <ShoppingCart className="w-4 h-4 mr-2" />
-                Comprar Cartones
+                Ir a Comprar Cartones
               </Button>
             </Link>
           </CardContent>
