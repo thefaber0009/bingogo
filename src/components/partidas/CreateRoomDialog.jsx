@@ -300,38 +300,10 @@ export default function CreateRoomDialog({ open, onOpenChange, onSubmit, isLoadi
             )}
           </div>
 
-          {/* Modos de Juego y Combos */}
+          {/* Combos de Cartones y Modos de Juego */}
           <div className="space-y-4">
-            <div>
-              <Label className="mb-3 block">Modos de Juego con Premios</Label>
-              <p className="text-xs text-slate-500 mb-3">Configure juegos de esta manera</p>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                {GAME_MODES.map(mode => (
-                  <div key={mode} className="border rounded-lg p-3 bg-white hover:bg-slate-50 transition-colors">
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={formData.modos[mode] || false}
-                        onChange={() => toggleMode(mode)}
-                      />
-                      <span className="text-xs font-medium flex-1">{mode}</span>
-                    </label>
-                    <Input
-                      type="number"
-                      placeholder="Precio"
-                      min="0"
-                      className="w-full mt-2 h-8 text-xs"
-                      onChange={(e) => {
-                        // Opcionalmente guardar el precio del modo
-                      }}
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-
             {/* Combos de Cartones */}
-            <div className="border-t pt-4">
+            <div>
               <div className="flex justify-between items-center mb-3">
                 <Label>Combos de Cartones</Label>
                 <Button size="sm" variant="outline" onClick={addCombo}>
@@ -391,6 +363,35 @@ export default function CreateRoomDialog({ open, onOpenChange, onSubmit, isLoadi
                         <Trash2 className="w-4 h-4 text-red-600" />
                       </Button>
                     )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Modos de Juego con Premios */}
+            <div className="border-t pt-4">
+              <Label className="mb-3 block">Modos de Juego con Premios</Label>
+              <p className="text-xs text-slate-500 mb-3">Configure juegos de esta manera</p>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                {GAME_MODES.map(mode => (
+                  <div key={mode} className="border rounded-lg p-3 bg-white hover:bg-slate-50 transition-colors">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={formData.modos[mode] || false}
+                        onChange={() => toggleMode(mode)}
+                      />
+                      <span className="text-xs font-medium flex-1">{mode}</span>
+                    </label>
+                    <Input
+                      type="number"
+                      placeholder="Precio"
+                      min="0"
+                      className="w-full mt-2 h-8 text-xs"
+                      onChange={(e) => {
+                        // Opcionalmente guardar el precio del modo
+                      }}
+                    />
                   </div>
                 ))}
               </div>
