@@ -115,12 +115,9 @@ export default function Lobby() {
             <p className="text-slate-600 mt-4">Cargando salas...</p>
           </div>
         ) : partidas.length === 0 ? (
-          <Card className="border-0 shadow-xl bg-white">
-            <CardContent className="py-20 text-center">
-              <PlayCircle className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-              <p className="text-slate-500 text-lg">No hay salas disponibles</p>
-            </CardContent>
-          </Card>
+          <div className="text-center py-20">
+            <p className="text-slate-500 text-lg">No hay salas disponibles</p>
+          </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {partidas.map((partida) => {
@@ -128,60 +125,61 @@ export default function Lobby() {
               const isActive = partida.estado === 'en_curso';
               
               return (
-                <div key={partida.id} className="bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow overflow-hidden">
-                  {/* Header con Badge */}
-                  <div className={`${roomColor.bg} text-white p-4 flex items-center justify-between`}>
+                <div key={partida.id} className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow overflow-hidden border border-slate-100">
+                  {/* Header con nombre y badge */}
+                  <div className={`${roomColor.bg} text-white px-4 py-3 flex items-center justify-between`}>
                     <div className="flex items-center gap-2">
-                      <Trophy className="w-5 h-5" />
-                      <span className="font-bold text-lg capitalize">{partida.nombre}</span>
+                      <span className="text-lg">♦</span>
+                      <span className="font-bold capitalize">{partida.nombre}</span>
                     </div>
-                    <span className={`${isActive ? 'bg-green-500' : 'bg-slate-400'} text-white text-xs font-bold px-3 py-1 rounded-full`}>
+                    <span className={`text-white text-xs font-bold px-2 py-1 rounded-full ${isActive ? 'bg-green-600' : 'bg-slate-500'}`}>
                       {isActive ? 'Activa' : 'Inactiva'}
                     </span>
                   </div>
 
-                  {/* Imagen/Placeholder */}
-                  <div className="h-40 bg-gradient-to-br from-slate-200 to-slate-300 flex items-center justify-center">
+                  {/* Imagen Bingo */}
+                  <div className="h-44 bg-gradient-to-b from-slate-100 to-slate-150 flex items-center justify-center border-b border-slate-200">
                     <div className="text-center">
-                      <Zap className="w-16 h-16 text-slate-500 mx-auto mb-2 opacity-50" />
-                      <p className="text-slate-600 font-semibold">Sala de Bingo</p>
+                      <div className="text-6xl opacity-30">🎰</div>
+                      <p className="text-slate-500 text-xs mt-2">Sala de Bingo</p>
                     </div>
                   </div>
 
                   {/* Contenido */}
-                  <div className="p-6 space-y-4">
-                    {/* Stats principales */}
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2 text-sm">
-                        <span className="w-4 h-4 flex items-center justify-center text-xs">🎫</span>
-                        <span className="text-slate-700">Cartones: <span className="font-bold">{partida.cantidad_total_cartones}</span></span>
+                  <div className="p-5 space-y-3">
+                    {/* Stats en dos columnas */}
+                    <div className="grid grid-cols-2 gap-3 text-xs">
+                      <div>
+                        <p className="text-slate-500">🎫 Cartones</p>
+                        <p className="font-bold text-slate-900">{partida.cantidad_total_cartones}</p>
                       </div>
-                      <div className="flex items-center gap-2 text-sm">
-                        <span className="w-4 h-4 flex items-center justify-center text-xs">🏆</span>
-                        <span className="text-slate-700">Premio: <span className="font-bold">${partida.modos_juego?.reduce((sum, m) => sum + (m.premio || 0), 0).toFixed(2) || '0.00'}</span></span>
+                      <div>
+                        <p className="text-slate-500">🏆 Premio</p>
+                        <p className="font-bold text-slate-900">${partida.modos_juego?.reduce((sum, m) => sum + (m.premio || 0), 0).toFixed(2) || '0.00'}</p>
                       </div>
-                      <div className="flex items-center gap-2 text-sm">
-                        <span className="w-4 h-4 flex items-center justify-center text-xs">📅</span>
-                        <span className="text-slate-700">Inicio: <span className="font-bold">{partida.fecha_inicio ? new Date(partida.fecha_inicio).toLocaleString('es-ES', {month: 'numeric', day: 'numeric', year: '2-digit', hour: '2-digit', minute: '2-digit'}) : 'N/A'}</span></span>
+                      <div>
+                        <p className="text-slate-500">📅 Inicio</p>
+                        <p className="font-bold text-slate-900">{partida.fecha_inicio ? new Date(partida.fecha_inicio).toLocaleString('es-ES', {month: 'numeric', day: 'numeric'}) + ' ' + new Date(partida.fecha_inicio).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'N/A'}</p>
                       </div>
-                      <div className="flex items-center gap-2 text-sm">
-                        <span className="w-4 h-4 flex items-center justify-center text-xs">⏱️</span>
-                        <span className="text-slate-700">Duración: <span className="font-bold">30 min</span></span>
+                      <div>
+                        <p className="text-slate-500">⏱️ Duración</p>
+                        <p className="font-bold text-slate-900">30 min</p>
                       </div>
-                      <div className="flex items-center gap-2 text-sm">
-                        <span className="w-4 h-4 flex items-center justify-center text-xs">🎮</span>
-                        <span className="text-slate-700">Modos de Juego: <span className="font-bold">({partida.modos_juego?.length || 0})</span></span>
-                      </div>
+                    </div>
+
+                    {/* Modos de juego */}
+                    <div className="pt-2 border-t border-slate-200">
+                      <p className="text-xs text-slate-500 mb-1">🎮 Modos de Juego ({partida.modos_juego?.length || 0})</p>
                     </div>
 
                     {/* Combos */}
                     {partida.combos && partida.combos.length > 0 && (
-                      <div className="pt-2 border-t border-slate-200">
-                        <p className="text-xs text-slate-600 font-semibold mb-2">Combos:</p>
+                      <div>
+                        <p className="text-xs text-slate-500 mb-1">💚 Combos disponibles</p>
                         <div className="space-y-1">
                           {partida.combos.slice(0, 3).map((combo, idx) => (
-                            <div key={idx} className="text-xs text-slate-700">
-                              <span className="font-semibold">{combo.cantidad} cartones</span> ${combo.precio?.toFixed(2)} | <span className="text-green-600">{combo.descuento}% OFF</span>
+                            <div key={idx} className="text-xs text-slate-700 bg-slate-50 px-2 py-1 rounded">
+                              <span className="font-semibold">{combo.cantidad} cartones</span> por ${combo.precio?.toFixed(2)} <span className="text-green-700">({combo.descuento}% OFF)</span>
                             </div>
                           ))}
                         </div>
@@ -189,12 +187,12 @@ export default function Lobby() {
                     )}
 
                     {/* Botón */}
-                    <Link to={createPageUrl('ComprarCartones') + `?partida=${partida.id}`} className="block">
+                    <Link to={createPageUrl('ComprarCartones') + `?partida=${partida.id}`} className="block pt-2">
                       <Button
-                        className={`w-full font-bold py-2 ${
+                        className={`w-full font-bold py-2 h-10 rounded-lg text-sm ${
                           isActive 
                             ? 'bg-purple-600 hover:bg-purple-700 text-white' 
-                            : 'bg-slate-300 hover:bg-slate-400 text-slate-700'
+                            : 'bg-slate-300 text-slate-600 cursor-not-allowed'
                         }`}
                         disabled={!isActive}
                       >
