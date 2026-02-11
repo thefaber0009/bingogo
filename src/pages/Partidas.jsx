@@ -20,12 +20,17 @@ import {
   Trophy
 } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Search } from 'lucide-react';
 import ModosJuegoForm from '../components/partidas/ModosJuegoForm';
 import CombosForm from '../components/partidas/CombosForm';
+import CreateRoomDialog from '../components/partidas/CreateRoomDialog';
 
 export default function Partidas() {
   const [open, setOpen] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingPartida, setEditingPartida] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterEstado, setFilterEstado] = useState('todas');
   const [formData, setFormData] = useState({
     nombre: '',
     fecha_inicio: '',
@@ -49,7 +54,21 @@ export default function Partidas() {
     onSuccess: () => {
       queryClient.invalidateQueries(['partidas']);
       setOpen(false);
+      setIsDialogOpen(false);
       resetForm();
+    },
+  });
+
+  const createRoomMutation = useMutation({
+    mutationFn: (data) => base44.entities.Partida.create({
+      ...data,
+      estado: 'pendiente',
+      cartones_vendidos: 0,
+      max_cartones_por_jugador: 4
+    }),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['partidas']);
+      setIsDialogOpen(false);
     },
   });
 
@@ -115,6 +134,10 @@ export default function Partidas() {
     setOpen(true);
   };
 
+  const handleCreateRoom = async (data) => {
+    await createRoomMutation.mutateAsync(data);
+  };
+
   const getEstadoBadge = (estado) => {
     const badges = {
       pendiente: { bg: 'bg-amber-100', text: 'text-amber-700', icon: Clock },
@@ -131,20 +154,64 @@ export default function Partidas() {
     );
   };
 
+  const filteredPartidas = partidas.filter(p => {
+    const matchSearch = p.nombre?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchEstado = filterEstado === 'todas' || p.estado === filterEstado;
+    return matchSearch && matchEstado;
+  });
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900">Gestión de Partidas</h1>
-          <p className="text-slate-600 mt-1">Administra todas las partidas de bingo</p>
+          <h1 className="text-3xl font-bold text-slate-900">Gestión de Salas de Bingo</h1>
+          <p className="text-slate-600 mt-1">Administra todas las salas de juego</p>
         </div>
-        <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) resetForm(); }}>
-          <DialogTrigger asChild>
-            <Button className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700">
-              <Plus className="w-4 h-4 mr-2" />
-              Nueva Partida
+        <Button 
+          onClick={() => setIsDialogOpen(true)}
+          className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
+        >
+          <Plus className="w-4 h-4 mr-2" />
+          Nueva Sala
+        </Button>
+      </div>
+
+      {/* Dialog de Crear Sala */}
+      <CreateRoomDialog
+        open={isDialogOpen}
+        onOpenChange={setIsDialogOpen}
+        onSubmit={handleCreateRoom}
+        isLoading={createRoomMutation.isLoading}
+      />
+
+      {/* Búsqueda y Filtros */}
+      <div className="flex flex-col md:flex-row gap-4 mb-6">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
+          <Input
+            placeholder="Buscar sala..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10"
+          />
+        </div>
+        <div className="flex gap-2">
+          {['todas', 'pendiente', 'en_curso', 'finalizada'].map(status => (
+            <Button
+              key={status}
+              variant={filterEstado === status ? 'default' : 'outline'}
+              onClick={() => setFilterEstado(status)}
+              className={filterEstado === status ? 'bg-gradient-to-r from-indigo-600 to-purple-600' : ''}
+            >
+              {status === 'todas' ? 'Todas' : status === 'pendiente' ? 'Próximamente' : status === 'en_curso' ? 'En Vivo' : 'Finalizada'}
             </Button>
-          </DialogTrigger>
+          ))}
+        </div>
+      </div>
+
+      {/* Dialog antiguo para editar */}
+      <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) resetForm(); }}>
+        <DialogTrigger asChild>
           <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>{editingPartida ? 'Editar Partida' : 'Nueva Partida'}</DialogTitle>
@@ -244,7 +311,15 @@ export default function Partidas() {
         </div>
       ) : (
         <div className="grid gap-4">
-          {partidas.map((partida) => (
+          {filteredPartidas.length === 0 ? (
+            <Card className="border-0 shadow-xl">
+              <CardContent className="py-20 text-center">
+                <PlayCircle className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+                <p className="text-slate-600">No hay salas disponibles</p>
+              </CardContent>
+            </Card>
+          ) : (
+            filteredPartidas.map((partida) => (
             <Card key={partida.id} className="border-0 shadow-lg hover:shadow-xl transition-shadow">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
@@ -325,13 +400,7 @@ export default function Partidas() {
                 </div>
               </CardContent>
             </Card>
-          ))}
-          {partidas.length === 0 && (
-            <Card className="border-0 shadow-lg">
-              <CardContent className="py-12 text-center">
-                <p className="text-slate-500">No hay partidas registradas. Crea tu primera partida.</p>
-              </CardContent>
-            </Card>
+            ))
           )}
         </div>
       )}

@@ -50,6 +50,7 @@
 import ComprarCartones from './pages/ComprarCartones';
 import Home from './pages/Home';
 import Lobby from './pages/Lobby';
+import MisCartones from './pages/MisCartones';
 import Notificaciones from './pages/Notificaciones';
 import PartidaEnVivo from './pages/PartidaEnVivo';
 import Partidas from './pages/Partidas';
@@ -57,7 +58,6 @@ import Perfil from './pages/Perfil';
 import Premios from './pages/Premios';
 import SalaBingo from './pages/SalaBingo';
 import Usuarios from './pages/Usuarios';
-import MisCartones from './pages/MisCartones';
 import __Layout from './Layout.jsx';
 
 
@@ -65,6 +65,7 @@ export const PAGES = {
     "ComprarCartones": ComprarCartones,
     "Home": Home,
     "Lobby": Lobby,
+    "MisCartones": MisCartones,
     "Notificaciones": Notificaciones,
     "PartidaEnVivo": PartidaEnVivo,
     "Partidas": Partidas,
@@ -72,7 +73,6 @@ export const PAGES = {
     "Premios": Premios,
     "SalaBingo": SalaBingo,
     "Usuarios": Usuarios,
-    "MisCartones": MisCartones,
 }
 
 export const pagesConfig = {
