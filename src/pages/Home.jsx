@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { 
@@ -15,8 +15,11 @@ import {
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import PanelAdminPartida from '@/components/partidas/PanelAdminPartida';
 
 export default function Home() {
+  const [panelOpen, setPanelOpen] = useState(false);
+  const [partidaSeleccionada, setPartidaSeleccionada] = useState(null);
   const queryClient = useQueryClient();
 
   const { data: partidas = [] } = useQuery({
