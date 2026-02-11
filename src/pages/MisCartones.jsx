@@ -12,7 +12,8 @@ import {
   Circle,
   Info,
   Trash2,
-  Clock
+  Clock,
+  Lock
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '../utils';
@@ -253,17 +254,27 @@ export default function MisCartones() {
                   {cartonesPartida.map((carton, idx) => {
                     const tiempoRestante = tiemposCarton[carton.id] || 300;
                     const tiempoAgotado = tiempoRestante === 0;
+                    const estaPagado = carton.pagado === true;
                     return (
-                    <Card key={carton.id} className={`border-2 transition-all duration-300 ${
-                      tiempoAgotado ? 'border-red-400 shadow-xl bg-red-50' :
-                      cartonesHabilitados[carton.id] 
+                    <Card key={carton.id} className={`border-2 transition-all duration-300 relative ${
+                      tiempoAgotado && estaPagado ? 'border-red-400 shadow-xl bg-red-50' :
+                      cartonesHabilitados[carton.id] && estaPagado
                         ? 'border-green-400 shadow-xl bg-green-50' 
+                        : !estaPagado ? 'border-amber-300 shadow-lg bg-amber-50 opacity-75'
                         : 'border-slate-200 shadow-lg bg-white'
                     }`}>
+                      {!estaPagado && (
+                        <div className="absolute inset-0 bg-black bg-opacity-30 rounded-lg flex items-center justify-center z-10">
+                          <div className="bg-white rounded-lg px-4 py-2 flex items-center gap-2 shadow-lg">
+                            <Lock className="w-5 h-5 text-amber-600" />
+                            <span className="font-bold text-amber-700 text-sm">Pendiente de pago</span>
+                          </div>
+                        </div>
+                      )}
                       <CardHeader className="pb-3">
                         <div className="flex items-center justify-between mb-2">
                           <CardTitle className="text-lg flex items-center gap-2">
-                            <Ticket className={`w-5 h-5 ${cartonesHabilitados[carton.id] ? 'text-green-600' : 'text-slate-400'}`} />
+                            <Ticket className={`w-5 h-5 ${cartonesHabilitados[carton.id] && estaPagado ? 'text-green-600' : 'text-slate-400'}`} />
                             Cartón #{idx + 1}
                           </CardTitle>
                           <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-slate-100">
@@ -275,12 +286,13 @@ export default function MisCartones() {
                         </div>
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
-                            <span className={`text-sm font-semibold ${cartonesHabilitados[carton.id] ? 'text-green-600' : 'text-slate-400'}`}>
-                              {cartonesHabilitados[carton.id] ? 'Habilitado' : 'Deshabilitado'}
+                            <span className={`text-sm font-semibold ${cartonesHabilitados[carton.id] && estaPagado ? 'text-green-600' : 'text-slate-400'}`}>
+                              {cartonesHabilitados[carton.id] && estaPagado ? 'Habilitado' : estaPagado ? 'Deshabilitado' : 'Bloqueado'}
                             </span>
                             <Switch
                               checked={cartonesHabilitados[carton.id] || false}
-                              onCheckedChange={() => toggleCarton(carton.id)}
+                              onCheckedChange={() => estaPagado && toggleCarton(carton.id)}
+                              disabled={!estaPagado}
                             />
                           </div>
                           <button
