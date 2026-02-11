@@ -81,21 +81,31 @@ export default function Lobby() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-100">
-      <div className="max-w-7xl mx-auto p-8 space-y-8">
-        {/* Header */}
+    <div className="min-h-screen bg-white">
+      {/* Top Navigation */}
+      <div className="bg-white border-b border-slate-200 px-8 py-4 sticky top-0 z-40">
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-slate-900">Salas Disponibles</h1>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-yellow-400 to-orange-400 rounded-lg flex items-center justify-center font-bold text-white">
+              B
+            </div>
+            <span className="font-bold text-slate-900">BingoGo</span>
           </div>
-          <div className="flex items-center gap-4">
-            <Link to={createPageUrl('Home')} className="text-slate-700 hover:text-slate-900 font-medium">Inicio</Link>
-            <Link to={createPageUrl('MisCartones')} className="text-slate-700 hover:text-slate-900 font-medium">Mis Cartones</Link>
-            <Link to={createPageUrl('Home')} className="text-slate-700 hover:text-slate-900 font-medium">Histórico</Link>
-            <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+          <div className="flex items-center gap-6">
+            <Link to={createPageUrl('Home')} className="text-slate-700 hover:text-slate-900 font-medium text-sm">Inicio</Link>
+            <Link to={createPageUrl('MisCartones')} className="text-slate-700 hover:text-slate-900 font-medium text-sm">Mis Cartones</Link>
+            <Link to={createPageUrl('Home')} className="text-slate-700 hover:text-slate-900 font-medium text-sm">Histórico</Link>
+            <Button className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-2 h-9">
               Usuario ↓
             </Button>
           </div>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-8 py-8 space-y-8">
+        {/* Título */}
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">Salas Disponibles</h1>
         </div>
 
         {/* Grid de Salas */}
