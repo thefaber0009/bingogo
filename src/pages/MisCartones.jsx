@@ -36,16 +36,33 @@ export default function MisCartones() {
     enabled: !!partidaId,
   });
 
-  const { data: cartones = [], isLoading: loadingCartones } = useQuery({
-    queryKey: ['misCartones', partidaId, user?.id],
+  const { data: todosLosCartones = [], isLoading: loadingCartones } = useQuery({
+    queryKey: ['misCartones', user?.id],
     queryFn: () => base44.entities.Carton.filter({ 
-      partida_id: partidaId,
       jugador_id: user.id,
       comprado: true
     }),
-    enabled: !!partidaId && !!user?.id,
+    enabled: !!user?.id,
     refetchInterval: 3000,
   });
+
+  const { data: todasLasPartidas = [] } = useQuery({
+    queryKey: ['todasPartidas'],
+    queryFn: () => base44.entities.Partida.list(),
+    refetchInterval: 5000,
+  });
+
+  // Agrupar cartones por partida
+  const cartonAgrupadosPorPartida = todosLosCartones.reduce((acc, carton) => {
+    if (!acc[carton.partida_id]) {
+      acc[carton.partida_id] = [];
+    }
+    acc[carton.partida_id].push(carton);
+    return acc;
+  }, {});
+
+  const partidas = todasLasPartidas.filter(p => cartonAgrupadosPorPartida[p.id]);
+  const cartones = partidaId ? todosLosCartones.filter(c => c.partida_id === partidaId) : todosLosCartones;
 
   const [cartonesHabilitados, setCartonesHabilitados] = useState({});
   const [tiemposCarton, setTiemposCarton] = useState({});
