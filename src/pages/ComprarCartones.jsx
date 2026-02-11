@@ -54,6 +54,15 @@ export default function ComprarCartones() {
     enabled: !!partidaId,
   });
 
+  const { data: todosLosCartones = [] } = useQuery({
+    queryKey: ['todosLosCartones', partidaId],
+    queryFn: () => base44.entities.Carton.filter({ 
+      partida_id: partidaId,
+      estado: 'activo'
+    }),
+    enabled: !!partidaId,
+  });
+
   const generarCarton = () => {
     const carton = [];
     const rangos = [
