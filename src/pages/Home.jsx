@@ -1,6 +1,6 @@
 import React from 'react';
 import { base44 } from '@/api/base44Client';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { 
   Users, 
   GamepadIcon, 
@@ -11,12 +11,14 @@ import {
   Gem,
   Edit2,
   Trash2,
-  Play
+  Power
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 
 export default function Home() {
+  const queryClient = useQueryClient();
+
   const { data: partidas = [] } = useQuery({
     queryKey: ['partidas'],
     queryFn: () => base44.entities.Partida.list(),
@@ -36,6 +38,18 @@ export default function Home() {
     queryKey: ['transacciones'],
     queryFn: () => base44.entities.Transaccion.list(),
   });
+
+  const toggleActiveMutation = useMutation({
+    mutationFn: ({ id, estado }) => base44.entities.Partida.update(id, { estado }),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['partidas']);
+    },
+  });
+
+  const handleToggleActive = (partida) => {
+    const nuevoEstado = partida.estado === 'en_curso' ? 'pendiente' : 'en_curso';
+    toggleActiveMutation.mutate({ id: partida.id, estado: nuevoEstado });
+  };
 
   const stats = [
     {
@@ -172,9 +186,14 @@ export default function Home() {
                   <Button size="sm" variant="outline" className="flex-1 h-8 text-xs">
                     Panel
                   </Button>
-                  <Button size="sm" className="flex-1 h-8 text-xs bg-green-600 hover:bg-green-700">
-                    <Play className="w-3 h-3 mr-1" />
-                    {partida.estado === 'en_curso' ? 'Activar' : 'Iniciar'}
+                  <Button 
+                    size="sm" 
+                    className={`flex-1 h-8 text-xs ${partida.estado === 'en_curso' ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'} text-white`}
+                    onClick={() => handleToggleActive(partida)}
+                    disabled={toggleActiveMutation.isLoading || partida.estado === 'finalizada'}
+                  >
+                    <Power className="w-3 h-3 mr-1" />
+                    {partida.estado === 'en_curso' ? 'Desactivar' : 'Activar'}
                   </Button>
                 </div>
               </CardContent>
