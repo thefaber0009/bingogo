@@ -211,99 +211,97 @@ export default function Partidas() {
 
       {/* Dialog antiguo para editar */}
       <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) resetForm(); }}>
-        <DialogTrigger asChild>
-          <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>{editingPartida ? 'Editar Partida' : 'Nueva Partida'}</DialogTitle>
-            </DialogHeader>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="col-span-2 space-y-2">
-                  <Label htmlFor="nombre">Nombre de la Partida</Label>
-                  <Input
-                    id="nombre"
-                    value={formData.nombre}
-                    onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="fecha_inicio">Fecha de Inicio</Label>
-                  <Input
-                    id="fecha_inicio"
-                    type="datetime-local"
-                    value={formData.fecha_inicio}
-                    onChange={(e) => setFormData({ ...formData, fecha_inicio: e.target.value })}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="precio_carton">Precio por Cartón ($)</Label>
-                  <Input
-                    id="precio_carton"
-                    type="number"
-                    step="0.01"
-                    value={formData.precio_carton}
-                    onChange={(e) => setFormData({ ...formData, precio_carton: e.target.value })}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="cantidad_total_cartones">Cantidad Total de Cartones</Label>
-                  <Input
-                    id="cantidad_total_cartones"
-                    type="number"
-                    min="1"
-                    value={formData.cantidad_total_cartones}
-                    onChange={(e) => setFormData({ ...formData, cantidad_total_cartones: e.target.value })}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="max_cartones_por_jugador">Cartones Máximos por Jugador</Label>
-                  <Input
-                    id="max_cartones_por_jugador"
-                    type="number"
-                    min="1"
-                    value={formData.max_cartones_por_jugador}
-                    onChange={(e) => setFormData({ ...formData, max_cartones_por_jugador: e.target.value })}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="max_jugadores">Máximo de Jugadores</Label>
-                  <Input
-                    id="max_jugadores"
-                    type="number"
-                    value={formData.max_jugadores}
-                    onChange={(e) => setFormData({ ...formData, max_jugadores: e.target.value })}
-                  />
-                </div>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>{editingPartida ? 'Editar Partida' : 'Nueva Partida'}</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="col-span-2 space-y-2">
+                <Label htmlFor="nombre">Nombre de la Partida</Label>
+                <Input
+                  id="nombre"
+                  value={formData.nombre}
+                  onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
+                  required
+                />
               </div>
-
-              <ModosJuegoForm 
-                modos={formData.modos_juego}
-                onChange={(modos) => setFormData({ ...formData, modos_juego: modos })}
-              />
-
-              <CombosForm 
-                combos={formData.combos}
-                precioCarton={parseFloat(formData.precio_carton) || 0}
-                onChange={(combos) => setFormData({ ...formData, combos: combos })}
-              />
-
-              <div className="flex justify-end gap-3 pt-4 border-t">
-                <Button type="button" variant="outline" onClick={() => setOpen(false)}>
-                  Cancelar
-                </Button>
-                <Button type="submit" className="bg-gradient-to-r from-indigo-600 to-purple-600">
-                  {editingPartida ? 'Actualizar' : 'Crear'} Partida
-                </Button>
+              <div className="space-y-2">
+                <Label htmlFor="fecha_inicio">Fecha de Inicio</Label>
+                <Input
+                  id="fecha_inicio"
+                  type="datetime-local"
+                  value={formData.fecha_inicio}
+                  onChange={(e) => setFormData({ ...formData, fecha_inicio: e.target.value })}
+                  required
+                />
               </div>
-            </form>
-          </DialogContent>
-        </Dialog>
-      </div>
+              <div className="space-y-2">
+                <Label htmlFor="precio_carton">Precio por Cartón ($)</Label>
+                <Input
+                  id="precio_carton"
+                  type="number"
+                  step="0.01"
+                  value={formData.precio_carton}
+                  onChange={(e) => setFormData({ ...formData, precio_carton: e.target.value })}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="cantidad_total_cartones">Cantidad Total de Cartones</Label>
+                <Input
+                  id="cantidad_total_cartones"
+                  type="number"
+                  min="1"
+                  value={formData.cantidad_total_cartones}
+                  onChange={(e) => setFormData({ ...formData, cantidad_total_cartones: e.target.value })}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="max_cartones_por_jugador">Cartones Máximos por Jugador</Label>
+                <Input
+                  id="max_cartones_por_jugador"
+                  type="number"
+                  min="1"
+                  value={formData.max_cartones_por_jugador}
+                  onChange={(e) => setFormData({ ...formData, max_cartones_por_jugador: e.target.value })}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="max_jugadores">Máximo de Jugadores</Label>
+                <Input
+                  id="max_jugadores"
+                  type="number"
+                  value={formData.max_jugadores}
+                  onChange={(e) => setFormData({ ...formData, max_jugadores: e.target.value })}
+                />
+              </div>
+            </div>
+
+            <ModosJuegoForm 
+              modos={formData.modos_juego}
+              onChange={(modos) => setFormData({ ...formData, modos_juego: modos })}
+            />
+
+            <CombosForm 
+              combos={formData.combos}
+              precioCarton={parseFloat(formData.precio_carton) || 0}
+              onChange={(combos) => setFormData({ ...formData, combos: combos })}
+            />
+
+            <div className="flex justify-end gap-3 pt-4 border-t">
+              <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+                Cancelar
+              </Button>
+              <Button type="submit" className="bg-gradient-to-r from-indigo-600 to-purple-600">
+                {editingPartida ? 'Actualizar' : 'Crear'} Partida
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
 
       {isLoading ? (
         <div className="text-center py-12">
