@@ -21,6 +21,9 @@ export default function ComprarCartones() {
   const queryClient = useQueryClient();
   const [cartonesSeleccionados, setCartonesSeleccionados] = useState([]);
   const [filtroCartones, setFiltroCartones] = useState('todos');
+  const [paginaActual, setPaginaActual] = useState(1);
+  const [busquedaNumero, setBusquedaNumero] = useState('');
+  const CARTONES_POR_PAGINA = 5;
   const urlParams = new URLSearchParams(window.location.search);
   const partidaId = urlParams.get('partida');
 
