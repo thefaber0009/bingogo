@@ -91,6 +91,18 @@ export default function Partidas() {
     },
   });
 
+  const toggleActiveMutation = useMutation({
+    mutationFn: ({ id, estado }) => base44.entities.Partida.update(id, { estado }),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['partidas']);
+    },
+  });
+
+  const handleToggleActive = (partida) => {
+    const nuevoEstado = partida.estado === 'en_curso' ? 'pendiente' : 'en_curso';
+    toggleActiveMutation.mutate({ id: partida.id, estado: nuevoEstado });
+  };
+
   const resetForm = () => {
     setFormData({
       nombre: '',
@@ -432,9 +444,14 @@ export default function Partidas() {
                   <Button size="sm" variant="outline" className="flex-1 h-8 text-xs">
                     Panel
                   </Button>
-                  <Button size="sm" className="flex-1 h-8 text-xs bg-green-600 hover:bg-green-700 text-white">
+                  <Button 
+                    size="sm" 
+                    className={`flex-1 h-8 text-xs ${partida.estado === 'en_curso' ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'} text-white`}
+                    onClick={() => handleToggleActive(partida)}
+                    disabled={toggleActiveMutation.isLoading || partida.estado === 'finalizada'}
+                  >
                     <Power className="w-3 h-3 mr-1" />
-                    {partida.estado === 'en_curso' ? 'Activa' : 'Activar'}
+                    {partida.estado === 'en_curso' ? 'Desactivar' : 'Activar'}
                   </Button>
                 </div>
               </CardContent>
