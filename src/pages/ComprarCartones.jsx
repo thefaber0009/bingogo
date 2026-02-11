@@ -137,6 +137,21 @@ export default function ComprarCartones() {
     navigate(createPageUrl('MisCartones') + `?partida=${partidaId}`);
   };
 
+  const handleComprarSeleccionados = async () => {
+    if (cartonesSeleccionados.length > 0) {
+      await crearCartonMutation.mutateAsync(cartonesSeleccionados.length);
+      navigate(createPageUrl('MisCartones') + `?partida=${partidaId}`);
+    }
+  };
+
+  const toggleCartonSeleccionado = (cartonId) => {
+    setCartonesSeleccionados(prev =>
+      prev.includes(cartonId) 
+        ? prev.filter(id => id !== cartonId)
+        : [...prev, cartonId]
+    );
+  };
+
   const entrarAPanelCartones = () => {
     navigate(createPageUrl('MisCartones') + `?partida=${partidaId}`);
   };
