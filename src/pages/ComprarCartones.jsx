@@ -94,7 +94,7 @@ export default function ComprarCartones() {
     return carton;
   };
 
-  const cartonesDisponiblesParaComprar = Array.from(
+  const cartonesDisponiblesParaComprar = useMemo(() => Array.from(
     { length: Math.max(0, (partida?.cantidad_total_cartones || 0) - cartonesVendidos.length) },
     (_, idx) => ({
       id: `virtual_${idx}`,
@@ -102,7 +102,7 @@ export default function ComprarCartones() {
       numeros: generarCartonVirtual(idx),
       comprado: false
     })
-  );
+  ), [partida?.cantidad_total_cartones, cartonesVendidos.length]);
 
   const generarCarton = () => {
     const carton = [];
