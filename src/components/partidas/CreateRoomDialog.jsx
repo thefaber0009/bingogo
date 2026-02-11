@@ -39,8 +39,17 @@ export default function CreateRoomDialog({ open, onOpenChange, onSubmit, isLoadi
     horaRecurrencia: '',
     combos: [{ nombre: '', cantidad: '', precio: '' }],
     modos: {},
-    valorPremio: ''
+    modosPrecio: {}
   });
+
+  const calcularValorPremioTotal = () => {
+    return Object.keys(formData.modos).reduce((total, mode) => {
+      if (formData.modos[mode] && formData.modosPrecio[mode]) {
+        return total + (parseFloat(formData.modosPrecio[mode]) || 0);
+      }
+      return total;
+    }, 0);
+  };
 
   const [selectedType, setSelectedType] = useState(null);
   const [expandedSections, setExpandedSections] = useState({});
@@ -111,7 +120,7 @@ export default function CreateRoomDialog({ open, onOpenChange, onSubmit, isLoadi
       horaRecurrencia: '',
       combos: [{ nombre: '', cantidad: '', precio: '' }],
       modos: {},
-      valorPremio: ''
+      modosPrecio: {}
     });
     setSelectedType(null);
   };
@@ -375,7 +384,7 @@ export default function CreateRoomDialog({ open, onOpenChange, onSubmit, isLoadi
               <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                 {GAME_MODES.map(mode => (
                   <div key={mode} className="border rounded-lg p-3 bg-white hover:bg-slate-50 transition-colors">
-                    <label className="flex items-center gap-2 cursor-pointer">
+                    <label className="flex items-center gap-2 cursor-pointer mb-2">
                       <input
                         type="checkbox"
                         checked={formData.modos[mode] || false}
@@ -387,9 +396,16 @@ export default function CreateRoomDialog({ open, onOpenChange, onSubmit, isLoadi
                       type="number"
                       placeholder="Precio"
                       min="0"
-                      className="w-full mt-2 h-8 text-xs"
+                      className="w-full h-8 text-xs"
+                      value={formData.modosPrecio[mode] || ''}
                       onChange={(e) => {
-                        // Opcionalmente guardar el precio del modo
+                        setFormData({
+                          ...formData,
+                          modosPrecio: {
+                            ...formData.modosPrecio,
+                            [mode]: e.target.value
+                          }
+                        });
                       }}
                     />
                   </div>
@@ -424,10 +440,11 @@ export default function CreateRoomDialog({ open, onOpenChange, onSubmit, isLoadi
             <Label>Valor del Premio Total</Label>
             <Input
               type="number"
-              placeholder="Ej: 500000"
-              value={formData.valorPremio}
-              onChange={(e) => setFormData({ ...formData, valorPremio: e.target.value })}
+              readOnly
+              value={calcularValorPremioTotal()}
+              className="bg-slate-100 cursor-not-allowed"
             />
+            <p className="text-xs text-slate-500 mt-1">Suma automática de precios de modos activos</p>
           </div>
 
           {/* Botones */}
