@@ -7,9 +7,14 @@ import {
   Trophy, 
   DollarSign,
   TrendingUp,
-  Activity
+  Activity,
+  Gem,
+  Edit2,
+  Trash2,
+  Play
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 
 export default function Home() {
   const { data: partidas = [] } = useQuery({
@@ -104,74 +109,78 @@ export default function Home() {
         })}
       </div>
 
-      {/* Quick Stats */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="border-0 shadow-lg">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Activity className="w-5 h-5 text-indigo-600" />
-              Estado de Partidas
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-between p-4 bg-green-50 rounded-xl">
-              <div>
-                <p className="text-sm text-slate-600 font-medium">En Curso</p>
-                <p className="text-2xl font-bold text-green-600">{partidasActivas.length}</p>
-              </div>
-              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                <Activity className="w-6 h-6 text-green-600" />
-              </div>
-            </div>
-            <div className="flex items-center justify-between p-4 bg-amber-50 rounded-xl">
-              <div>
-                <p className="text-sm text-slate-600 font-medium">Pendientes</p>
-                <p className="text-2xl font-bold text-amber-600">{partidasPendientes.length}</p>
-              </div>
-              <div className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center">
-                <GamepadIcon className="w-6 h-6 text-amber-600" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-0 shadow-lg">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="w-5 h-5 text-indigo-600" />
-              Últimas Transacciones
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {transacciones.slice(0, 5).map((t) => (
-                <div key={t.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors">
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-slate-900 capitalize">{t.tipo}</p>
-                    <p className="text-xs text-slate-500">{new Date(t.created_date).toLocaleDateString()}</p>
+      {/* Partidas Grid */}
+      <div>
+        <h2 className="text-2xl font-bold text-slate-900 mb-4">Mis Salas</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {partidas.map((partida) => (
+            <Card key={partida.id} className="border-0 shadow-lg hover:shadow-xl transition-shadow overflow-hidden">
+              <CardContent className="p-5 space-y-4">
+                {/* Header */}
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center gap-2">
+                    <Gem className="w-5 h-5 text-slate-600" />
+                    <h3 className="font-semibold text-slate-900">{partida.nombre}</h3>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <span className={`text-sm font-semibold ${
-                      t.estado === 'confirmada' ? 'text-green-600' : 
-                      t.estado === 'pendiente' ? 'text-amber-600' : 'text-red-600'
-                    }`}>
-                      ${t.monto?.toFixed(2)}
-                    </span>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      t.estado === 'confirmada' ? 'bg-green-100 text-green-700' : 
-                      t.estado === 'pendiente' ? 'bg-amber-100 text-amber-700' : 'bg-red-100 text-red-700'
-                    }`}>
-                      {t.estado}
-                    </span>
+                  <span className={`text-xs font-semibold px-2 py-1 rounded ${
+                    partida.estado === 'en_curso' ? 'bg-green-100 text-green-700' :
+                    partida.estado === 'pendiente' ? 'bg-slate-200 text-slate-700' :
+                    'bg-gray-100 text-gray-600'
+                  }`}>
+                    {partida.estado === 'en_curso' ? 'Activa' : 
+                     partida.estado === 'pendiente' ? 'Inactiva' : 'Finalizada'}
+                  </span>
+                </div>
+
+                {/* Stats */}
+                <div className="space-y-2 text-sm">
+                  <div className="flex items-center gap-2">
+                    <span className="w-3 h-3 bg-blue-500 rounded-full"></span>
+                    <span className="text-slate-700">{partida.cantidad_total_cartones} cartones</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg">💰</span>
+                    <span className="text-slate-700">Premio$ {(partida.modos_juego?.reduce((sum, m) => sum + (m.premio || 0), 0) || 0).toLocaleString()}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg">🎮</span>
+                    <span className="text-slate-700">{partida.modos_juego?.length || 0} modos de juego</span>
                   </div>
                 </div>
-              ))}
-              {transacciones.length === 0 && (
-                <p className="text-center text-slate-500 py-8">No hay transacciones registradas</p>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+
+                {/* Game Modes */}
+                {partida.modos_juego && partida.modos_juego.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {partida.modos_juego.map((modo, idx) => (
+                      <span key={idx} className="text-xs bg-slate-100 text-slate-700 px-2 py-1 rounded">
+                        {modo.nombre} (${modo.premio || 0})
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                {/* Actions */}
+                <div className="flex gap-2 pt-2">
+                  <Button size="sm" variant="outline" className="flex-1 h-8 text-xs">
+                    <Edit2 className="w-3 h-3 mr-1" />
+                    Editar
+                  </Button>
+                  <Button size="sm" variant="outline" className="flex-1 h-8 text-xs text-red-600 hover:text-red-700">
+                    <Trash2 className="w-3 h-3 mr-1" />
+                    Eliminar
+                  </Button>
+                  <Button size="sm" variant="outline" className="flex-1 h-8 text-xs">
+                    Panel
+                  </Button>
+                  <Button size="sm" className="flex-1 h-8 text-xs bg-green-600 hover:bg-green-700">
+                    <Play className="w-3 h-3 mr-1" />
+                    {partida.estado === 'en_curso' ? 'Activar' : 'Iniciar'}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       </div>
     </div>
   );
