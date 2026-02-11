@@ -255,6 +255,47 @@ export default function CreateRoomDialog({ open, onOpenChange, onSubmit, isLoadi
                     </label>
                   </div>
                 </div>
+
+                {formData.salaRecurrente && (
+                  <div className="space-y-3 border-t pt-3">
+                    <div>
+                      <p className="text-xs text-slate-500 mb-2">Días de Recurrencia</p>
+                      <div className="flex gap-2 flex-wrap">
+                        {['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sab', 'Dom'].map((day, idx) => (
+                          <button
+                            key={day}
+                            onClick={() => {
+                              const newDias = [...formData.diasRecurrencia];
+                              const dayIndex = newDias.indexOf(idx);
+                              if (dayIndex > -1) {
+                                newDias.splice(dayIndex, 1);
+                              } else {
+                                newDias.push(idx);
+                              }
+                              setFormData({ ...formData, diasRecurrencia: newDias });
+                            }}
+                            className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
+                              formData.diasRecurrencia.includes(idx)
+                                ? 'bg-indigo-600 text-white'
+                                : 'bg-slate-200 text-slate-600 hover:bg-slate-300'
+                            }`}
+                          >
+                            {day}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <div>
+                      <p className="text-xs text-slate-500 mb-2">Hora</p>
+                      <Input
+                        type="time"
+                        value={formData.horaRecurrencia}
+                        onChange={(e) => setFormData({ ...formData, horaRecurrencia: e.target.value })}
+                        className="w-full"
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>
