@@ -77,39 +77,37 @@ export default function Lobby() {
     );
   };
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
-      <div className="max-w-7xl mx-auto p-6 space-y-6">
-        {/* Header */}
-        <div className="text-center py-8">
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-3">
-            Lobby de Bingo
-          </h1>
-          <p className="text-slate-600 text-lg">Únete a una partida y gana increíbles premios</p>
-        </div>
+  const roomColors = {
+    festivo: { bg: 'bg-yellow-400', badge: 'bg-yellow-400' },
+    diamante: { bg: 'bg-purple-500', badge: 'bg-purple-500' },
+    star: { bg: 'bg-purple-500', badge: 'bg-purple-500' },
+    default: { bg: 'bg-indigo-500', badge: 'bg-indigo-500' }
+  };
 
-        {/* Filtros */}
-        <div className="flex flex-col md:flex-row gap-4">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
-            <Input
-              placeholder="Buscar partidas..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 h-12 border-slate-200 focus:border-indigo-500"
-            />
+  const getRoomColor = (nombre) => {
+    const lower = nombre?.toLowerCase() || '';
+    if (lower.includes('festivo')) return roomColors.festivo;
+    if (lower.includes('diamante')) return roomColors.diamante;
+    if (lower.includes('star')) return roomColors.star;
+    return roomColors.default;
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-100">
+      <div className="max-w-7xl mx-auto p-8 space-y-8">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-slate-900">Salas Disponibles</h1>
           </div>
-          <Select value={filterEstado} onValueChange={setFilterEstado}>
-            <SelectTrigger className="w-full md:w-48 h-12">
-              <Filter className="w-4 h-4 mr-2" />
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="todas">Todas</SelectItem>
-              <SelectItem value="pendiente">Próximamente</SelectItem>
-              <SelectItem value="en_curso">En Vivo</SelectItem>
-            </SelectContent>
-          </Select>
+          <div className="flex items-center gap-4">
+            <Link to={createPageUrl('Home')} className="text-slate-700 hover:text-slate-900 font-medium">Inicio</Link>
+            <Link to={createPageUrl('MisCartones')} className="text-slate-700 hover:text-slate-900 font-medium">Mis Cartones</Link>
+            <Link to={createPageUrl('Home')} className="text-slate-700 hover:text-slate-900 font-medium">Histórico</Link>
+            <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+              Usuario ↓
+            </Button>
+          </div>
         </div>
 
         {/* Lista de Partidas */}
