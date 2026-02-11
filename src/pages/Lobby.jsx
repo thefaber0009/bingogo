@@ -242,7 +242,7 @@ export default function Lobby() {
 
                     {/* Acción */}
                     <div className="bg-gradient-to-br from-indigo-600 to-purple-600 p-6 flex items-center justify-center md:w-48">
-                      <Link to={createPageUrl('SalaBingo') + `?partida=${partida.id}`}>
+                      <Link to={createPageUrl('ComprarCartones') + `?partida=${partida.id}`}>
                         <Button 
                           size="lg"
                           className="bg-white text-indigo-600 hover:bg-slate-50 shadow-lg"

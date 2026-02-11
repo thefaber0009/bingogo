@@ -13,7 +13,8 @@ import {
   ShoppingCart,
   Search,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Ticket
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '../utils';
@@ -242,6 +243,22 @@ export default function SalaBingo() {
     );
   }
 
+  if (cartones.length === 0 && !mostrarCompra) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Card className="max-w-md">
+          <CardContent className="py-12 text-center">
+            <Ticket className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+            <p className="text-slate-600 mb-4">No tienes cartones para esta partida</p>
+            <Link to={createPageUrl('ComprarCartones') + `?partida=${partidaId}`}>
+              <Button>Comprar Cartones</Button>
+            </Link>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   // Filtrar cartones por búsqueda
   const cartonesFiltrados = cartones.filter((carton, idx) => {
     if (!busqueda) return true;
@@ -360,13 +377,12 @@ export default function SalaBingo() {
           </div>
           <div className="flex items-center gap-3">
             {cartones.length < (partida?.max_cartones_por_jugador || 4) && (
-              <Button
-                variant="outline"
-                onClick={() => setMostrarCompra(true)}
-              >
-                <ShoppingCart className="w-4 h-4 mr-2" />
-                Comprar más ({cartones.length}/{partida?.max_cartones_por_jugador})
-              </Button>
+              <Link to={createPageUrl('ComprarCartones') + `?partida=${partidaId}`}>
+                <Button variant="outline">
+                  <ShoppingCart className="w-4 h-4 mr-2" />
+                  Comprar más ({cartones.length}/{partida?.max_cartones_por_jugador})
+                </Button>
+              </Link>
             )}
             <Button
               variant="outline"

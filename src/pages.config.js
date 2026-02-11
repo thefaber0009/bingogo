@@ -56,6 +56,7 @@ import Perfil from './pages/Perfil';
 import Premios from './pages/Premios';
 import SalaBingo from './pages/SalaBingo';
 import Usuarios from './pages/Usuarios';
+import ComprarCartones from './pages/ComprarCartones';
 import __Layout from './Layout.jsx';
 
 
@@ -69,6 +70,7 @@ export const PAGES = {
     "Premios": Premios,
     "SalaBingo": SalaBingo,
     "Usuarios": Usuarios,
+    "ComprarCartones": ComprarCartones,
 }
 
 export const pagesConfig = {
