@@ -96,7 +96,15 @@ export default function Home() {
   const partidasPendientes = partidas.filter(p => p.estado === 'pendiente');
 
   return (
-    <div className="space-y-8">
+    <>
+      {partidaSeleccionada && (
+        <PanelAdminPartida 
+          partida={partidaSeleccionada} 
+          open={panelOpen} 
+          onOpenChange={setPanelOpen}
+        />
+      )}
+      <div className="space-y-8">
       <div>
         <h1 className="text-4xl font-bold text-slate-900 mb-2">Dashboard</h1>
         <p className="text-slate-600">Resumen general de la plataforma BingoGo</p>
