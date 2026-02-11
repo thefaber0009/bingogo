@@ -86,8 +86,8 @@ export default function CreateRoomDialog({ open, onOpenChange, onSubmit, isLoadi
   };
 
   const handleSubmit = async () => {
-    if (!formData.nombre || !selectedType) {
-      alert('Por favor completa los campos requeridos');
+    if (!formData.nombre || !selectedType || !formData.cantidadCartones || !formData.fechaInicio) {
+      alert('Por favor completa los campos requeridos (nombre, tipo, cantidad, fecha)');
       return;
     }
     
@@ -95,15 +95,16 @@ export default function CreateRoomDialog({ open, onOpenChange, onSubmit, isLoadi
       nombre: formData.nombre,
       tipo: selectedType,
       cantidad_total_cartones: parseInt(formData.cantidadCartones),
+      fecha_inicio: new Date(formData.fechaInicio).toISOString(),
+      precio_carton: 1, // Precio base por defecto
       duracion_maxima: formData.duracionMaxima ? parseInt(formData.duracionMaxima) : null,
       combos: formData.combos.filter(c => c.nombre && c.cantidad && c.precio),
       modos_juego: Object.keys(formData.modos).filter(m => formData.modos[m]).map(m => ({
         tipo: m,
         nombre: m,
-        premio: 0
+        premio: parseInt(formData.modosPrecio[m]) || 0
       })),
       max_jugadores: formData.capacidad === 'limitada' ? parseInt(formData.limiteJugadores) : null,
-      valor_premio: formData.valorPremio ? parseInt(formData.valorPremio) : null
     };
 
     await onSubmit(submitData);
