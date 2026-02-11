@@ -385,14 +385,14 @@ export default function ComprarCartones() {
                     <div
                       key={carton.id}
                       onClick={() => toggleCartonSeleccionado(carton.id)}
-                      className={`border-2 rounded-lg p-3 cursor-pointer transition-all ${
+                      className={`relative border-2 rounded-lg p-3 cursor-pointer transition-all ${
                         cartonesSeleccionados.includes(carton.id)
                           ? 'border-blue-600 bg-blue-50 shadow-md'
                           : 'border-slate-300 hover:border-blue-400'
                       }`}
                     >
                       {cartonesSeleccionados.includes(carton.id) && (
-                        <div className="absolute -mt-3 -ml-3 w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold">
+                        <div className="absolute -top-3 -right-3 w-7 h-7 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold shadow-lg">
                           ✓
                         </div>
                       )}
@@ -400,7 +400,7 @@ export default function ComprarCartones() {
                         <p className="font-bold text-blue-700 text-center text-xs">BINGO MANÍA</p>
                       </div>
                       <p className="text-red-600 font-bold text-xs text-center mb-2">Cartón No. {numeroCarton}</p>
-                      <div className="grid grid-cols-5 gap-0.5 text-center text-xs mb-2">
+                      <div className="grid grid-cols-5 gap-0.5 text-center text-xs mb-1">
                         <div className="font-bold text-slate-600">B</div>
                         <div className="font-bold text-slate-600">I</div>
                         <div className="font-bold text-slate-600">N</div>
@@ -408,62 +408,94 @@ export default function ComprarCartones() {
                         <div className="font-bold text-slate-600">O</div>
                       </div>
                       <div className="grid grid-cols-5 gap-0.5 text-center text-xs">
-                        {Array.from({length: 25}).map((_, i) => {
-                          const col = i % 5;
-                          const row = Math.floor(i / 5);
-                          const num = carton.numeros?.[col]?.[row];
-                          return (
-                            <div key={i} className={`${num === 0 ? 'bg-yellow-300' : 'bg-slate-100'} rounded p-1 font-semibold text-slate-700`}>
-                              {num || num === 0 ? (num === 0 ? '✓' : num) : '-'}
+                        {carton.numeros?.map((fila, row) =>
+                          fila.map((num, col) => (
+                            <div key={`${row}-${col}`} className={`${num === 0 ? 'bg-yellow-300' : 'bg-slate-100'} rounded p-0.5 font-semibold text-slate-700 text-xs`}>
+                              {num === 0 ? '✓' : num}
                             </div>
-                          );
-                        })}
+                          ))
+                        )}
                       </div>
                     </div>
                   );
                 })}
               </div>
 
-              {/* Paginación */}
+              {/* Paginación Mejorada */}
               {totalPaginas > 1 && (
-                <div className="flex items-center justify-center gap-2 mt-6 pt-4 border-t border-slate-200">
+                <div className="flex items-center justify-center gap-3 mt-8 pt-6 border-t border-slate-200">
                   <button
-                    onClick={() => setPaginaActual(Math.max(1, paginaActual - 1))}
+                    onClick={() => setPaginaActual(1)}
                     disabled={paginaActual === 1}
-                    className={`px-3 py-1 rounded font-bold text-sm ${
+                    className={`px-3 py-2 rounded-lg font-bold text-sm transition-all ${
                       paginaActual === 1
                         ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
                         : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
                     }`}
                   >
-                    ← Anterior
+                    ⟨⟨
                   </button>
+                  <button
+                    onClick={() => setPaginaActual(Math.max(1, paginaActual - 1))}
+                    disabled={paginaActual === 1}
+                    className={`px-3 py-2 rounded-lg font-bold text-sm transition-all ${
+                      paginaActual === 1
+                        ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                        : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                    }`}
+                  >
+                    ⟨
+                  </button>
+                  
                   <div className="flex gap-1">
-                    {Array.from({length: totalPaginas}, (_, i) => i + 1).map((page) => (
-                      <button
-                        key={page}
-                        onClick={() => setPaginaActual(page)}
-                        className={`px-3 py-1 rounded font-bold text-sm ${
-                          paginaActual === page
-                            ? 'bg-purple-600 text-white'
-                            : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
-                        }`}
-                      >
-                        {page}
-                      </button>
-                    ))}
+                    {Array.from({length: totalPaginas}, (_, i) => i + 1).map((page) => {
+                      if (totalPaginas <= 7 || Math.abs(page - paginaActual) <= 2 || page === 1 || page === totalPaginas) {
+                        return (
+                          <button
+                            key={page}
+                            onClick={() => setPaginaActual(page)}
+                            className={`px-3 py-2 rounded-lg font-bold text-sm transition-all ${
+                              paginaActual === page
+                                ? 'bg-purple-600 text-white shadow-lg'
+                                : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                            }`}
+                          >
+                            {page}
+                          </button>
+                        );
+                      } else if (Math.abs(page - paginaActual) === 3) {
+                        return <span key={page} className="text-slate-500">...</span>;
+                      }
+                      return null;
+                    })}
                   </div>
+
                   <button
                     onClick={() => setPaginaActual(Math.min(totalPaginas, paginaActual + 1))}
                     disabled={paginaActual === totalPaginas}
-                    className={`px-3 py-1 rounded font-bold text-sm ${
+                    className={`px-3 py-2 rounded-lg font-bold text-sm transition-all ${
                       paginaActual === totalPaginas
                         ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
                         : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
                     }`}
                   >
-                    Siguiente →
+                    ⟩
                   </button>
+                  <button
+                    onClick={() => setPaginaActual(totalPaginas)}
+                    disabled={paginaActual === totalPaginas}
+                    className={`px-3 py-2 rounded-lg font-bold text-sm transition-all ${
+                      paginaActual === totalPaginas
+                        ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                        : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                    }`}
+                  >
+                    ⟩⟩
+                  </button>
+
+                  <div className="text-slate-600 font-bold text-sm">
+                    Página {paginaActual} de {totalPaginas}
+                  </div>
                 </div>
               )}
             </div>
