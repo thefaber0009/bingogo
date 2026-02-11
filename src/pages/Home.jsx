@@ -226,7 +226,15 @@ export default function Home() {
                     <Trash2 className="w-4 h-4 mr-1" />
                     Eliminar
                   </Button>
-                  <Button size="sm" variant="outline" className="h-9 text-xs px-3">
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    className="h-9 text-xs px-3"
+                    onClick={() => {
+                      setPartidaSeleccionada(partida);
+                      setPanelOpen(true);
+                    }}
+                  >
                     Panel
                   </Button>
                   <Button size="sm" variant="outline" className="h-9 text-xs px-3">
