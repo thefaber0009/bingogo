@@ -297,14 +297,14 @@ export default function ComprarCartones() {
               </div>
             </div>
 
-            {/* Filtro Cartones */}
-            <div className="bg-white rounded-2xl shadow-lg p-6">
+            {/* Filtro y Búsqueda */}
+            <div className="bg-white rounded-2xl shadow-lg p-6 space-y-4">
               <h3 className="font-bold text-slate-900 mb-4">▼ Filtrar Cartones</h3>
               <div className="flex gap-2 flex-wrap">
                 {['todos', 'disponibles', 'seleccionados', 'ocupados'].map((filtro) => (
                   <button
                     key={filtro}
-                    onClick={() => setFiltroCartones(filtro)}
+                    onClick={() => { setFiltroCartones(filtro); setPaginaActual(1); }}
                     className={`px-4 py-2 rounded-full font-bold text-sm capitalize transition-all ${
                       filtroCartones === filtro
                         ? 'bg-purple-600 text-white'
@@ -315,51 +315,129 @@ export default function ComprarCartones() {
                   </button>
                 ))}
               </div>
+              
+              <div>
+                <label className="text-xs text-slate-600 font-bold">🔍 Buscar por número</label>
+                <input
+                  type="number"
+                  min="1"
+                  max="75"
+                  placeholder="Ej: 15"
+                  value={busquedaNumero}
+                  onChange={(e) => { setBusquedaNumero(e.target.value); setPaginaActual(1); }}
+                  className="w-full mt-2 px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600"
+                />
+              </div>
             </div>
 
             {/* Selector de Cartones */}
             <div className="bg-white rounded-2xl shadow-lg p-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="font-bold text-slate-900">⊞ Seleccionar Cartones</h3>
+                <h3 className="font-bold text-slate-900">⊞ Seleccionar Cartones ({cartonesTodosConFiltro.length} disponibles)</h3>
                 <div className="flex gap-2">
-                  <button className="text-xs font-bold px-3 py-1 bg-slate-100 rounded text-slate-700">
-                    ↔️ Atajos
+                  <button 
+                    onClick={() => setCartonesSeleccionados([...cartonesSeleccionados, ...cartonesParaMostrar.map(c => c.id).filter(id => !cartonesSeleccionados.includes(id))])}
+                    className="text-xs font-bold px-3 py-1 bg-blue-400 text-white rounded"
+                  >
+                    ✓ Todos
                   </button>
-                  <button className="text-xs font-bold px-3 py-1 bg-orange-400 text-white rounded">
+                  <button 
+                    onClick={() => setCartonesSeleccionados([])}
+                    className="text-xs font-bold px-3 py-1 bg-orange-400 text-white rounded"
+                  >
                     🔥 Limpiar
                   </button>
                 </div>
               </div>
-              <div className="grid grid-cols-4 gap-3">
-                {cartonesParaMostrar.slice(0, 8).map((carton, idx) => (
-                  <div
-                    key={carton.id}
-                    onClick={() => toggleCartonSeleccionado(carton.id)}
-                    className={`border-2 rounded-lg p-4 cursor-pointer transition-all ${
-                      cartonesSeleccionados.includes(carton.id)
-                        ? 'border-blue-500 bg-blue-50'
-                        : 'border-slate-300 hover:border-blue-400'
+              
+              <div className="grid grid-cols-5 gap-3">
+                {cartonesParaMostrar.map((carton, idx) => {
+                  const numeroCarton = indiceInicio + idx + 1;
+                  return (
+                    <div
+                      key={carton.id}
+                      onClick={() => toggleCartonSeleccionado(carton.id)}
+                      className={`border-2 rounded-lg p-3 cursor-pointer transition-all ${
+                        cartonesSeleccionados.includes(carton.id)
+                          ? 'border-blue-600 bg-blue-50 shadow-md'
+                          : 'border-slate-300 hover:border-blue-400'
+                      }`}
+                    >
+                      {cartonesSeleccionados.includes(carton.id) && (
+                        <div className="absolute -mt-3 -ml-3 w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold">
+                          ✓
+                        </div>
+                      )}
+                      <div className="bg-blue-100 rounded p-1 mb-2">
+                        <p className="font-bold text-blue-700 text-center text-xs">BINGO MANÍA</p>
+                      </div>
+                      <p className="text-red-600 font-bold text-xs text-center mb-2">Cartón No. {numeroCarton}</p>
+                      <div className="grid grid-cols-5 gap-0.5 text-center text-xs mb-2">
+                        <div className="font-bold text-slate-600">B</div>
+                        <div className="font-bold text-slate-600">I</div>
+                        <div className="font-bold text-slate-600">N</div>
+                        <div className="font-bold text-slate-600">G</div>
+                        <div className="font-bold text-slate-600">O</div>
+                      </div>
+                      <div className="grid grid-cols-5 gap-0.5 text-center text-xs">
+                        {Array.from({length: 25}).map((_, i) => {
+                          const col = i % 5;
+                          const row = Math.floor(i / 5);
+                          const num = carton.numeros?.[col]?.[row];
+                          return (
+                            <div key={i} className={`${num === 0 ? 'bg-yellow-300' : 'bg-slate-100'} rounded p-1 font-semibold text-slate-700`}>
+                              {num || num === 0 ? (num === 0 ? '✓' : num) : '-'}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Paginación */}
+              {totalPaginas > 1 && (
+                <div className="flex items-center justify-center gap-2 mt-6 pt-4 border-t border-slate-200">
+                  <button
+                    onClick={() => setPaginaActual(Math.max(1, paginaActual - 1))}
+                    disabled={paginaActual === 1}
+                    className={`px-3 py-1 rounded font-bold text-sm ${
+                      paginaActual === 1
+                        ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                        : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
                     }`}
                   >
-                    <div className="bg-blue-50 rounded p-2 mb-2">
-                      <p className="font-bold text-blue-700 text-center text-sm">BINGO MANIA</p>
-                    </div>
-                    <p className="text-red-600 font-bold text-xs text-center mb-2">Cartón No. {idx + 1}</p>
-                    <div className="grid grid-cols-5 gap-1 text-center text-xs">
-                      {carton.numeros?.flat?.().slice(0, 25).map((num, i) => (
-                        <div key={i} className={`${num === 0 ? 'bg-yellow-200' : 'bg-slate-100'} rounded p-1 font-semibold`}>
-                          {num || '✓'}
-                        </div>
-                      ))}
-                    </div>
-                    {cartonesSeleccionados.includes(carton.id) && (
-                      <div className="mt-2 text-center">
-                        <input type="checkbox" checked className="accent-blue-600" />
-                      </div>
-                    )}
+                    ← Anterior
+                  </button>
+                  <div className="flex gap-1">
+                    {Array.from({length: totalPaginas}, (_, i) => i + 1).map((page) => (
+                      <button
+                        key={page}
+                        onClick={() => setPaginaActual(page)}
+                        className={`px-3 py-1 rounded font-bold text-sm ${
+                          paginaActual === page
+                            ? 'bg-purple-600 text-white'
+                            : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                        }`}
+                      >
+                        {page}
+                      </button>
+                    ))}
                   </div>
-                ))}
-              </div>
+                  <button
+                    onClick={() => setPaginaActual(Math.min(totalPaginas, paginaActual + 1))}
+                    disabled={paginaActual === totalPaginas}
+                    className={`px-3 py-1 rounded font-bold text-sm ${
+                      paginaActual === totalPaginas
+                        ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                        : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                    }`}
+                  >
+                    Siguiente →
+                  </button>
+                </div>
+              )}
             </div>
           </div>
 
