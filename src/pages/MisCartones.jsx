@@ -197,73 +197,130 @@ export default function MisCartones() {
         </Card>
 
         {/* Salas con Cartones */}
-         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-           {cartones.map((carton, idx) => {
-             const tiempoRestante = tiemposCarton[carton.id] || 300;
-             const tiempoAgotado = tiempoRestante === 0;
-             return (
-             <Card key={carton.id} className={`border-2 transition-all duration-300 ${
-               tiempoAgotado ? 'border-red-400 shadow-xl bg-red-50' :
-               cartonesHabilitados[carton.id] 
-                 ? 'border-green-400 shadow-xl bg-green-50' 
-                 : 'border-slate-200 shadow-lg bg-white'
-             }`}>
-               <CardHeader className="pb-3">
-                 <div className="flex items-center justify-between mb-2">
-                   <CardTitle className="text-lg flex items-center gap-2">
-                     <Ticket className={`w-5 h-5 ${cartonesHabilitados[carton.id] ? 'text-green-600' : 'text-slate-400'}`} />
-                     Cartón #{idx + 1}
-                   </CardTitle>
-                   <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-slate-100">
-                     <Clock className={`w-4 h-4 ${tiempoAgotado ? 'text-red-600' : 'text-slate-600'}`} />
-                     <span className={`text-sm font-bold ${tiempoAgotado ? 'text-red-600' : 'text-slate-600'}`}>
-                       {formatearTiempo(tiempoRestante)}
-                     </span>
-                   </div>
-                 </div>
-                 <div className="flex items-center justify-between">
-                   <div className="flex items-center gap-2">
-                     <span className={`text-sm font-semibold ${cartonesHabilitados[carton.id] ? 'text-green-600' : 'text-slate-400'}`}>
-                       {cartonesHabilitados[carton.id] ? 'Habilitado' : 'Deshabilitado'}
-                     </span>
-                     <Switch
-                       checked={cartonesHabilitados[carton.id] || false}
-                       onCheckedChange={() => toggleCarton(carton.id)}
-                     />
-                   </div>
-                   <button
-                     onClick={() => handleEliminarCarton(carton.id)}
-                     className="p-1.5 hover:bg-red-200 text-red-600 rounded-lg transition-colors"
-                     title="Eliminar cartón"
-                   >
-                     <Trash2 className="w-4 h-4" />
-                   </button>
-                 </div>
-               </CardHeader>
-               <CardContent>
-                 <CartonBingo 
-                   carton={carton}
-                   marcados={[]}
-                   onMarcar={() => {}}
-                   autoMarcar={true}
-                 />
-               </CardContent>
-             </Card>
-            );
-           })}
-         </div>
+        <div className="space-y-8">
+          {partidas.map((part) => {
+            const cartonesPartida = cartonAgrupadosPorPartida[part.id] || [];
+            const cartonesHabilitadosPartida = cartonesPartida.filter(c => cartonesHabilitados[c.id]).length;
+            
+            return (
+              <div key={part.id} className="border-2 border-indigo-300 rounded-2xl p-6 bg-white shadow-lg">
+                {/* Header de la Sala */}
+                <div className="mb-6 pb-4 border-b-2 border-indigo-200">
+                  <div className="flex items-center justify-between mb-3">
+                    <div>
+                      <h2 className="text-2xl font-bold text-slate-900">{part.nombre}</h2>
+                      <div className="flex items-center gap-3 mt-2">
+                        <span className={`text-xs font-bold px-3 py-1 rounded-full ${
+                          part.estado === 'en_curso' ? 'bg-green-100 text-green-700' :
+                          part.estado === 'pendiente' ? 'bg-amber-100 text-amber-700' :
+                          'bg-slate-100 text-slate-700'
+                        }`}>
+                          {part.estado === 'en_curso' ? '● Activa' : '● Inactiva'}
+                        </span>
+                        <span className="text-xs text-slate-500">ID: {part.id}</span>
+                      </div>
+                    </div>
+                    <Link to={createPageUrl('ComprarCartones') + `?partida=${part.id}`}>
+                      <Button variant="outline" size="sm">
+                        <ShoppingCart className="w-4 h-4 mr-2" />
+                        Comprar más
+                      </Button>
+                    </Link>
+                  </div>
 
-        {/* Botón inferior */}
-        <div className="flex justify-center pt-6">
-          <Button 
-            onClick={entrarASala}
-            size="lg"
-            disabled={cartonesActivos === 0}
-            className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 px-12 py-6 text-lg"
-          >
-            <Play className="w-6 h-6 mr-2" />
-            Entrar a la Sala de Bingo
-          </Button>
+                  {/* Datos de la Sala */}
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <div>
+                      <p className="text-xs text-slate-500">📅 Hora Inicio</p>
+                      <p className="font-semibold text-slate-900">{part.fecha_inicio ? new Date(part.fecha_inicio).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'N/A'}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-slate-500">🎫 Total</p>
+                      <p className="font-semibold text-slate-900">{cartonesPartida.length}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-slate-500">✓ Habilitados</p>
+                      <p className="font-semibold text-green-600">{cartonesHabilitadosPartida}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-slate-500">💰 Precio</p>
+                      <p className="font-semibold text-slate-900">${part.precio_carton?.toFixed(2)}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Cartones de la Sala */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  {cartonesPartida.map((carton, idx) => {
+                    const tiempoRestante = tiemposCarton[carton.id] || 300;
+                    const tiempoAgotado = tiempoRestante === 0;
+                    return (
+                    <Card key={carton.id} className={`border-2 transition-all duration-300 ${
+                      tiempoAgotado ? 'border-red-400 shadow-xl bg-red-50' :
+                      cartonesHabilitados[carton.id] 
+                        ? 'border-green-400 shadow-xl bg-green-50' 
+                        : 'border-slate-200 shadow-lg bg-white'
+                    }`}>
+                      <CardHeader className="pb-3">
+                        <div className="flex items-center justify-between mb-2">
+                          <CardTitle className="text-lg flex items-center gap-2">
+                            <Ticket className={`w-5 h-5 ${cartonesHabilitados[carton.id] ? 'text-green-600' : 'text-slate-400'}`} />
+                            Cartón #{idx + 1}
+                          </CardTitle>
+                          <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-slate-100">
+                            <Clock className={`w-4 h-4 ${tiempoAgotado ? 'text-red-600' : 'text-slate-600'}`} />
+                            <span className={`text-sm font-bold ${tiempoAgotado ? 'text-red-600' : 'text-slate-600'}`}>
+                              {formatearTiempo(tiempoRestante)}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <span className={`text-sm font-semibold ${cartonesHabilitados[carton.id] ? 'text-green-600' : 'text-slate-400'}`}>
+                              {cartonesHabilitados[carton.id] ? 'Habilitado' : 'Deshabilitado'}
+                            </span>
+                            <Switch
+                              checked={cartonesHabilitados[carton.id] || false}
+                              onCheckedChange={() => toggleCarton(carton.id)}
+                            />
+                          </div>
+                          <button
+                            onClick={() => handleEliminarCarton(carton.id)}
+                            className="p-1.5 hover:bg-red-200 text-red-600 rounded-lg transition-colors"
+                            title="Eliminar cartón"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </CardHeader>
+                      <CardContent>
+                        <CartonBingo 
+                          carton={carton}
+                          marcados={[]}
+                          onMarcar={() => {}}
+                          autoMarcar={true}
+                        />
+                      </CardContent>
+                    </Card>
+                    );
+                  })}
+                </div>
+
+                {/* Botón Entrar a Jugar por Sala */}
+                {cartonesHabilitadosPartida > 0 && (
+                  <div className="mt-6 flex justify-center">
+                    <Button 
+                      onClick={() => navigate(createPageUrl('SalaBingo') + `?partida=${part.id}`)}
+                      className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 px-8 py-3"
+                    >
+                      <Play className="w-5 h-5 mr-2" />
+                      Entrar a {part.nombre} ({cartonesHabilitadosPartida} cartones)
+                    </Button>
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>
