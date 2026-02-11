@@ -190,21 +190,21 @@ export default function Home() {
                       <span className="text-lg">💚</span>
                       <h4 className="font-bold text-slate-900">Combos disponibles:</h4>
                     </div>
-                    <div className="overflow-x-auto">
+                    <div className="border border-slate-200 rounded overflow-hidden">
                       <table className="w-full text-sm">
-                        <thead>
-                          <tr className="border-b border-slate-200">
-                            <th className="text-left py-2 font-semibold text-slate-900">Combo</th>
-                            <th className="text-center py-2 font-semibold text-slate-900">Cartones</th>
-                            <th className="text-right py-2 font-semibold text-slate-900">Precio</th>
+                        <thead className="bg-slate-50">
+                          <tr>
+                            <th className="text-left px-4 py-3 font-semibold text-slate-900 border-b border-slate-200">Combo</th>
+                            <th className="text-center px-4 py-3 font-semibold text-slate-900 border-b border-slate-200">Cartones</th>
+                            <th className="text-right px-4 py-3 font-semibold text-slate-900 border-b border-slate-200">Precio</th>
                           </tr>
                         </thead>
                         <tbody>
                           {partida.combos.map((combo, idx) => (
-                            <tr key={idx} className="border-b border-slate-100">
-                              <td className="py-2 text-blue-600 font-medium">{combo.nombre || combo.cantidad}</td>
-                              <td className="text-center text-slate-700">{combo.cantidad}</td>
-                              <td className="text-right text-slate-900 font-medium">$ {combo.precio?.toLocaleString()}</td>
+                            <tr key={idx} className="border-b border-slate-100 last:border-b-0 hover:bg-slate-50">
+                              <td className="px-4 py-3 text-blue-600 font-medium">{combo.nombre || combo.cantidad}</td>
+                              <td className="text-center px-4 py-3 text-slate-700">{combo.cantidad}</td>
+                              <td className="text-right px-4 py-3 text-orange-600 font-semibold">$ {combo.precio?.toLocaleString()}</td>
                             </tr>
                           ))}
                         </tbody>
