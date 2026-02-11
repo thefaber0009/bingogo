@@ -251,39 +251,61 @@ export default function MisCartones() {
         </div>
 
         {/* Lista de Cartones */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {cartones.map((carton, idx) => (
-            <Card key={carton.id} className={`border-2 transition-all duration-300 ${
-              cartonesHabilitados[carton.id] 
-                ? 'border-green-400 shadow-xl bg-green-50' 
-                : 'border-slate-200 shadow-lg bg-white'
-            }`}>
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <Ticket className={`w-5 h-5 ${cartonesHabilitados[carton.id] ? 'text-green-600' : 'text-slate-400'}`} />
-                  Cartón #{idx + 1}
-                </CardTitle>
-                <div className="flex items-center gap-2">
-                  <span className={`text-sm font-semibold ${cartonesHabilitados[carton.id] ? 'text-green-600' : 'text-slate-400'}`}>
-                    {cartonesHabilitados[carton.id] ? 'Habilitado' : 'Deshabilitado'}
-                  </span>
-                  <Switch
-                    checked={cartonesHabilitados[carton.id] || false}
-                    onCheckedChange={() => toggleCarton(carton.id)}
-                  />
-                </div>
-              </CardHeader>
-              <CardContent>
-                <CartonBingo 
-                  carton={carton}
-                  marcados={[]}
-                  onMarcar={() => {}}
-                  autoMarcar={true}
-                />
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+           {cartones.map((carton, idx) => {
+             const tiempoRestante = tiemposCarton[carton.id] || 300;
+             const tiempoAgotado = tiempoRestante === 0;
+             return (
+             <Card key={carton.id} className={`border-2 transition-all duration-300 ${
+               tiempoAgotado ? 'border-red-400 shadow-xl bg-red-50' :
+               cartonesHabilitados[carton.id] 
+                 ? 'border-green-400 shadow-xl bg-green-50' 
+                 : 'border-slate-200 shadow-lg bg-white'
+             }`}>
+               <CardHeader className="pb-3">
+                 <div className="flex items-center justify-between mb-2">
+                   <CardTitle className="text-lg flex items-center gap-2">
+                     <Ticket className={`w-5 h-5 ${cartonesHabilitados[carton.id] ? 'text-green-600' : 'text-slate-400'}`} />
+                     Cartón #{idx + 1}
+                   </CardTitle>
+                   <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-slate-100">
+                     <Clock className={`w-4 h-4 ${tiempoAgotado ? 'text-red-600' : 'text-slate-600'}`} />
+                     <span className={`text-sm font-bold ${tiempoAgotado ? 'text-red-600' : 'text-slate-600'}`}>
+                       {formatearTiempo(tiempoRestante)}
+                     </span>
+                   </div>
+                 </div>
+                 <div className="flex items-center justify-between">
+                   <div className="flex items-center gap-2">
+                     <span className={`text-sm font-semibold ${cartonesHabilitados[carton.id] ? 'text-green-600' : 'text-slate-400'}`}>
+                       {cartonesHabilitados[carton.id] ? 'Habilitado' : 'Deshabilitado'}
+                     </span>
+                     <Switch
+                       checked={cartonesHabilitados[carton.id] || false}
+                       onCheckedChange={() => toggleCarton(carton.id)}
+                     />
+                   </div>
+                   <button
+                     onClick={() => handleEliminarCarton(carton.id)}
+                     className="p-1.5 hover:bg-red-200 text-red-600 rounded-lg transition-colors"
+                     title="Eliminar cartón"
+                   >
+                     <Trash2 className="w-4 h-4" />
+                   </button>
+                 </div>
+               </CardHeader>
+               <CardContent>
+                 <CartonBingo 
+                   carton={carton}
+                   marcados={[]}
+                   onMarcar={() => {}}
+                   autoMarcar={true}
+                 />
+               </CardContent>
+             </Card>
+            );
+           })}
+         </div>
 
         {/* Botón inferior */}
         <div className="flex justify-center pt-6">
