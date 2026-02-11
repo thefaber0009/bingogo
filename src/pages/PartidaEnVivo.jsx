@@ -176,7 +176,7 @@ export default function PartidaEnVivo() {
             </div>
           </div>
 
-          {/* Sorteo Anterior */}
+          {/* Información del Juego */}
           {partidaActual && (
             <Card className="border-0 shadow-lg">
               <CardHeader className="bg-gradient-to-r from-slate-900 to-slate-800 text-white rounded-t-xl">
@@ -211,6 +211,59 @@ export default function PartidaEnVivo() {
               </CardContent>
             </Card>
           )}
+
+          {/* Lista de Cartones */}
+          <Card className="border-0 shadow-lg">
+            <CardHeader className="bg-gradient-to-r from-slate-900 to-slate-800 text-white rounded-t-xl">
+              <CardTitle className="text-xl">CARTONES EN JUEGO ({cartones.length})</CardTitle>
+            </CardHeader>
+            <CardContent className="p-8">
+              {cartones.length > 0 ? (
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b-2 border-slate-300">
+                        <th className="text-left px-4 py-3 font-bold text-slate-900">ID</th>
+                        <th className="text-left px-4 py-3 font-bold text-slate-900">Jugador</th>
+                        <th className="text-center px-4 py-3 font-bold text-slate-900">Estado</th>
+                        <th className="text-center px-4 py-3 font-bold text-slate-900">Marcados</th>
+                        <th className="text-center px-4 py-3 font-bold text-slate-900">Comprado</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {cartones.map((carton, idx) => (
+                        <tr key={carton.id} className="border-b border-slate-200 hover:bg-slate-50 transition-colors">
+                          <td className="px-4 py-3 text-sm text-slate-900 font-medium">#{idx + 1}</td>
+                          <td className="px-4 py-3 text-sm text-slate-700">{carton.jugador_id?.substring(0, 8)}...</td>
+                          <td className="px-4 py-3 text-center">
+                            <span className={`text-xs font-bold px-2 py-1 rounded-full ${
+                              carton.estado === 'activo' ? 'bg-green-100 text-green-800' :
+                              carton.estado === 'ganador' ? 'bg-yellow-100 text-yellow-800' :
+                              'bg-slate-100 text-slate-800'
+                            }`}>
+                              {carton.estado}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3 text-center text-sm font-semibold text-slate-900">
+                            {carton.marcados?.length || 0} / 25
+                          </td>
+                          <td className="px-4 py-3 text-center">
+                            <span className={`text-xs font-bold px-2 py-1 rounded-full ${
+                              carton.comprado ? 'bg-blue-100 text-blue-800' : 'bg-slate-100 text-slate-800'
+                            }`}>
+                              {carton.comprado ? 'Sí' : 'No'}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <p className="text-center text-slate-500 py-8">No hay cartones en esta sala aún</p>
+              )}
+            </CardContent>
+          </Card>
         </div>
       )}
     </div>
