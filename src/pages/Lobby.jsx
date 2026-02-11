@@ -16,7 +16,8 @@ import {
   Search,
   Filter,
   Ticket,
-  Tag
+  Tag,
+  Zap
 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
