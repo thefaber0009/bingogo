@@ -105,7 +105,7 @@ export default function Home() {
         />
       )}
       <div className="space-y-8">
-      <div>
+        <div>
         <h1 className="text-4xl font-bold text-slate-900 mb-2">Dashboard</h1>
         <p className="text-slate-600">Resumen general de la plataforma BingoGo</p>
       </div>
