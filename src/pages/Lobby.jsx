@@ -63,19 +63,7 @@ export default function Lobby() {
     return matchSearch && matchEstado;
   });
 
-  const getEstadoBadge = (estado) => {
-    const badges = {
-      pendiente: { bg: 'bg-amber-100', text: 'text-amber-700', label: 'Próximamente' },
-      en_curso: { bg: 'bg-green-100', text: 'text-green-700', label: 'En Vivo' },
-      finalizada: { bg: 'bg-slate-100', text: 'text-slate-700', label: 'Finalizada' },
-    };
-    const badge = badges[estado] || badges.pendiente;
-    return (
-      <span className={`px-3 py-1 rounded-full text-xs font-semibold ${badge.bg} ${badge.text}`}>
-        {badge.label}
-      </span>
-    );
-  };
+
 
   const roomColors = {
     festivo: { bg: 'bg-yellow-400', badge: 'bg-yellow-400' },
