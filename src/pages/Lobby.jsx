@@ -110,152 +110,103 @@ export default function Lobby() {
           </div>
         </div>
 
-        {/* Lista de Partidas */}
+        {/* Grid de Salas */}
         {isLoading ? (
           <div className="text-center py-20">
             <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
-            <p className="text-slate-600 mt-4">Cargando partidas...</p>
+            <p className="text-slate-600 mt-4">Cargando salas...</p>
           </div>
-        ) : filteredPartidas.length === 0 ? (
-          <Card className="border-0 shadow-xl">
+        ) : partidas.length === 0 ? (
+          <Card className="border-0 shadow-xl bg-white">
             <CardContent className="py-20 text-center">
               <PlayCircle className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-              <p className="text-slate-500 text-lg">No hay partidas disponibles</p>
+              <p className="text-slate-500 text-lg">No hay salas disponibles</p>
             </CardContent>
           </Card>
         ) : (
-          <div className="grid gap-6">
-            {filteredPartidas.map((partida) => (
-              <Card key={partida.id} className="border-0 shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden">
-                <CardContent className="p-0">
-                  <div className="flex flex-col md:flex-row">
-                    {/* Info Principal */}
-                    <div className="flex-1 p-6">
-                      <div className="flex items-start justify-between mb-4">
-                        <div>
-                          <h3 className="text-2xl font-bold text-slate-900 mb-2">{partida.nombre}</h3>
-                          {getEstadoBadge(partida.estado)}
-                        </div>
-                        <div className="text-right">
-                          <p className="text-sm text-slate-500 font-medium">Modos de Juego</p>
-                          <p className="text-3xl font-bold text-green-600">
-                            {partida.modos_juego?.length || 0}
-                          </p>
-                          <p className="text-xs text-slate-500 mt-1">
-                            Premio Total: ${partida.modos_juego?.reduce((sum, m) => sum + (m.premio || 0), 0).toFixed(2) || '0.00'}
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
-                        <div className="flex items-center gap-2">
-                          <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                            <Calendar className="w-5 h-5 text-blue-600" />
-                          </div>
-                          <div>
-                            <p className="text-xs text-slate-500">Fecha</p>
-                            <p className="text-sm font-semibold text-slate-900">
-                              {partida.fecha_inicio ? new Date(partida.fecha_inicio).toLocaleDateString() : 'N/A'}
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center gap-2">
-                          <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                            <Clock className="w-5 h-5 text-purple-600" />
-                          </div>
-                          <div>
-                            <p className="text-xs text-slate-500">Hora</p>
-                            <p className="text-sm font-semibold text-slate-900">
-                              {partida.fecha_inicio ? new Date(partida.fecha_inicio).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'N/A'}
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center gap-2">
-                          <div className="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center">
-                            <DollarSign className="w-5 h-5 text-amber-600" />
-                          </div>
-                          <div>
-                            <p className="text-xs text-slate-500">Precio Cartón</p>
-                            <p className="text-sm font-semibold text-slate-900">
-                              ${partida.precio_carton?.toFixed(2)}
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center gap-2">
-                          <div className="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center">
-                            <Ticket className="w-5 h-5 text-slate-600" />
-                          </div>
-                          <div>
-                            <p className="text-xs text-slate-500">Total Cartones</p>
-                            <p className="text-sm font-semibold text-slate-900">
-                              {partida.cantidad_total_cartones || 0}
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center gap-2">
-                          <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                            <Ticket className="w-5 h-5 text-green-600" />
-                          </div>
-                          <div>
-                            <p className="text-xs text-slate-500">Vendidos</p>
-                            <p className="text-sm font-semibold text-green-700">
-                              {getCartonesVendidos(partida.id)} / {partida.cantidad_total_cartones || 0}
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center gap-2">
-                          <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
-                            <Users className="w-5 h-5 text-indigo-600" />
-                          </div>
-                          <div>
-                            <p className="text-xs text-slate-500">Mis Cartones</p>
-                            <p className="text-sm font-semibold text-indigo-600">
-                              {getMisCartones(partida.id)}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Combos disponibles */}
-                      {partida.combos && partida.combos.length > 0 && (
-                        <div className="mt-4 pt-4 border-t border-slate-200">
-                          <p className="text-xs text-slate-500 mb-2 font-medium">Combos Disponibles:</p>
-                          <div className="flex gap-2 flex-wrap">
-                            {partida.combos.map((combo, idx) => (
-                              <div key={idx} className="inline-flex items-center gap-1 px-3 py-1 bg-amber-50 border border-amber-200 rounded-full text-xs">
-                                <Tag className="w-3 h-3 text-amber-600" />
-                                <span className="font-semibold">{combo.cantidad} cartones</span>
-                                <span className="text-slate-600">por ${combo.precio?.toFixed(2)}</span>
-                                <span className="text-red-600 font-semibold">({combo.descuento}% OFF)</span>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      )}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {partidas.map((partida) => {
+              const roomColor = getRoomColor(partida.nombre);
+              const isActive = partida.estado === 'en_curso';
+              
+              return (
+                <div key={partida.id} className="bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow overflow-hidden">
+                  {/* Header con Badge */}
+                  <div className={`${roomColor.bg} text-white p-4 flex items-center justify-between`}>
+                    <div className="flex items-center gap-2">
+                      <Trophy className="w-5 h-5" />
+                      <span className="font-bold text-lg capitalize">{partida.nombre}</span>
                     </div>
+                    <span className={`${isActive ? 'bg-green-500' : 'bg-slate-400'} text-white text-xs font-bold px-3 py-1 rounded-full`}>
+                      {isActive ? 'Activa' : 'Inactiva'}
+                    </span>
+                  </div>
 
-                    {/* Acción */}
-                    <div className="bg-gradient-to-br from-indigo-600 to-purple-600 p-6 flex items-center justify-center md:w-48">
-                      <Link to={createPageUrl('ComprarCartones') + `?partida=${partida.id}`}>
-                        <Button 
-                          size="lg"
-                          className="bg-white text-indigo-600 hover:bg-slate-50 shadow-lg"
-                          disabled={partida.estado === 'finalizada'}
-                        >
-                          <PlayCircle className="w-5 h-5 mr-2" />
-                          {partida.estado === 'en_curso' ? 'Jugar Ahora' : 'Unirse'}
-                        </Button>
-                      </Link>
+                  {/* Imagen/Placeholder */}
+                  <div className="h-40 bg-gradient-to-br from-slate-200 to-slate-300 flex items-center justify-center">
+                    <div className="text-center">
+                      <Zap className="w-16 h-16 text-slate-500 mx-auto mb-2 opacity-50" />
+                      <p className="text-slate-600 font-semibold">Sala de Bingo</p>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-            ))}
+
+                  {/* Contenido */}
+                  <div className="p-6 space-y-4">
+                    {/* Stats principales */}
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2 text-sm">
+                        <span className="w-4 h-4 flex items-center justify-center text-xs">🎫</span>
+                        <span className="text-slate-700">Cartones: <span className="font-bold">{partida.cantidad_total_cartones}</span></span>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm">
+                        <span className="w-4 h-4 flex items-center justify-center text-xs">🏆</span>
+                        <span className="text-slate-700">Premio: <span className="font-bold">${partida.modos_juego?.reduce((sum, m) => sum + (m.premio || 0), 0).toFixed(2) || '0.00'}</span></span>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm">
+                        <span className="w-4 h-4 flex items-center justify-center text-xs">📅</span>
+                        <span className="text-slate-700">Inicio: <span className="font-bold">{partida.fecha_inicio ? new Date(partida.fecha_inicio).toLocaleString('es-ES', {month: 'numeric', day: 'numeric', year: '2-digit', hour: '2-digit', minute: '2-digit'}) : 'N/A'}</span></span>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm">
+                        <span className="w-4 h-4 flex items-center justify-center text-xs">⏱️</span>
+                        <span className="text-slate-700">Duración: <span className="font-bold">30 min</span></span>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm">
+                        <span className="w-4 h-4 flex items-center justify-center text-xs">🎮</span>
+                        <span className="text-slate-700">Modos de Juego: <span className="font-bold">({partida.modos_juego?.length || 0})</span></span>
+                      </div>
+                    </div>
+
+                    {/* Combos */}
+                    {partida.combos && partida.combos.length > 0 && (
+                      <div className="pt-2 border-t border-slate-200">
+                        <p className="text-xs text-slate-600 font-semibold mb-2">Combos:</p>
+                        <div className="space-y-1">
+                          {partida.combos.slice(0, 3).map((combo, idx) => (
+                            <div key={idx} className="text-xs text-slate-700">
+                              <span className="font-semibold">{combo.cantidad} cartones</span> ${combo.precio?.toFixed(2)} | <span className="text-green-600">{combo.descuento}% OFF</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Botón */}
+                    <Link to={createPageUrl('ComprarCartones') + `?partida=${partida.id}`} className="block">
+                      <Button
+                        className={`w-full font-bold py-2 ${
+                          isActive 
+                            ? 'bg-purple-600 hover:bg-purple-700 text-white' 
+                            : 'bg-slate-300 hover:bg-slate-400 text-slate-700'
+                        }`}
+                        disabled={!isActive}
+                      >
+                        {isActive ? 'Jugar' : 'No Disponible'}
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         )}
       </div>
