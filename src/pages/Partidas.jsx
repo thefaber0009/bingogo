@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Plus, 
   Edit, 
@@ -17,7 +18,8 @@ import {
   CheckCircle,
   Clock,
   Ticket,
-  Trophy
+  Trophy,
+  Power
 } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Search } from 'lucide-react';
@@ -31,6 +33,7 @@ export default function Partidas() {
   const [editingPartida, setEditingPartida] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterEstado, setFilterEstado] = useState('todas');
+  const [selectedTab, setSelectedTab] = useState('todas');
   const [formData, setFormData] = useState({
     nombre: '',
     fecha_inicio: '',
@@ -156,7 +159,13 @@ export default function Partidas() {
 
   const filteredPartidas = partidas.filter(p => {
     const matchSearch = p.nombre?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchEstado = filterEstado === 'todas' || p.estado === filterEstado;
+    let matchEstado = false;
+    
+    if (selectedTab === 'todas') matchEstado = true;
+    else if (selectedTab === 'activas') matchEstado = p.estado === 'en_curso';
+    else if (selectedTab === 'en_proceso') matchEstado = p.estado === 'pendiente';
+    else if (selectedTab === 'inactivas') matchEstado = p.estado === 'finalizada';
+    
     return matchSearch && matchEstado;
   });
 
@@ -184,30 +193,51 @@ export default function Partidas() {
         isLoading={createRoomMutation.isLoading}
       />
 
-      {/* Búsqueda y Filtros */}
-      <div className="flex flex-col md:flex-row gap-4 mb-6">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
-          <Input
-            placeholder="Buscar sala..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
-          />
-        </div>
-        <div className="flex gap-2">
-          {['todas', 'pendiente', 'en_curso', 'finalizada'].map(status => (
-            <Button
-              key={status}
-              variant={filterEstado === status ? 'default' : 'outline'}
-              onClick={() => setFilterEstado(status)}
-              className={filterEstado === status ? 'bg-gradient-to-r from-indigo-600 to-purple-600' : ''}
-            >
-              {status === 'todas' ? 'Todas' : status === 'pendiente' ? 'Próximamente' : status === 'en_curso' ? 'En Vivo' : 'Finalizada'}
-            </Button>
-          ))}
-        </div>
-      </div>
+      {/* Encabezado Salas de Juego */}
+       <div className="flex items-center justify-between">
+         <div>
+           <p className="text-sm text-slate-600 mb-2">Salas de Juego</p>
+         </div>
+         <div className="relative flex-1 max-w-xs">
+           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
+           <Input
+             placeholder="Buscar salas..."
+             value={searchTerm}
+             onChange={(e) => setSearchTerm(e.target.value)}
+             className="pl-10 h-9 text-sm"
+           />
+         </div>
+       </div>
+
+       {/* Tabs */}
+       <Tabs value={selectedTab} onValueChange={setSelectedTab} className="w-full">
+         <TabsList className="gap-2 bg-transparent">
+           <TabsTrigger 
+             value="todas"
+             className="data-[state=active]:bg-indigo-600 data-[state=active]:text-white rounded-md px-4 py-2 text-sm font-medium"
+           >
+             Todas
+           </TabsTrigger>
+           <TabsTrigger 
+             value="activas"
+             className="data-[state=active]:bg-indigo-600 data-[state=active]:text-white rounded-md px-4 py-2 text-sm font-medium"
+           >
+             Activas
+           </TabsTrigger>
+           <TabsTrigger 
+             value="en_proceso"
+             className="data-[state=active]:bg-indigo-600 data-[state=active]:text-white rounded-md px-4 py-2 text-sm font-medium"
+           >
+             En proceso
+           </TabsTrigger>
+           <TabsTrigger 
+             value="inactivas"
+             className="data-[state=active]:bg-indigo-600 data-[state=active]:text-white rounded-md px-4 py-2 text-sm font-medium"
+           >
+             Inactivas
+           </TabsTrigger>
+         </TabsList>
+       </Tabs>
 
       {/* Dialog antiguo para editar */}
       <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) resetForm(); }}>
@@ -308,9 +338,9 @@ export default function Partidas() {
           <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
         </div>
       ) : (
-        <div className="grid gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {filteredPartidas.length === 0 ? (
-            <Card className="border-0 shadow-xl">
+            <Card className="border-0 shadow-xl col-span-full">
               <CardContent className="py-20 text-center">
                 <PlayCircle className="w-16 h-16 text-slate-300 mx-auto mb-4" />
                 <p className="text-slate-600">No hay salas disponibles</p>
@@ -318,83 +348,94 @@ export default function Partidas() {
             </Card>
           ) : (
             filteredPartidas.map((partida) => (
-            <Card key={partida.id} className="border-0 shadow-lg hover:shadow-xl transition-shadow">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-3">
-                      <h3 className="text-xl font-bold text-slate-900">{partida.nombre}</h3>
-                      {getEstadoBadge(partida.estado)}
-                    </div>
-                    <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
-                      <div className="flex items-center gap-2">
-                        <Calendar className="w-4 h-4 text-slate-400" />
-                        <div>
-                          <p className="text-xs text-slate-500">Inicio</p>
-                          <p className="text-sm font-medium">
-                            {partida.fecha_inicio ? new Date(partida.fecha_inicio).toLocaleDateString() : 'N/A'}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <DollarSign className="w-4 h-4 text-slate-400" />
-                        <div>
-                          <p className="text-xs text-slate-500">Cartón</p>
-                          <p className="text-sm font-medium">${partida.precio_carton?.toFixed(2)}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Ticket className="w-4 h-4 text-slate-400" />
-                        <div>
-                          <p className="text-xs text-slate-500">Total Cartones</p>
-                          <p className="text-sm font-medium text-indigo-600">{partida.cantidad_total_cartones || 0}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Ticket className="w-4 h-4 text-slate-400" />
-                        <div>
-                          <p className="text-xs text-slate-500">Máx/jugador</p>
-                          <p className="text-sm font-medium">{partida.max_cartones_por_jugador}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Users className="w-4 h-4 text-slate-400" />
-                        <div>
-                          <p className="text-xs text-slate-500">Vendidos</p>
-                          <p className="text-sm font-medium">{partida.cartones_vendidos || 0}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Trophy className="w-4 h-4 text-slate-400" />
-                        <div>
-                          <p className="text-xs text-slate-500">Modos</p>
-                          <p className="text-sm font-medium text-green-600">{partida.modos_juego?.length || 0}</p>
-                        </div>
-                      </div>
-                    </div>
+            <Card key={partida.id} className="border-0 shadow-lg hover:shadow-xl transition-shadow overflow-hidden">
+              <CardContent className="p-4 space-y-3">
+                {/* Header */}
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center gap-2">
+                    <Ticket className="w-5 h-5 text-slate-600" />
+                    <h3 className="font-semibold text-slate-900">{partida.nombre}</h3>
+                  </div>
+                  <span className={`text-xs font-semibold px-2 py-1 rounded ${
+                    partida.estado === 'en_curso' ? 'bg-green-100 text-green-700' :
+                    partida.estado === 'pendiente' ? 'bg-slate-200 text-slate-700' :
+                    'bg-gray-100 text-gray-600'
+                  }`}>
+                    {partida.estado === 'en_curso' ? 'Activa' : 
+                     partida.estado === 'pendiente' ? 'Inactiva' : 'Finalizada'}
+                  </span>
+                </div>
+
+                {/* Stats */}
+                <div className="space-y-2 text-sm border-b pb-3">
+                  <div className="flex items-center gap-2">
+                    <Ticket className="w-4 h-4 text-blue-500" />
+                    <span className="text-slate-700">{partida.cantidad_total_cartones} cartones</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => handleEdit(partida)}
-                      disabled={partida.estado === 'finalizada'}
-                    >
-                      <Edit className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => {
-                        if (confirm('¿Estás seguro de eliminar esta partida?')) {
-                          deleteMutation.mutate(partida.id);
-                        }
-                      }}
-                      disabled={partida.estado === 'en_curso'}
-                    >
-                      <Trash2 className="w-4 h-4 text-red-600" />
-                    </Button>
+                    <span className="text-lg">💰</span>
+                    <span className="text-slate-700">Premios$ {(partida.modos_juego?.reduce((sum, m) => sum + (m.premio || 0), 0) || 0).toLocaleString()}</span>
                   </div>
+                  {partida.duracion_maxima && (
+                    <div className="flex items-center gap-2">
+                      <Clock className="w-4 h-4 text-purple-500" />
+                      <span className="text-slate-700">Duración: {partida.duracion_maxima} minutos</span>
+                    </div>
+                  )}
+                  <div className="flex items-center gap-2">
+                    <Calendar className="w-4 h-4 text-amber-500" />
+                    <span className="text-slate-700">Inicio: {partida.fecha_inicio ? new Date(partida.fecha_inicio).toLocaleString('es-ES', { month: 'numeric', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'N/A'}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Trophy className="w-4 h-4 text-cyan-500" />
+                    <span className="text-slate-700">{partida.modos_juego?.length || 0} modos de juego</span>
+                  </div>
+                </div>
+
+                {/* Game Modes */}
+                {partida.modos_juego && partida.modos_juego.length > 0 && (
+                  <div className="space-y-2 border-b pb-3">
+                    {partida.modos_juego.map((modo, idx) => (
+                      <div key={idx} className="text-xs bg-slate-100 text-slate-700 px-2 py-1 rounded inline-block mr-2">
+                        {modo.nombre} (${modo.premio || 0})
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Combos */}
+                {partida.combos && partida.combos.length > 0 && (
+                  <div className="space-y-2 border-b pb-3">
+                    <p className="text-xs font-semibold text-slate-600">Combos disponibles:</p>
+                    <div className="space-y-1">
+                      {partida.combos.map((combo, idx) => (
+                        <div key={idx} className="flex justify-between text-xs bg-slate-50 p-2 rounded">
+                          <span className="text-slate-700">{combo.nombre}</span>
+                          <span className="text-slate-600">{combo.cantidad} cartones</span>
+                          <span className="font-semibold text-slate-700">$ {combo.precio}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Actions */}
+                <div className="flex gap-2 pt-2 flex-wrap">
+                  <Button size="sm" variant="outline" className="flex-1 h-8 text-xs" onClick={() => handleEdit(partida)} disabled={partida.estado === 'finalizada'}>
+                    <Edit className="w-3 h-3 mr-1" />
+                    Editar
+                  </Button>
+                  <Button size="sm" variant="outline" className="flex-1 h-8 text-xs text-red-600 hover:text-red-700" onClick={() => { if (confirm('¿Estás seguro?')) deleteMutation.mutate(partida.id); }} disabled={partida.estado === 'en_curso'}>
+                    <Trash2 className="w-3 h-3 mr-1" />
+                    Eliminar
+                  </Button>
+                  <Button size="sm" variant="outline" className="flex-1 h-8 text-xs">
+                    Panel
+                  </Button>
+                  <Button size="sm" className="flex-1 h-8 text-xs bg-green-600 hover:bg-green-700 text-white">
+                    <Power className="w-3 h-3 mr-1" />
+                    {partida.estado === 'en_curso' ? 'Activa' : 'Activar'}
+                  </Button>
                 </div>
               </CardContent>
             </Card>
