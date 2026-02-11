@@ -124,7 +124,12 @@ export default function MisCartones() {
 
   const cartonesActivos = Object.keys(cartonesHabilitados).filter(id => cartonesHabilitados[id]).length;
 
-
+  // Calcular totales
+  const totalCartones = todosLosCartones.length;
+  const totalCosto = todosLosCartones.reduce((sum, carton) => {
+    const partida = todasLasPartidas.find(p => p.id === carton.partida_id);
+    return sum + (partida?.precio_carton || 0);
+  }, 0);
 
   if (loadingCartones) {
     return (
