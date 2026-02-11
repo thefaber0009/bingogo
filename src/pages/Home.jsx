@@ -126,19 +126,19 @@ export default function Home() {
       {/* Partidas Grid */}
       <div>
         <h2 className="text-2xl font-bold text-slate-900 mb-4">Mis Salas</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 gap-4">
           {partidas.map((partida) => (
             <Card key={partida.id} className="border-0 shadow-lg hover:shadow-xl transition-shadow overflow-hidden">
-              <CardContent className="p-5 space-y-4">
+              <CardContent className="p-6 space-y-4">
                 {/* Header */}
                 <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-2">
-                    <Gem className="w-5 h-5 text-slate-600" />
-                    <h3 className="font-semibold text-slate-900">{partida.nombre}</h3>
+                  <div className="flex items-center gap-3">
+                    <span className="text-3xl">👻</span>
+                    <h3 className="font-bold text-lg text-slate-900">{partida.nombre}</h3>
                   </div>
-                  <span className={`text-xs font-semibold px-2 py-1 rounded ${
+                  <span className={`text-xs font-semibold px-3 py-1 rounded-full ${
                     partida.estado === 'en_curso' ? 'bg-green-100 text-green-700' :
-                    partida.estado === 'pendiente' ? 'bg-slate-200 text-slate-700' :
+                    partida.estado === 'pendiente' ? 'bg-slate-400 text-white' :
                     'bg-gray-100 text-gray-600'
                   }`}>
                     {partida.estado === 'en_curso' ? 'Activa' : 
@@ -149,16 +149,26 @@ export default function Home() {
                 {/* Stats */}
                 <div className="space-y-2 text-sm">
                   <div className="flex items-center gap-2">
-                    <span className="w-3 h-3 bg-blue-500 rounded-full"></span>
-                    <span className="text-slate-700">{partida.cantidad_total_cartones} cartones</span>
+                    <span className="text-lg">🔵</span>
+                    <span className="text-slate-900 font-medium">{partida.cantidad_total_cartones} cartones</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-lg">💰</span>
-                    <span className="text-slate-700">Premio$ {(partida.modos_juego?.reduce((sum, m) => sum + (m.premio || 0), 0) || 0).toLocaleString()}</span>
+                    <span className="text-lg">🏆</span>
+                    <span className="text-slate-900">Premio$ {(partida.modos_juego?.reduce((sum, m) => sum + (m.premio || 0), 0) || 0).toLocaleString()}</span>
+                  </div>
+                  {partida.duracion_maxima && (
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg">⏱️</span>
+                      <span className="text-slate-900">Duración: {partida.duracion_maxima} minutos</span>
+                    </div>
+                  )}
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg">📅</span>
+                    <span className="text-slate-900">Inicio: {partida.fecha_inicio ? new Date(partida.fecha_inicio).toLocaleString('es-ES', { month: 'numeric', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'N/A'}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-lg">🎮</span>
-                    <span className="text-slate-700">{partida.modos_juego?.length || 0} modos de juego</span>
+                    <span className="text-lg">💬</span>
+                    <span className="text-slate-900">{partida.modos_juego?.length || 0} modos de juego</span>
                   </div>
                 </div>
 
@@ -166,33 +176,66 @@ export default function Home() {
                 {partida.modos_juego && partida.modos_juego.length > 0 && (
                   <div className="flex flex-wrap gap-2">
                     {partida.modos_juego.map((modo, idx) => (
-                      <span key={idx} className="text-xs bg-slate-100 text-slate-700 px-2 py-1 rounded">
+                      <span key={idx} className="text-xs border border-blue-400 text-blue-700 px-3 py-1 rounded-full">
                         {modo.nombre} (${modo.premio || 0})
                       </span>
                     ))}
                   </div>
                 )}
 
+                {/* Combos Table */}
+                {partida.combos && partida.combos.length > 0 && (
+                  <div className="space-y-3 border-t pt-4">
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg">💚</span>
+                      <h4 className="font-bold text-slate-900">Combos disponibles:</h4>
+                    </div>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-sm">
+                        <thead>
+                          <tr className="border-b border-slate-200">
+                            <th className="text-left py-2 font-semibold text-slate-900">Combo</th>
+                            <th className="text-center py-2 font-semibold text-slate-900">Cartones</th>
+                            <th className="text-right py-2 font-semibold text-slate-900">Precio</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {partida.combos.map((combo, idx) => (
+                            <tr key={idx} className="border-b border-slate-100">
+                              <td className="py-2 text-blue-600 font-medium">{combo.nombre || combo.cantidad}</td>
+                              <td className="text-center text-slate-700">{combo.cantidad}</td>
+                              <td className="text-right text-slate-900 font-medium">$ {combo.precio?.toLocaleString()}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+
                 {/* Actions */}
-                <div className="flex gap-2 pt-2">
-                  <Button size="sm" variant="outline" className="flex-1 h-8 text-xs">
-                    <Edit2 className="w-3 h-3 mr-1" />
+                <div className="flex gap-2 pt-4 flex-wrap">
+                  <Button size="sm" variant="outline" className="h-9 text-xs px-3">
+                    <Edit2 className="w-4 h-4 mr-1" />
                     Editar
                   </Button>
-                  <Button size="sm" variant="outline" className="flex-1 h-8 text-xs text-red-600 hover:text-red-700">
-                    <Trash2 className="w-3 h-3 mr-1" />
+                  <Button size="sm" variant="outline" className="h-9 text-xs px-3 text-red-600 hover:text-red-700">
+                    <Trash2 className="w-4 h-4 mr-1" />
                     Eliminar
                   </Button>
-                  <Button size="sm" variant="outline" className="flex-1 h-8 text-xs">
+                  <Button size="sm" variant="outline" className="h-9 text-xs px-3">
                     Panel
+                  </Button>
+                  <Button size="sm" variant="outline" className="h-9 text-xs px-3">
+                    Iniciar
                   </Button>
                   <Button 
                     size="sm" 
-                    className={`flex-1 h-8 text-xs ${partida.estado === 'en_curso' ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'} text-white`}
+                    className={`h-9 text-xs px-3 ${partida.estado === 'en_curso' ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'} text-white`}
                     onClick={() => handleToggleActive(partida)}
                     disabled={toggleActiveMutation.isLoading || partida.estado === 'finalizada'}
                   >
-                    <Power className="w-3 h-3 mr-1" />
+                    <Power className="w-4 h-4 mr-1" />
                     {partida.estado === 'en_curso' ? 'Desactivar' : 'Activar'}
                   </Button>
                 </div>
