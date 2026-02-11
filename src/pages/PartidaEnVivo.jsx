@@ -10,7 +10,9 @@ import {
   StopCircle,
   Users,
   Ticket,
-  Circle
+  Circle,
+  Zap,
+  RotateCcw
 } from 'lucide-react';
 
 export default function PartidaEnVivo() {
