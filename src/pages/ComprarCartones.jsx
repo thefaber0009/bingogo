@@ -19,6 +19,8 @@ import { createPageUrl } from '../utils';
 export default function ComprarCartones() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const [cartonesSeleccionados, setCartonesSeleccionados] = useState([]);
+  const [filtroCartones, setFiltroCartones] = useState('todos');
   const urlParams = new URLSearchParams(window.location.search);
   const partidaId = urlParams.get('partida');
 
