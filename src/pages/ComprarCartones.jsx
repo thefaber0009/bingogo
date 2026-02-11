@@ -188,160 +188,213 @@ export default function ComprarCartones() {
     c <= (partida?.max_cartones_por_jugador || 4) - misCartones.length
   );
 
+  const cartonesParaMostrar = todosLosCartones.filter(c => {
+    if (filtroCartones === 'disponibles') return !c.comprado;
+    if (filtroCartones === 'seleccionados') return cartonesSeleccionados.includes(c.id);
+    if (filtroCartones === 'ocupados') return c.comprado;
+    return true;
+  });
+
+  const precioSeleccionados = cartonesSeleccionados.length * (partida?.precio_carton || 0);
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 to-purple-50 p-6">
-      <Card className="max-w-5xl w-full border-0 shadow-2xl">
-        <CardContent className="py-12 px-8">
-          {/* Header */}
-          <div className="text-center mb-8">
-            <Trophy className="w-20 h-20 text-indigo-600 mx-auto mb-4" />
-            <h1 className="text-4xl font-bold text-slate-900 mb-2">{partida?.nombre}</h1>
-            <p className="text-slate-600 text-lg">Compra tus cartones para participar</p>
-          </div>
-
-          {/* Información de la partida */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-            <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-4 text-center">
-              <DollarSign className="w-8 h-8 text-blue-600 mx-auto mb-2" />
-              <p className="text-xs text-slate-600 mb-1">Precio por Cartón</p>
-              <p className="text-2xl font-bold text-blue-700">${partida?.precio_carton?.toFixed(2)}</p>
+    <div className="min-h-screen bg-gradient-to-br from-blue-400 to-purple-500 p-6">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="bg-white rounded-2xl shadow-lg p-6 mb-6 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-bold ${partida?.estado === 'en_curso' ? 'bg-green-500' : 'bg-slate-400'}`}>
+              ◆
             </div>
-            <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-4 text-center">
-              <Ticket className="w-8 h-8 text-green-600 mx-auto mb-2" />
-              <p className="text-xs text-slate-600 mb-1">Disponibles</p>
-              <p className="text-2xl font-bold text-green-700">{cartonesDisponibles}</p>
-            </div>
-            <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-xl p-4 text-center">
-              <Ticket className="w-8 h-8 text-indigo-600 mx-auto mb-2" />
-              <p className="text-xs text-slate-600 mb-1">Mis Cartones</p>
-              <p className="text-2xl font-bold text-indigo-700">{misCartones.length}</p>
-            </div>
-            <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-4 text-center">
-              <Trophy className="w-8 h-8 text-purple-600 mx-auto mb-2" />
-              <p className="text-xs text-slate-600 mb-1">Modos de Juego</p>
-              <p className="text-2xl font-bold text-purple-700">{partida?.modos_juego?.length || 0}</p>
-            </div>
-          </div>
-
-          {/* Si ya tiene cartones */}
-          {misCartones.length > 0 && (
-            <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-6 text-center">
-              <CheckCircle className="w-8 h-8 text-green-600 mx-auto mb-2" />
-              <p className="text-green-700 font-semibold">Ya tienes {misCartones.length} cartón{misCartones.length !== 1 ? 'es' : ''} comprado{misCartones.length !== 1 ? 's' : ''}</p>
-              <Button 
-                onClick={entrarAPanelCartones}
-                className="mt-3 bg-green-600 hover:bg-green-700"
-                size="lg"
-              >
-                Ver Mis Cartones
-              </Button>
-            </div>
-          )}
-
-          {/* Combos Rápidos */}
-          {puedeComprar && combosRapidos.length > 0 && (
-            <div className="mb-8">
-              <p className="text-sm font-semibold text-slate-700 mb-4 text-center">⚡ Compra Rápida</p>
-              <div className="flex gap-3 justify-center flex-wrap">
-                {combosRapidos.map((cantidad) => (
-                  <Button
-                    key={cantidad}
-                    variant="outline"
-                    size="lg"
-                    onClick={() => comprarYEntrar(cantidad)}
-                    disabled={crearCartonMutation.isLoading}
-                    className="min-w-[120px] border-2 hover:border-indigo-500 hover:bg-indigo-50"
-                  >
-                    {cantidad} Cartones
-                  </Button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Opciones de compra */}
-          {puedeComprar && (
             <div>
-              <p className="text-sm font-semibold text-slate-700 mb-4 text-center">Selecciona tu opción</p>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                {/* Compra individual */}
-                <Card className="border-2 border-indigo-200 hover:border-indigo-400 transition-all cursor-pointer hover:shadow-xl"
-                      onClick={() => comprarYEntrar(1)}>
-                  <CardContent className="p-6 text-center">
-                    <Ticket className="w-12 h-12 text-indigo-600 mx-auto mb-3" />
-                    <p className="text-sm text-slate-600 mb-2">1 Cartón</p>
-                    <p className="text-4xl font-bold text-indigo-600 mb-4">
-                      ${partida?.precio_carton?.toFixed(2)}
-                    </p>
-                    <Button 
-                      disabled={crearCartonMutation.isLoading} 
-                      className="w-full"
-                    >
-                      Comprar e Ingresar
-                    </Button>
-                  </CardContent>
-                </Card>
+              <h1 className="text-2xl font-bold text-slate-900">{partida?.nombre}</h1>
+              <div className="flex items-center gap-3">
+                <span className={`text-xs font-bold px-2 py-1 rounded-full ${partida?.estado === 'en_curso' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-700'}`}>
+                  {partida?.estado === 'en_curso' ? '● Activa' : '● Inactiva'}
+                </span>
+                <span className="text-xs text-slate-500">ID: {partidaId}</span>
+              </div>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <Link to={createPageUrl('Lobby')}>
+              <Button variant="outline" className="border-slate-300">← Volver</Button>
+            </Link>
+            <Button className="bg-blue-600 hover:bg-blue-700 text-white">🔄 Actualizar</Button>
+          </div>
+        </div>
 
-                {/* Combos */}
-                {partida?.combos?.filter(combo => combo.cantidad <= (partida?.max_cartones_por_jugador || 4) - misCartones.length).map((combo, idx) => (
-                  <Card key={idx} className="border-2 border-amber-200 hover:border-amber-400 transition-all cursor-pointer bg-gradient-to-br from-amber-50 to-orange-50 hover:shadow-xl"
-                        onClick={() => comprarYEntrar(combo.cantidad)}>
-                    <CardContent className="p-6 text-center relative">
-                      <div className="absolute top-2 right-2 bg-red-500 text-white text-xs px-3 py-1 rounded-full font-bold">
-                        {combo.descuento}% OFF
-                      </div>
-                      <Tag className="w-12 h-12 text-amber-600 mx-auto mb-3" />
-                      <p className="text-sm text-slate-600 mb-2">{combo.cantidad} Cartones</p>
-                      <div className="mb-4">
-                        <p className="text-lg text-slate-400 line-through">
-                          ${(combo.cantidad * partida.precio_carton).toFixed(2)}
-                        </p>
-                        <p className="text-4xl font-bold text-green-600">
-                          ${combo.precio?.toFixed(2)}
-                        </p>
-                        <p className="text-xs text-green-600 font-semibold mt-1">
-                          Ahorras ${((combo.cantidad * partida.precio_carton) - combo.precio).toFixed(2)}
-                        </p>
-                      </div>
-                      <Button 
-                        disabled={crearCartonMutation.isLoading} 
-                        className="w-full bg-amber-600 hover:bg-amber-700"
-                      >
-                        Comprar e Ingresar
-                      </Button>
-                    </CardContent>
-                  </Card>
+        {/* Stats */}
+        <div className="bg-white rounded-2xl shadow-lg p-6 mb-6 grid grid-cols-4 gap-4">
+          <div className="text-center">
+            <p className="text-blue-600 font-bold text-lg">🎫</p>
+            <p className="text-2xl font-bold text-slate-900">{partida?.cantidad_total_cartones}</p>
+            <p className="text-xs text-slate-500">Cartones totales</p>
+          </div>
+          <div className="text-center">
+            <p className="text-green-600 font-bold text-lg">🏆</p>
+            <p className="text-2xl font-bold text-slate-900">${partida?.modos_juego?.reduce((sum, m) => sum + (m.premio || 0), 0).toFixed(2) || '0'}</p>
+            <p className="text-xs text-slate-500">Premio</p>
+          </div>
+          <div className="text-center">
+            <p className="text-purple-600 font-bold text-lg">👥</p>
+            <p className="text-2xl font-bold text-slate-900">{cartonesVendidos.length}</p>
+            <p className="text-xs text-slate-500">Jugadores</p>
+          </div>
+          <div className="text-center">
+            <p className="text-slate-600 font-bold text-lg">⏱️</p>
+            <p className="text-2xl font-bold text-slate-900">29:54</p>
+            <p className="text-xs text-slate-500">Tiempo</p>
+          </div>
+        </div>
+
+        {/* Modos de Juego */}
+        <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
+          <h3 className="font-bold text-slate-900 mb-4 flex items-center gap-2">🎮 Modos de Juego</h3>
+          <div className="flex flex-wrap gap-3">
+            {partida?.modos_juego?.map((modo, idx) => (
+              <span key={idx} className="bg-cyan-100 text-cyan-700 px-4 py-2 rounded-full text-sm font-semibold">
+                {modo.nombre} - ${modo.premio}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Contenido Principal */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Combos */}
+            <div className="bg-white rounded-2xl shadow-lg p-6">
+              <h3 className="font-bold text-slate-900 mb-4">💚 Combos Disponibles</h3>
+              <div className="space-y-3">
+                {partida?.combos?.map((combo, idx) => (
+                  <div key={idx} className="bg-purple-500 text-white rounded-lg p-4 flex items-center justify-between">
+                    <div>
+                      <p className="font-bold">{combo.cantidad > 5 ? `Combo ${idx > 0 ? 'Premium' : 'Básico'}` : 'Combo Básico'}</p>
+                      <p className="text-sm opacity-90">{combo.cantidad} cartones por ${combo.precio}</p>
+                      <p className="text-xs opacity-75">Precio por cartón: ${(combo.precio / combo.cantidad).toFixed(2)}</p>
+                    </div>
+                    <span className="bg-yellow-400 text-purple-900 font-bold px-3 py-1 rounded-lg text-sm">
+                      ¡Ahorra {combo.descuento}%
+                    </span>
+                  </div>
                 ))}
               </div>
             </div>
-          )}
 
-          {!puedeComprar && misCartones.length === 0 && (
-            <div className="text-center py-8">
-              <p className="text-slate-600 mb-4">No hay cartones disponibles</p>
+            {/* Filtro Cartones */}
+            <div className="bg-white rounded-2xl shadow-lg p-6">
+              <h3 className="font-bold text-slate-900 mb-4">▼ Filtrar Cartones</h3>
+              <div className="flex gap-2 flex-wrap">
+                {['todos', 'disponibles', 'seleccionados', 'ocupados'].map((filtro) => (
+                  <button
+                    key={filtro}
+                    onClick={() => setFiltroCartones(filtro)}
+                    className={`px-4 py-2 rounded-full font-bold text-sm capitalize transition-all ${
+                      filtroCartones === filtro
+                        ? 'bg-purple-600 text-white'
+                        : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                    }`}
+                  >
+                    {filtro}
+                  </button>
+                ))}
+              </div>
             </div>
-          )}
 
-          {/* Botones de acción */}
-          <div className="flex gap-4 justify-center">
-            <Link to={createPageUrl('Lobby')}>
-              <Button variant="outline" size="lg">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Volver al Lobby
-              </Button>
-            </Link>
-            {misCartones.length > 0 && (
-              <Button 
-                onClick={entrarAPanelCartones}
-                size="lg"
-                className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
-              >
-                Ver Mis Cartones
-              </Button>
-            )}
+            {/* Selector de Cartones */}
+            <div className="bg-white rounded-2xl shadow-lg p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-bold text-slate-900">⊞ Seleccionar Cartones</h3>
+                <div className="flex gap-2">
+                  <button className="text-xs font-bold px-3 py-1 bg-slate-100 rounded text-slate-700">
+                    ↔️ Atajos
+                  </button>
+                  <button className="text-xs font-bold px-3 py-1 bg-orange-400 text-white rounded">
+                    🔥 Limpiar
+                  </button>
+                </div>
+              </div>
+              <div className="grid grid-cols-4 gap-3">
+                {cartonesParaMostrar.slice(0, 8).map((carton, idx) => (
+                  <div
+                    key={carton.id}
+                    onClick={() => toggleCartonSeleccionado(carton.id)}
+                    className={`border-2 rounded-lg p-4 cursor-pointer transition-all ${
+                      cartonesSeleccionados.includes(carton.id)
+                        ? 'border-blue-500 bg-blue-50'
+                        : 'border-slate-300 hover:border-blue-400'
+                    }`}
+                  >
+                    <div className="bg-blue-50 rounded p-2 mb-2">
+                      <p className="font-bold text-blue-700 text-center text-sm">BINGO MANIA</p>
+                    </div>
+                    <p className="text-red-600 font-bold text-xs text-center mb-2">Cartón No. {idx + 1}</p>
+                    <div className="grid grid-cols-5 gap-1 text-center text-xs">
+                      {carton.numeros?.flat?.().slice(0, 25).map((num, i) => (
+                        <div key={i} className={`${num === 0 ? 'bg-yellow-200' : 'bg-slate-100'} rounded p-1 font-semibold`}>
+                          {num || '✓'}
+                        </div>
+                      ))}
+                    </div>
+                    {cartonesSeleccionados.includes(carton.id) && (
+                      <div className="mt-2 text-center">
+                        <input type="checkbox" checked className="accent-blue-600" />
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
-        </CardContent>
-      </Card>
+
+          {/* Sidebar Resumen */}
+          <div className="bg-white rounded-2xl shadow-lg p-6 h-fit sticky top-6">
+            <h3 className="font-bold text-slate-900 mb-6">🛒 Resumen de Compra</h3>
+            
+            <div className="bg-purple-600 text-white rounded-xl p-6 text-center mb-4">
+              <p className="text-4xl font-bold">{cartonesSeleccionados.length}</p>
+              <p className="text-sm opacity-90">Cartones seleccionados</p>
+            </div>
+
+            <Button className="w-full bg-orange-400 hover:bg-orange-500 text-white font-bold mb-4 py-3">
+              🧹 Limpiar Selección
+            </Button>
+
+            <div className="space-y-3 border-t border-slate-200 pt-4 mb-4">
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-700">Cartones individuales:</span>
+                <span className="font-bold">${(cartonesSeleccionados.length * (partida?.precio_carton || 0)).toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-700">Descuento combo:</span>
+                <span className="font-bold">$0</span>
+              </div>
+            </div>
+
+            <div className="bg-slate-100 rounded-lg p-3 mb-6 text-center">
+              <p className="text-xs text-slate-600 mb-1">Total a pagar:</p>
+              <p className="text-2xl font-bold text-slate-900">${precioSeleccionados.toFixed(2)}</p>
+            </div>
+
+            <Button 
+              onClick={handleComprarSeleccionados}
+              disabled={cartonesSeleccionados.length === 0 || crearCartonMutation.isLoading}
+              className={`w-full font-bold py-3 h-11 rounded-lg ${
+                cartonesSeleccionados.length > 0
+                  ? 'bg-green-600 hover:bg-green-700 text-white'
+                  : 'bg-slate-300 text-slate-600 cursor-not-allowed'
+              }`}
+            >
+              {cartonesSeleccionados.length > 0 ? `🛒 Comprar ${cartonesSeleccionados.length} Cartones` : 'Comprar'}
+            </Button>
+
+            <p className="text-xs text-slate-500 text-center mt-4">
+              🔔 Los cartones se reservan por 5 minutos
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
