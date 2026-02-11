@@ -67,8 +67,10 @@ export default function ComprarCartones() {
       [61, 75]   // O
     ];
 
-    // Crear matriz 5x5
+    // Crear matriz 5x5 con números únicos por columna
     const carton = [];
+    const numerosUsadosPorColumna = [[], [], [], [], []];
+
     for (let row = 0; row < 5; row++) {
       const fila = [];
       for (let col = 0; col < 5; col++) {
@@ -76,7 +78,13 @@ export default function ComprarCartones() {
           fila.push(0); // Centro libre
         } else {
           const [min, max] = rangos[col];
-          const num = Math.floor(Math.random() * (max - min + 1)) + min;
+          const numerosDisponibles = Array.from(
+            { length: max - min + 1 },
+            (_, i) => i + min
+          ).filter(n => !numerosUsadosPorColumna[col].includes(n));
+          
+          const num = numerosDisponibles[Math.floor(Math.random() * numerosDisponibles.length)];
+          numerosUsadosPorColumna[col].push(num);
           fila.push(num);
         }
       }
