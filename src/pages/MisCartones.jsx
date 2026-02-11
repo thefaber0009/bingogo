@@ -48,12 +48,61 @@ export default function MisCartones() {
   });
 
   const [cartonesHabilitados, setCartonesHabilitados] = useState({});
+  const [tiemposCarton, setTiemposCarton] = useState({});
+
+  useEffect(() => {
+    // Inicializar tiempos de los cartones (5 minutos = 300 segundos)
+    const nuevosTiempos = {};
+    cartones.forEach(carton => {
+      if (!tiemposCarton[carton.id]) {
+        nuevosTiempos[carton.id] = 300;
+      }
+    });
+    if (Object.keys(nuevosTiempos).length > 0) {
+      setTiemposCarton(prev => ({ ...prev, ...nuevosTiempos }));
+    }
+  }, [cartones]);
+
+  useEffect(() => {
+    const intervalo = setInterval(() => {
+      setTiemposCarton(prev => {
+        const nuevo = { ...prev };
+        Object.keys(nuevo).forEach(cartonId => {
+          if (nuevo[cartonId] > 0) {
+            nuevo[cartonId] -= 1;
+          }
+        });
+        return nuevo;
+      });
+    }, 1000);
+
+    return () => clearInterval(intervalo);
+  }, []);
 
   const toggleCarton = (cartonId) => {
     setCartonesHabilitados(prev => ({
       ...prev,
       [cartonId]: !prev[cartonId]
     }));
+  };
+
+  const deleteCartonMutation = useMutation({
+    mutationFn: (cartonId) => base44.entities.Carton.delete(cartonId),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['misCartones', partidaId, user?.id]);
+    },
+  });
+
+  const handleEliminarCarton = (cartonId) => {
+    if (confirm('¿Estás seguro de que deseas eliminar este cartón?')) {
+      deleteCartonMutation.mutate(cartonId);
+    }
+  };
+
+  const formatearTiempo = (segundos) => {
+    const min = Math.floor(segundos / 60);
+    const seg = segundos % 60;
+    return `${min}:${seg.toString().padStart(2, '0')}`;
   };
 
   const cartonesActivos = Object.keys(cartonesHabilitados).filter(id => cartonesHabilitados[id]).length;
