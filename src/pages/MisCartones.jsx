@@ -124,13 +124,7 @@ export default function MisCartones() {
 
   const cartonesActivos = Object.keys(cartonesHabilitados).filter(id => cartonesHabilitados[id]).length;
 
-  const entrarASala = () => {
-    if (cartonesActivos === 0) {
-      alert('Debes habilitar al menos un cartón para jugar');
-      return;
-    }
-    navigate(createPageUrl('SalaBingo') + `?partida=${partidaId}`);
-  };
+
 
   if (loadingCartones) {
     return (
