@@ -7,6 +7,7 @@ import { X, Play, Square, RotateCcw, Ticket } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import CartonBingo from '../bingo/CartonBingo';
+import BolasDisplay from '../bingo/BolasDisplay';
 
 export default function PanelAdminPartida({ partida, open, onOpenChange }) {
   const [numerosSorteados, setNumerosSorteados] = useState([]);
