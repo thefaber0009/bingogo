@@ -615,6 +615,13 @@ export default function MisCartones() {
           </Card>
         </div>
 
+        {/* Menú de Configuración */}
+        <ClientSettingsMenu 
+          open={dialogoConfiguracionAbierto} 
+          onOpenChange={setDialogoConfiguracionAbierto}
+          user={user}
+        />
+
         {/* Diálogo de Opciones de Pago */}
         <Dialog open={dialogoPagoAbierto} onOpenChange={setDialogoPagoAbierto}>
           <DialogContent className="max-w-md">
