@@ -189,6 +189,7 @@ export default function Lobby() {
                     {/* Stats */}
                     <div className="space-y-1.5 text-xs text-slate-700">
                       <p>🎫 Cartones: <span className="font-bold text-slate-900">{partida.cantidad_total_cartones}</span></p>
+                      <p>💰 Precio: <span className="font-bold text-slate-900">${partida.precio_carton?.toFixed(2) || '0.00'}</span></p>
                       <p>🏆 Premio: <span className="font-bold text-slate-900">${partida.modos_juego?.reduce((sum, m) => sum + (m.premio || 0), 0).toFixed(2) || '0.00'}</span></p>
                       <p>📅 Inicio: <span className="font-bold text-slate-900">{partida.fecha_inicio ? new Date(partida.fecha_inicio).toLocaleDateString('es-ES', {day: '2-digit', month: '2-digit', year: 'numeric'}) + ' ' + new Date(partida.fecha_inicio).toLocaleTimeString('es-ES', {hour: '2-digit', minute:'2-digit'}) : 'N/A'}</span></p>
                       <p>⏱️ Duración: <span className="font-bold text-slate-900">30 min</span></p>
