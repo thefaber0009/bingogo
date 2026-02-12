@@ -37,6 +37,12 @@ export default function Layout({ children, currentPageName }) {
     { name: 'Mi Perfil', icon: User, path: 'Perfil' },
   ];
 
+  // Páginas del cliente sin dashboard
+  const clientPages = ['Lobby', 'ComprarCartones', 'MisCartones', 'SalaBingo'];
+  if (clientPages.includes(currentPageName)) {
+    return <>{children}</>;
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
       {/* Sidebar */}
