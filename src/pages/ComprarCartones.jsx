@@ -282,7 +282,7 @@ export default function ComprarCartones() {
         </div>
 
         {/* Stats */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 mb-6 grid grid-cols-4 gap-4">
+        <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 mb-4 sm:mb-6 grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
           <div className="text-center">
             <p className="text-blue-600 font-bold text-lg">🎫</p>
             <p className="text-2xl font-bold text-slate-900">{partida?.cantidad_total_cartones}</p>
