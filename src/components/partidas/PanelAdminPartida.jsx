@@ -17,6 +17,7 @@ export default function PanelAdminPartida({ partida, open, onOpenChange }) {
   const [autoSort, setAutoSort] = useState(false);
   const [ultimoNumero, setUltimoNumero] = useState(null);
   const [mostrarCartones, setMostrarCartones] = useState(false);
+  const [expandido, setExpandido] = useState(false);
 
   const { data: cartonesSala = [] } = useQuery({
     queryKey: ['cartonesSala', partida?.id],
