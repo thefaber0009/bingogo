@@ -96,10 +96,67 @@ export default function ComprarCartones() {
 
   const { data: todosLosCartones = [] } = useQuery({
     queryKey: ['todosLosCartones', partidaId],
-    queryFn: () => base44.entities.Carton.filter({ 
-      partida_id: partidaId
-    }),
-    enabled: !!partidaId,
+    queryFn: async () => {
+      const cartones = await base44.entities.Carton.filter({ 
+        partida_id: partidaId
+      });
+
+      // Si no hay cartones pre-generados, crearlos
+      if (cartones.length === 0 && partida) {
+        const seededRandom = (seed) => {
+          let state = seed;
+          return () => {
+            state = (state * 1103515245 + 12345) & 0x7fffffff;
+            return state / 0x7fffffff;
+          };
+        };
+
+        const generarCartonDeterminista = (numeroCarton) => {
+          const random = seededRandom(numeroCarton * 9999);
+          const rangos = [[1, 15], [16, 30], [31, 45], [46, 60], [61, 75]];
+          const carton = [];
+          const numerosUsadosPorColumna = [[], [], [], [], []];
+          for (let row = 0; row < 5; row++) {
+            const fila = [];
+            for (let col = 0; col < 5; col++) {
+              if (col === 2 && row === 2) {
+                fila.push(0);
+              } else {
+                const [min, max] = rangos[col];
+                const numerosDisponibles = Array.from(
+                  { length: max - min + 1 },
+                  (_, i) => i + min
+                ).filter(n => !numerosUsadosPorColumna[col].includes(n));
+                const num = numerosDisponibles[Math.floor(random() * numerosDisponibles.length)];
+                numerosUsadosPorColumna[col].push(num);
+                fila.push(num);
+              }
+            }
+            carton.push(fila);
+          }
+          return carton;
+        };
+
+        const nuevosCartones = [];
+        for (let i = 1; i <= partida.cantidad_total_cartones; i++) {
+          nuevosCartones.push({
+            partida_id: partidaId,
+            numero_carton: i,
+            numeros: generarCartonDeterminista(i),
+            jugador_id: null,
+            estado: 'activo',
+            comprado: false,
+            pagado: false,
+            marcados: []
+          });
+        }
+        await base44.entities.Carton.bulkCreate(nuevosCartones);
+        return nuevosCartones;
+      }
+
+      return cartones;
+    },
+    enabled: !!partidaId && !!partida,
   });
 
   const cartonesVendidos = todosLosCartones.filter(c => c.comprado);
@@ -364,16 +421,6 @@ export default function ComprarCartones() {
             <div className="bg-white rounded-2xl shadow-lg p-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-bold text-slate-900">⊞ Seleccionar Cartones ({cartonesTodosConFiltro.length} disponibles)</h3>
-              </div>
-
-              {/* Debug info */}
-              <div className="mb-4 p-3 bg-yellow-50 rounded-lg text-xs">
-                <p>Debug: Total cartones en BD: {todosLosCartones.length}</p>
-                <p>Disponibles: {cartonesDisponiblesDB.length}</p>
-                <p>Vendidos: {cartonesVendidos.length}</p>
-              </div>
-              
-              <div className="flex items-center justify-between mb-4">
                 <div className="flex gap-2">
                   <button 
                     onClick={() => setCartonesSeleccionados([...cartonesSeleccionados, ...cartonesParaMostrar.map(c => c.id).filter(id => !cartonesSeleccionados.includes(id))])}
