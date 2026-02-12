@@ -560,7 +560,10 @@ export default function ComprarCartones() {
               <p className="text-sm opacity-90">Cartones seleccionados</p>
             </div>
 
-            <Button className="w-full bg-orange-400 hover:bg-orange-500 text-white font-bold mb-4 py-3">
+            <Button 
+              onClick={() => setCartonesSeleccionados([])}
+              className="w-full bg-orange-400 hover:bg-orange-500 text-white font-bold mb-4 py-3"
+            >
               🧹 Limpiar Selección
             </Button>
 
