@@ -259,25 +259,25 @@ export default function ComprarCartones() {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 mb-4 sm:mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <div className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-bold ${partida?.estado === 'en_curso' ? 'bg-green-500' : 'bg-slate-400'}`}>
+          <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
+            <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-white font-bold ${partida?.estado === 'en_curso' ? 'bg-green-500' : 'bg-slate-400'}`}>
               ◆
             </div>
-            <div>
-              <h1 className="text-2xl font-bold text-slate-900">{partida?.nombre}</h1>
-              <div className="flex items-center gap-3">
+            <div className="flex-1 sm:flex-none">
+              <h1 className="text-lg sm:text-2xl font-bold text-slate-900">{partida?.nombre}</h1>
+              <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
                 <span className={`text-xs font-bold px-2 py-1 rounded-full ${partida?.estado === 'en_curso' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-700'}`}>
                   {partida?.estado === 'en_curso' ? '● Activa' : '● Inactiva'}
                 </span>
-                <span className="text-xs text-slate-500">ID: {partidaId}</span>
+                <span className="text-xs text-slate-500 hidden sm:inline">ID: {partidaId}</span>
               </div>
             </div>
           </div>
-          <div className="flex items-center gap-3">
-            <Link to={createPageUrl('Lobby')}>
-              <Button variant="outline" className="border-slate-300">← Volver</Button>
+          <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
+            <Link to={createPageUrl('Lobby')} className="flex-1 sm:flex-none">
+              <Button variant="outline" className="border-slate-300 w-full sm:w-auto text-sm">← Volver</Button>
             </Link>
-            <Button className="bg-blue-600 hover:bg-blue-700 text-white">🔄 Actualizar</Button>
+            <Button className="bg-blue-600 hover:bg-blue-700 text-white flex-1 sm:flex-none text-sm">🔄</Button>
           </div>
         </div>
 
