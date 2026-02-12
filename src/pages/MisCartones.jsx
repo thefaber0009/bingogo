@@ -78,12 +78,12 @@ export default function MisCartones() {
   const [cartonesHabilitados, setCartonesHabilitados] = useState({});
   const [dialogoPagoAbierto, setDialogoPagoAbierto] = useState(false);
 
-  // Calcular tiempo restante basado en created_date del cartón
+  // Calcular tiempo restante basado en updated_date del cartón (fecha de compra)
   const calcularTiempoRestante = (carton) => {
     if (carton.pagado) return null;
-    const createdDate = new Date(carton.created_date);
+    const fechaCompra = new Date(carton.updated_date);
     const ahora = new Date();
-    const tiempoTranscurrido = Math.floor((ahora - createdDate) / 1000);
+    const tiempoTranscurrido = Math.floor((ahora - fechaCompra) / 1000);
     const tiempoRestante = Math.max(0, 300 - tiempoTranscurrido);
     return tiempoRestante;
   };
