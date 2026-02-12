@@ -54,12 +54,26 @@ export default function CartonBingo({ carton, marcados = [], onMarcar, autoMarca
     <Card className="border-2 border-slate-300 shadow-2xl overflow-hidden">
       <CardContent className="p-0">
         <div className="bg-gradient-to-r from-indigo-600 to-purple-600 p-4">
+          <div className="text-center mb-2">
+            {modoSeleccionado && (
+              <span className="text-white text-xs font-bold bg-black/20 px-2 py-1 rounded">
+                Modo: {modoSeleccionado}
+              </span>
+            )}
+          </div>
           <div className="grid grid-cols-5 gap-2">
-            {letras.map((letra) => (
-              <div key={letra} className="text-center">
-                <span className="text-white font-bold text-2xl">{letra}</span>
-              </div>
-            ))}
+            {letras.map((letra, idx) => {
+              const letrasAlMarcar = getLetrasAlMarcar(modoSeleccionado);
+              const debeMarcar = letrasAlMarcar.includes(letra);
+              return (
+                <div 
+                  key={letra} 
+                  className={`text-center rounded-lg py-1 ${debeMarcar ? 'bg-white/20' : ''}`}
+                >
+                  <span className="text-white font-bold text-2xl">{letra}</span>
+                </div>
+              );
+            })}
           </div>
         </div>
         
