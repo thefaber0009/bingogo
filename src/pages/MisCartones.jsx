@@ -199,35 +199,35 @@ export default function MisCartones() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3 sm:gap-4 flex-1">
               <Link to={createPageUrl('Lobby')}>
-                <Button variant="outline" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 bg-white/20 border-white/30 hover:bg-white/30">
+                <Button variant="outline" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 bg-white/20 border-white/30 hover:bg-white/30 flex-shrink-0">
                   <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                 </Button>
               </Link>
-              <div>
-                <h1 className="text-xl sm:text-2xl font-bold">¡Bienvenido, {user?.full_name || 'Jugador'}!</h1>
-                <p className="text-xs sm:text-sm text-white/90 flex items-center gap-2">
+              <div className="min-w-0">
+                <h1 className="text-xl sm:text-2xl font-bold truncate">¡Bienvenido, {user?.full_name || 'Jugador'}!</h1>
+                <p className="text-xs sm:text-sm text-white/90 flex items-center gap-2 flex-wrap">
                   <span>📅 {new Date().toLocaleDateString('es-ES', {weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'})}</span>
-                  <span>•</span>
+                  <span className="hidden sm:inline">•</span>
                   <span>🕐 {new Date().toLocaleTimeString('es-ES', {hour: '2-digit', minute: '2-digit'})}</span>
                 </p>
               </div>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 ml-auto flex-shrink-0">
               <Button 
                 onClick={() => setDialogoConfiguracionAbierto(true)}
                 variant="outline" 
                 size="icon" 
-                className="h-9 w-9 sm:h-10 sm:w-10 bg-white/20 border-white/30 hover:bg-white/30"
+                className="h-9 w-9 sm:h-10 sm:w-10 bg-white/20 border-white/30 hover:bg-white/30 flex-shrink-0"
               >
                 <Settings className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
               </Button>
-              <Link to={createPageUrl('Lobby')}>
-                <Button variant="outline" className="bg-white/20 border-white/30 hover:bg-white/30 text-white font-semibold">
+              <Link to={createPageUrl('Lobby')} className="flex-shrink-0">
+                <Button variant="outline" className="bg-white/20 border-white/30 hover:bg-white/30 text-white font-semibold text-xs sm:text-sm">
                   Salir
                 </Button>
               </Link>
             </div>
-            <div className="hidden sm:block text-right">
+            <div className="hidden lg:block text-right ml-auto flex-shrink-0">
               <p className="text-3xl font-bold">${saldoDisponible.toFixed(3)}</p>
               <p className="text-sm text-white/90">Total Gastado</p>
             </div>
