@@ -409,22 +409,14 @@ export default function MisCartones() {
                         </div>
                       )}
                       <CardHeader className="pb-2 sm:pb-3">
-                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mb-2">
-                          <CardTitle className="text-sm sm:text-base lg:text-lg flex items-center gap-2">
+                        <div className="flex items-start justify-between gap-2">
+                          <CardTitle className="text-sm sm:text-base lg:text-lg flex items-center gap-2 flex-1">
                             <Ticket className={`w-4 h-4 sm:w-5 sm:h-5 ${cartonesHabilitados[carton.id] && estaPagado ? 'text-green-600' : 'text-slate-400'}`} />
                             <span className="truncate">Cartón #{carton.numero_carton} - {carton.id.substring(0, 6).toUpperCase()}</span>
                           </CardTitle>
-                          <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-slate-100">
-                            <Clock className={`w-3 h-3 sm:w-4 sm:h-4 ${tiempoAgotado ? 'text-red-600' : 'text-slate-600'}`} />
-                            <span className={`text-xs sm:text-sm font-bold ${tiempoAgotado ? 'text-red-600' : 'text-slate-600'}`}>
-                              {formatearTiempo(tiempoRestante)}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="flex items-center justify-end">
                           <button
                             onClick={() => handleEliminarCarton(carton.id)}
-                            className="w-10 h-10 sm:w-12 sm:h-12 bg-red-100 hover:bg-red-200 text-red-600 rounded-full transition-all flex items-center justify-center relative z-20 pointer-events-auto shadow-md hover:shadow-lg"
+                            className="w-10 h-10 sm:w-12 sm:h-12 bg-red-100 hover:bg-red-200 text-red-600 rounded-full transition-all flex items-center justify-center relative z-20 pointer-events-auto shadow-md hover:shadow-lg flex-shrink-0"
                             title="Eliminar cartón"
                           >
                             <Trash2 className="w-5 h-5 sm:w-6 sm:h-6" />
