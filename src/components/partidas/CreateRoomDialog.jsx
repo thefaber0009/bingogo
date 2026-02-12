@@ -168,7 +168,9 @@ export default function CreateRoomDialog({ open, onOpenChange, onSubmit, isLoadi
         });
       }
       
-      await base44.entities.Carton.bulkCreate(cartones);
+      console.log('Creando', cartones.length, 'cartones para partida:', partidaCreada.id);
+      const cartonesCreados = await base44.entities.Carton.bulkCreate(cartones);
+      console.log('Cartones creados exitosamente:', cartonesCreados?.length || 'desconocido');
     }
     
     setFormData({

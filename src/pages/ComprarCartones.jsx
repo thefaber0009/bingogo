@@ -100,10 +100,13 @@ export default function ComprarCartones() {
       const cartones = await base44.entities.Carton.filter({ 
         partida_id: partidaId
       });
+      console.log('Cartones encontrados:', cartones.length, 'para partida:', partidaId);
+      console.log('Cartones:', cartones);
       return cartones;
     },
     enabled: !!partidaId,
     refetchInterval: 3000,
+    staleTime: 0,
   });
 
   const cartonesVendidos = todosLosCartones.filter(c => c.comprado);
