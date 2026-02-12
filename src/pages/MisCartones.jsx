@@ -81,15 +81,21 @@ export default function MisCartones() {
 
   useEffect(() => {
     // Inicializar tiempos de los cartones (5 minutos = 300 segundos)
-    const nuevosTiempos = {};
-    cartones.forEach(carton => {
-      if (!tiemposCarton[carton.id]) {
-        nuevosTiempos[carton.id] = 300;
-      }
+    setTiemposCarton(prev => {
+      const nuevo = { ...prev };
+      cartones.forEach(carton => {
+        if (!carton.pagado && !nuevo[carton.id]) {
+          nuevo[carton.id] = 300;
+        }
+      });
+      // Limpiar tiempos de cartones que ya no existen
+      Object.keys(nuevo).forEach(cartonId => {
+        if (!cartones.find(c => c.id === cartonId)) {
+          delete nuevo[cartonId];
+        }
+      });
+      return nuevo;
     });
-    if (Object.keys(nuevosTiempos).length > 0) {
-      setTiemposCarton(prev => ({ ...prev, ...nuevosTiempos }));
-    }
   }, [cartones]);
 
   useEffect(() => {
@@ -107,6 +113,7 @@ export default function MisCartones() {
             const carton = cartones.find(c => c.id === cartonId);
             if (carton && !carton.pagado) {
               deleteCartonMutation.mutate(cartonId);
+              delete nuevo[cartonId]; // Limpiar el tiempo del estado
             }
           }
         });
