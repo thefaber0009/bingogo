@@ -86,7 +86,18 @@ export default function PanelAdminPartida({ partida, open, onOpenChange }) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-6xl max-h-[95vh] overflow-y-auto bg-slate-100 p-0">
         <DialogHeader className="bg-white border-b p-4">
-          <DialogTitle className="text-2xl">Panel de Administración - {partida.nombre}</DialogTitle>
+          <div className="flex items-center justify-between">
+            <DialogTitle className="text-2xl">Panel de Administración - {partida.nombre}</DialogTitle>
+            <Button 
+              onClick={() => onOpenChange(false)}
+              variant="outline"
+              size="sm"
+              className="gap-2"
+            >
+              <X className="w-4 h-4" />
+              Salir
+            </Button>
+          </div>
         </DialogHeader>
 
         <div className="p-6 space-y-6">
