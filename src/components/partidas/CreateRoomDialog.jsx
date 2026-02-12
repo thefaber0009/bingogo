@@ -257,31 +257,7 @@ export default function CreateRoomDialog({ open, onOpenChange, onSubmit, isLoadi
             </div>
           </div>
 
-          {/* Límites (Opcionales) */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label>Máximo Cartones por Jugador (Opcional)</Label>
-              <Input
-                type="number"
-                placeholder="Ej: 4"
-                min="1"
-                value={formData.maxCartonesPorJugador}
-                onChange={(e) => setFormData({ ...formData, maxCartonesPorJugador: e.target.value })}
-              />
-              <p className="text-xs text-slate-500 mt-1">Límite de cartones que puede comprar cada jugador</p>
-            </div>
-            <div>
-              <Label>Máximo de Jugadores (Opcional)</Label>
-              <Input
-                type="number"
-                placeholder="Ej: 50"
-                min="1"
-                value={formData.maxJugadores}
-                onChange={(e) => setFormData({ ...formData, maxJugadores: e.target.value })}
-              />
-              <p className="text-xs text-slate-500 mt-1">Límite de jugadores en la sala</p>
-            </div>
-          </div>
+
 
           {/* Configuración Avanzada */}
           <div className="border rounded-lg">
