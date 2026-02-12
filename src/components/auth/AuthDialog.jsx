@@ -57,22 +57,22 @@ export default function AuthDialog({ open, onClose, onSuccess }) {
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md p-0 bg-transparent border-none shadow-none">
-        <div className="bg-gradient-to-br from-blue-400 to-purple-500 p-1 rounded-3xl">
-          <div className="bg-white rounded-3xl p-8">
+      <DialogContent className="max-w-[90vw] sm:max-w-md p-0 bg-transparent border-none shadow-none">
+        <div className="bg-gradient-to-br from-blue-400 to-purple-500 p-1 rounded-2xl sm:rounded-3xl">
+          <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-8">
             {/* Logo y Título */}
-            <div className="text-center mb-8">
-              <div className="flex items-center justify-center gap-3 mb-2">
-                <div className="w-12 h-12 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl flex items-center justify-center">
-                  <span className="text-white text-2xl">🎲</span>
+            <div className="text-center mb-6 sm:mb-8">
+              <div className="flex items-center justify-center gap-2 sm:gap-3 mb-2">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-lg sm:rounded-xl flex items-center justify-center">
+                  <span className="text-white text-xl sm:text-2xl">🎲</span>
                 </div>
-                <h1 className="text-2xl font-bold text-slate-900">Bingo Manía</h1>
+                <h1 className="text-xl sm:text-2xl font-bold text-slate-900">Bingo Manía</h1>
               </div>
-              {modo === 'login' ? null : <h2 className="text-xl font-semibold text-slate-700">Crear Cuenta</h2>}
+              {modo === 'login' ? null : <h2 className="text-lg sm:text-xl font-semibold text-slate-700">Crear Cuenta</h2>}
             </div>
 
             {modo === 'login' ? (
-              <form onSubmit={handleLogin} className="space-y-4">
+              <form onSubmit={handleLogin} className="space-y-3 sm:space-y-4">
                 {/* Correo Electrónico */}
                 <div>
                   <label className="flex items-center gap-2 text-sm font-semibold text-slate-700 mb-2">
@@ -146,7 +146,7 @@ export default function AuthDialog({ open, onClose, onSuccess }) {
                 </div>
               </form>
             ) : (
-              <form onSubmit={handleRegistro} className="space-y-4">
+              <form onSubmit={handleRegistro} className="space-y-3 sm:space-y-4">
                 {/* Nombres */}
                 <Input
                   type="text"

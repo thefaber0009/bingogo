@@ -179,30 +179,30 @@ export default function MisCartones() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
-      <div className="max-w-7xl mx-auto p-6 space-y-6">
+      <div className="max-w-7xl mx-auto p-3 sm:p-6 space-y-4 sm:space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
+          <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
             <Link to={createPageUrl('Lobby')}>
-              <Button variant="outline" size="icon">
-                <ArrowLeft className="w-5 h-5" />
+              <Button variant="outline" size="icon" className="h-9 w-9 sm:h-10 sm:w-10">
+                <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
               </Button>
             </Link>
             <div>
-              <h1 className="text-3xl font-bold text-slate-900">Mis Cartones</h1>
-              <p className="text-slate-600">Visualiza tus cartones por sala</p>
+              <h1 className="text-xl sm:text-3xl font-bold text-slate-900">Mis Cartones</h1>
+              <p className="text-xs sm:text-base text-slate-600">Visualiza tus cartones por sala</p>
             </div>
           </div>
         </div>
 
         {/* Información */}
         <Card className="border-0 shadow-xl bg-gradient-to-r from-blue-50 to-indigo-50">
-          <CardContent className="p-6">
-            <div className="flex items-start gap-3">
-              <Info className="w-6 h-6 text-indigo-600 mt-1" />
+          <CardContent className="p-4 sm:p-6">
+            <div className="flex items-start gap-2 sm:gap-3">
+              <Info className="w-5 h-5 sm:w-6 sm:h-6 text-indigo-600 mt-0.5 sm:mt-1 flex-shrink-0" />
               <div>
-                <p className="font-semibold text-slate-900 mb-1">Habilita tus cartones para jugar</p>
-                <p className="text-sm text-slate-600">
+                <p className="font-semibold text-sm sm:text-base text-slate-900 mb-1">Habilita tus cartones para jugar</p>
+                <p className="text-xs sm:text-sm text-slate-600">
                   Activa o desactiva los cartones que deseas usar en cada sala. 
                   Solo los cartones habilitados estarán activos durante el juego.
                 </p>
@@ -212,31 +212,31 @@ export default function MisCartones() {
         </Card>
 
         {/* Salas con Cartones */}
-        <div className="space-y-8">
+        <div className="space-y-6 sm:space-y-8">
           {partidas.map((part) => {
             const cartonesPartida = cartonAgrupadosPorPartida[part.id] || [];
             const cartonesHabilitadosPartida = cartonesPartida.filter(c => cartonesHabilitados[c.id]).length;
             
             return (
-              <div key={part.id} className="border-2 border-indigo-300 rounded-2xl p-6 bg-white shadow-lg">
+              <div key={part.id} className="border-2 border-indigo-300 rounded-xl sm:rounded-2xl p-4 sm:p-6 bg-white shadow-lg">
                 {/* Header de la Sala */}
-                <div className="mb-6 pb-4 border-b-2 border-indigo-200">
-                  <div className="flex items-center justify-between mb-3">
-                    <div>
-                      <h2 className="text-2xl font-bold text-slate-900">{part.nombre}</h2>
-                      <div className="flex items-center gap-3 mt-2">
-                        <span className={`text-xs font-bold px-3 py-1 rounded-full ${
+                <div className="mb-4 sm:mb-6 pb-3 sm:pb-4 border-b-2 border-indigo-200">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-3">
+                    <div className="w-full sm:w-auto">
+                      <h2 className="text-xl sm:text-2xl font-bold text-slate-900">{part.nombre}</h2>
+                      <div className="flex items-center gap-2 sm:gap-3 mt-2 flex-wrap">
+                        <span className={`text-xs font-bold px-2 sm:px-3 py-1 rounded-full ${
                           part.estado === 'en_curso' ? 'bg-green-100 text-green-700' :
                           part.estado === 'pendiente' ? 'bg-amber-100 text-amber-700' :
                           'bg-slate-100 text-slate-700'
                         }`}>
                           {part.estado === 'en_curso' ? '● Activa' : '● Inactiva'}
                         </span>
-                        <span className="text-xs text-slate-500">ID: {part.id}</span>
+                        <span className="text-xs text-slate-500 hidden sm:inline">ID: {part.id}</span>
                       </div>
                     </div>
-                    <Link to={createPageUrl('ComprarCartones') + `?partida=${part.id}`}>
-                      <Button variant="outline" size="sm">
+                    <Link to={createPageUrl('ComprarCartones') + `?partida=${part.id}`} className="w-full sm:w-auto">
+                      <Button variant="outline" size="sm" className="w-full sm:w-auto">
                         <ShoppingCart className="w-4 h-4 mr-2" />
                         Comprar más
                       </Button>
@@ -244,28 +244,28 @@ export default function MisCartones() {
                   </div>
 
                   {/* Datos de la Sala */}
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
                     <div>
                       <p className="text-xs text-slate-500">📅 Hora Inicio</p>
-                      <p className="font-semibold text-slate-900">{part.fecha_inicio ? new Date(part.fecha_inicio).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'N/A'}</p>
+                      <p className="font-semibold text-sm sm:text-base text-slate-900">{part.fecha_inicio ? new Date(part.fecha_inicio).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'N/A'}</p>
                     </div>
                     <div>
                       <p className="text-xs text-slate-500">🎫 Total</p>
-                      <p className="font-semibold text-slate-900">{cartonesPartida.length}</p>
+                      <p className="font-semibold text-sm sm:text-base text-slate-900">{cartonesPartida.length}</p>
                     </div>
                     <div>
                       <p className="text-xs text-slate-500">✓ Habilitados</p>
-                      <p className="font-semibold text-green-600">{cartonesHabilitadosPartida}</p>
+                      <p className="font-semibold text-sm sm:text-base text-green-600">{cartonesHabilitadosPartida}</p>
                     </div>
                     <div>
                       <p className="text-xs text-slate-500">💰 Precio</p>
-                      <p className="font-semibold text-slate-900">${part.precio_carton?.toFixed(2)}</p>
+                      <p className="font-semibold text-sm sm:text-base text-slate-900">${part.precio_carton?.toFixed(2)}</p>
                     </div>
                   </div>
                 </div>
 
                 {/* Cartones de la Sala */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   {cartonesPartida.sort((a, b) => a.numero_carton - b.numero_carton).map((carton) => {
                     const tiempoRestante = tiemposCarton[carton.id] || 300;
                     const tiempoAgotado = tiempoRestante === 0;
@@ -286,22 +286,22 @@ export default function MisCartones() {
                           </div>
                         </div>
                       )}
-                      <CardHeader className="pb-3">
-                        <div className="flex items-center justify-between mb-2">
-                          <CardTitle className="text-lg flex items-center gap-2">
-                            <Ticket className={`w-5 h-5 ${cartonesHabilitados[carton.id] && estaPagado ? 'text-green-600' : 'text-slate-400'}`} />
-                            Cartón #{carton.numero_carton} - {carton.id.substring(0, 8).toUpperCase()}
+                      <CardHeader className="pb-2 sm:pb-3">
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mb-2">
+                          <CardTitle className="text-sm sm:text-base lg:text-lg flex items-center gap-2">
+                            <Ticket className={`w-4 h-4 sm:w-5 sm:h-5 ${cartonesHabilitados[carton.id] && estaPagado ? 'text-green-600' : 'text-slate-400'}`} />
+                            <span className="truncate">Cartón #{carton.numero_carton} - {carton.id.substring(0, 6).toUpperCase()}</span>
                           </CardTitle>
                           <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-slate-100">
-                            <Clock className={`w-4 h-4 ${tiempoAgotado ? 'text-red-600' : 'text-slate-600'}`} />
-                            <span className={`text-sm font-bold ${tiempoAgotado ? 'text-red-600' : 'text-slate-600'}`}>
+                            <Clock className={`w-3 h-3 sm:w-4 sm:h-4 ${tiempoAgotado ? 'text-red-600' : 'text-slate-600'}`} />
+                            <span className={`text-xs sm:text-sm font-bold ${tiempoAgotado ? 'text-red-600' : 'text-slate-600'}`}>
                               {formatearTiempo(tiempoRestante)}
                             </span>
                           </div>
                         </div>
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
-                            <span className={`text-sm font-semibold ${cartonesHabilitados[carton.id] && estaPagado ? 'text-green-600' : 'text-slate-400'}`}>
+                            <span className={`text-xs sm:text-sm font-semibold ${cartonesHabilitados[carton.id] && estaPagado ? 'text-green-600' : 'text-slate-400'}`}>
                               {cartonesHabilitados[carton.id] && estaPagado ? 'Habilitado' : estaPagado ? 'Deshabilitado' : 'Bloqueado'}
                             </span>
                             <Switch
@@ -312,10 +312,10 @@ export default function MisCartones() {
                           </div>
                           <button
                             onClick={() => handleEliminarCarton(carton.id)}
-                            className="p-1.5 hover:bg-red-200 text-red-600 rounded-lg transition-colors relative z-20 pointer-events-auto"
+                            className="p-1 sm:p-1.5 hover:bg-red-200 text-red-600 rounded-lg transition-colors relative z-20 pointer-events-auto"
                             title="Eliminar cartón"
                           >
-                            <Trash2 className="w-4 h-4" />
+                            <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
                           </button>
                         </div>
                       </CardHeader>
@@ -334,13 +334,13 @@ export default function MisCartones() {
 
                 {/* Botón Entrar a Jugar por Sala */}
                 {cartonesHabilitadosPartida > 0 && (
-                  <div className="mt-6 flex justify-center">
+                  <div className="mt-4 sm:mt-6 flex justify-center">
                     <Button 
                       onClick={() => navigate(createPageUrl('SalaBingo') + `?partida=${part.id}`)}
-                      className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 px-8 py-3"
+                      className="w-full sm:w-auto bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 px-6 sm:px-8 py-3 text-sm sm:text-base"
                     >
-                      <Play className="w-5 h-5 mr-2" />
-                      Entrar a {part.nombre} ({cartonesHabilitadosPartida} cartones)
+                      <Play className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                      Entrar a {part.nombre} ({cartonesHabilitadosPartida})
                     </Button>
                   </div>
                 )}
@@ -350,25 +350,25 @@ export default function MisCartones() {
         </div>
 
         {/* Resumen de Compra */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
           <div className="lg:col-span-2">
             <Card className="border-0 shadow-xl">
-              <CardHeader className="pb-4">
-                <CardTitle className="flex items-center gap-2">
-                  <Clock className="w-5 h-5 text-indigo-600" />
+              <CardHeader className="pb-3 sm:pb-4">
+                <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                  <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-indigo-600" />
                   Historial de Compras
                 </CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
+              <CardContent className="px-2 sm:px-6">
+                <div className="overflow-x-auto -mx-2 sm:mx-0">
+                  <table className="w-full text-xs sm:text-sm">
                     <thead>
                       <tr className="border-b border-slate-200">
-                        <th className="text-left py-3 px-4 font-semibold text-slate-600">Fecha</th>
-                        <th className="text-left py-3 px-4 font-semibold text-slate-600">Sala</th>
-                        <th className="text-left py-3 px-4 font-semibold text-slate-600">Cantidad</th>
-                        <th className="text-left py-3 px-4 font-semibold text-slate-600">Total</th>
-                        <th className="text-left py-3 px-4 font-semibold text-slate-600">Estado</th>
+                        <th className="text-left py-2 sm:py-3 px-2 sm:px-4 font-semibold text-slate-600">Fecha</th>
+                        <th className="text-left py-2 sm:py-3 px-2 sm:px-4 font-semibold text-slate-600">Sala</th>
+                        <th className="text-left py-2 sm:py-3 px-2 sm:px-4 font-semibold text-slate-600 hidden sm:table-cell">Cantidad</th>
+                        <th className="text-left py-2 sm:py-3 px-2 sm:px-4 font-semibold text-slate-600">Total</th>
+                        <th className="text-left py-2 sm:py-3 px-2 sm:px-4 font-semibold text-slate-600 hidden lg:table-cell">Estado</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -379,16 +379,16 @@ export default function MisCartones() {
                         
                         return (
                           <tr key={part.id} className="border-b border-slate-100 hover:bg-slate-50">
-                            <td className="py-3 px-4 text-slate-700">{fecha}</td>
-                            <td className="py-3 px-4">
-                              <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-semibold">
+                            <td className="py-2 sm:py-3 px-2 sm:px-4 text-slate-700">{fecha}</td>
+                            <td className="py-2 sm:py-3 px-2 sm:px-4">
+                              <span className="bg-blue-100 text-blue-700 px-2 sm:px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap">
                                 🎫 {part.nombre}
                               </span>
                             </td>
-                            <td className="py-3 px-4 font-semibold text-slate-900">{cartonesPartida.length} cartones</td>
-                            <td className="py-3 px-4 font-semibold text-slate-900">${subtotal.toFixed(2)}</td>
-                            <td className="py-3 px-4">
-                              <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-semibold">
+                            <td className="py-2 sm:py-3 px-2 sm:px-4 font-semibold text-slate-900 hidden sm:table-cell">{cartonesPartida.length} cartones</td>
+                            <td className="py-2 sm:py-3 px-2 sm:px-4 font-semibold text-slate-900">${subtotal.toFixed(2)}</td>
+                            <td className="py-2 sm:py-3 px-2 sm:px-4 hidden lg:table-cell">
+                              <span className="bg-green-100 text-green-700 px-2 sm:px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap">
                                 ✓ COMPLETADO
                               </span>
                             </td>
@@ -403,48 +403,48 @@ export default function MisCartones() {
           </div>
 
           {/* Resumen de Pago */}
-          <Card className="border-0 shadow-xl h-fit">
-            <CardHeader className="pb-4">
-              <CardTitle className="flex items-center gap-2">
-                <ShoppingCart className="w-5 h-5 text-indigo-600" />
+          <Card className="border-0 shadow-xl h-fit lg:sticky lg:top-6">
+            <CardHeader className="pb-3 sm:pb-4">
+              <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5 text-indigo-600" />
                 Resumen de Compra
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg p-4 text-center mb-4">
-                <p className="text-sm text-slate-600 mb-1">Total Cartones</p>
-                <p className="text-3xl font-bold text-indigo-600">{totalCartones}</p>
+            <CardContent className="space-y-3 sm:space-y-4">
+              <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg p-3 sm:p-4 text-center mb-3 sm:mb-4">
+                <p className="text-xs sm:text-sm text-slate-600 mb-1">Total Cartones</p>
+                <p className="text-2xl sm:text-3xl font-bold text-indigo-600">{totalCartones}</p>
               </div>
 
-              <div className="space-y-2 border-t border-slate-200 pt-4">
-                <div className="flex justify-between text-sm">
+              <div className="space-y-2 border-t border-slate-200 pt-3 sm:pt-4">
+                <div className="flex justify-between text-xs sm:text-sm">
                   <span className="text-slate-600">Cartones:</span>
                   <span className="font-semibold text-slate-900">{totalCartones}</span>
                 </div>
-                <div className="flex justify-between text-sm">
+                <div className="flex justify-between text-xs sm:text-sm">
                   <span className="text-slate-600">Combos:</span>
                   <span className="font-semibold text-slate-900">0</span>
                 </div>
               </div>
 
-              <div className="bg-slate-100 rounded-lg p-3 space-y-2">
-                <div className="flex justify-between text-sm">
+              <div className="bg-slate-100 rounded-lg p-2.5 sm:p-3 space-y-2">
+                <div className="flex justify-between text-xs sm:text-sm">
                   <span className="text-slate-600">Subtotal:</span>
                   <span className="font-semibold text-slate-900">${totalCosto.toFixed(2)}</span>
                 </div>
-                <div className="flex justify-between text-sm">
+                <div className="flex justify-between text-xs sm:text-sm">
                   <span className="text-slate-600">Descuento:</span>
                   <span className="font-semibold text-slate-900">$0</span>
                 </div>
                 <div className="border-t border-slate-300 pt-2 flex justify-between">
-                  <span className="font-bold text-slate-900">Total:</span>
-                  <span className="font-bold text-lg text-indigo-600">${totalCosto.toFixed(2)}</span>
+                  <span className="font-bold text-sm sm:text-base text-slate-900">Total:</span>
+                  <span className="font-bold text-base sm:text-lg text-indigo-600">${totalCosto.toFixed(2)}</span>
                 </div>
               </div>
 
               <Button 
                 onClick={() => setDialogoPagoAbierto(true)}
-                className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 h-11 rounded-lg mt-4"
+                className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2.5 sm:py-3 h-auto rounded-lg mt-3 sm:mt-4 text-sm sm:text-base"
               >
                 💳 Pagar ${totalCosto.toFixed(2)}
               </Button>
