@@ -275,7 +275,7 @@ export default function PanelAdminPartida({ partida, open, onOpenChange }) {
                         <div className="flex items-start gap-1 mb-1">
                           <span className="text-xs font-bold text-indigo-600">#{carton.numero_carton}</span>
                           {carton.comprado && (
-                            <span className="bg-green-500 text-white px-2 py-0.5 rounded text-xs text-xs">Vendido</span>
+                            <span className="bg-green-500 text-white px-2 py-0.5 rounded text-xs">Vendido</span>
                           )}
                         </div>
                         <div className="scale-75 origin-top">
