@@ -539,7 +539,7 @@ export default function ComprarCartones() {
           </div>
 
           {/* Sidebar Resumen */}
-          <div className="bg-white rounded-2xl shadow-lg p-6 h-fit sticky top-6">
+          <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 h-fit lg:sticky lg:top-6">
             <h3 className="font-bold text-slate-900 mb-6">🛒 Resumen de Compra</h3>
             
             <div className="bg-purple-600 text-white rounded-xl p-6 text-center mb-4">
