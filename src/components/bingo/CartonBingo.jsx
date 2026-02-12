@@ -37,8 +37,9 @@ export default function CartonBingo({ carton, marcados = [], onMarcar, autoMarca
 
   const isNumeroMarcado = (numero, fila, columna) => {
     if (numero === 0) return true;
-    if (!modoSeleccionado) return false;
-    return marcados.includes(numero) && perteneceModo(fila, columna);
+    if (!marcados.includes(numero)) return false;
+    if (!modoSeleccionado) return true;
+    return perteneceModo(fila, columna);
   };
 
   const handleClickCelda = (numero) => {
