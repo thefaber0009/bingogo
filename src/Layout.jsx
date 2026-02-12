@@ -52,7 +52,7 @@ export default function Layout({ children, currentPageName }) {
               <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69811affc30258284f5a5643/a24656e95_image.png" alt="BingoGo Logo" className="w-12 h-12 rounded-2xl" />
               <div>
                 <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                  BingoGo
+                  BingoManía
                 </h1>
                 <p className="text-xs text-slate-500 font-medium">Panel Administrativo</p>
               </div>
