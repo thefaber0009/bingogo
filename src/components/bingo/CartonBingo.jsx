@@ -65,37 +65,42 @@ export default function CartonBingo({ carton, marcados = [], onMarcar, autoMarca
       </div>
 
       {/* Grid de números estilo bingo */}
-      <div className="px-2.5 pb-2 pt-1.5 bg-white space-y-0.5">
+      <div className="relative px-2.5 pb-2 pt-1.5 bg-white space-y-0.5">
         {numeros.length > 0 ? (
-          numeros.map((fila, i) => {
-            const arrayFila = Array.isArray(fila) ? fila : [];
-            return (
-              <div key={i} className="grid grid-cols-5 gap-0.5">
-                {arrayFila.map((numero, j) => {
-                const esCentro = i === 2 && j === 2;
-                const marcado = isNumeroMarcado(numero, j);
+          <>
+            {numeros.map((fila, i) => {
+              const arrayFila = Array.isArray(fila) ? fila : [];
+              return (
+                <div key={i} className="grid grid-cols-5 gap-0.5">
+                  {arrayFila.map((numero, j) => {
+                    const esCentro = i === 2 && j === 2;
+                    const perteneceAlModo = perteneceModo(i, j);
+                    const marcado = isNumeroMarcado(numero, i, j);
 
-                return (
-                <div
-                key={`${i}-${j}`}
-                className={cn(
-                "aspect-square flex items-center justify-center font-bold transition-all text-sm rounded",
-                esCentro && "bg-white",
-                !esCentro && "bg-yellow-100 text-slate-900 border-2 border-dashed border-yellow-300",
-                !esCentro && marcado && "border-blue-500"
-                )}
-                >
-                {esCentro ? (
-                <div className="w-4 h-4 bg-cyan-400 rounded-full"></div>
-                ) : (
-                numero
-                )}
+                    return (
+                      <div
+                        key={`${i}-${j}`}
+                        className={cn(
+                          "aspect-square flex items-center justify-center font-bold transition-all text-sm rounded",
+                          esCentro && "bg-white",
+                          !esCentro && !modoSeleccionado && "bg-gray-100 text-gray-600 border-2 border-dashed border-gray-300",
+                          !esCentro && modoSeleccionado && perteneceAlModo && "bg-yellow-100 text-slate-900 border-2 border-dashed border-yellow-300",
+                          !esCentro && modoSeleccionado && !perteneceAlModo && "bg-gray-100 text-gray-600 border-2 border-dashed border-gray-300",
+                          !esCentro && marcado && "border-blue-500"
+                        )}
+                      >
+                        {esCentro ? (
+                          <div className="w-4 h-4 bg-cyan-400 rounded-full"></div>
+                        ) : (
+                          numero
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
-                );
-                })}
-              </div>
-            );
-          })
+              );
+            })}
+          </>
         ) : null}
       </div>
 
