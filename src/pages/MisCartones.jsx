@@ -97,6 +97,7 @@ export default function MisCartones() {
   const cartones = partidaId ? todosLosCartones.filter(c => c.partida_id === partidaId) : todosLosCartones;
 
   const [cartonesHabilitados, setCartonesHabilitados] = useState({});
+  const [modoSeleccionadoPorPartida, setModoSeleccionadoPorPartida] = useState({});
   const [dialogoPagoAbierto, setDialogoPagoAbierto] = useState(false);
   const [dialogoConfiguracionAbierto, setDialogoConfiguracionAbierto] = useState(false);
   const [tiempoActual, setTiempoActual] = useState(Date.now());
