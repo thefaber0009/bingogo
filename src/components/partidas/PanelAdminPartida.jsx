@@ -273,10 +273,9 @@ export default function PanelAdminPartida({ partida, open, onOpenChange }) {
                     .map((carton) => (
                       <div key={carton.id} className="border-0 rounded-lg p-0">
                         <div className="flex items-start gap-1 mb-1">
-                        <div className="text-xs font-bold text-center mb-1 flex items-center justify-between">
-                          <span className="text-indigo-600">#{carton.numero_carton}</span>
+                          <span className="text-xs font-bold text-indigo-600">#{carton.numero_carton}</span>
                           {carton.comprado && (
-                            <span className="bg-green-500 text-white px-2 py-0.5 rounded text-xs">Vendido</span>
+                            <span className="bg-green-500 text-white px-2 py-0.5 rounded text-xs text-xs">Vendido</span>
                           )}
                         </div>
                         <div className="scale-75 origin-top">
