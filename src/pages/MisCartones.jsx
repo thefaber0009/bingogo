@@ -153,7 +153,8 @@ export default function MisCartones() {
 
   // Calcular totales
   const totalCartones = todosLosCartones.length;
-  const totalCosto = todosLosCartones.reduce((sum, carton) => {
+  const cartonesPendientes = todosLosCartones.filter(c => !c.pagado);
+  const totalCosto = cartonesPendientes.reduce((sum, carton) => {
     const partida = todasLasPartidas.find(p => p.id === carton.partida_id);
     return sum + (partida?.precio_carton || 0);
   }, 0);
@@ -557,14 +558,14 @@ export default function MisCartones() {
             </CardHeader>
             <CardContent className="space-y-3 sm:space-y-4">
               <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg p-3 sm:p-4 text-center mb-3 sm:mb-4">
-                <p className="text-xs sm:text-sm text-slate-600 mb-1">Total Cartones</p>
-                <p className="text-2xl sm:text-3xl font-bold text-indigo-600">{totalCartones}</p>
+                <p className="text-xs sm:text-sm text-slate-600 mb-1">Cartones Pendientes</p>
+                <p className="text-2xl sm:text-3xl font-bold text-indigo-600">{cartonesPendientes.length}</p>
               </div>
 
               <div className="space-y-2 border-t border-slate-200 pt-3 sm:pt-4">
                 <div className="flex justify-between text-xs sm:text-sm">
                   <span className="text-slate-600">Cartones:</span>
-                  <span className="font-semibold text-slate-900">{totalCartones}</span>
+                  <span className="font-semibold text-slate-900">{cartonesPendientes.length}</span>
                 </div>
                 <div className="flex justify-between text-xs sm:text-sm">
                   <span className="text-slate-600">Combos:</span>
@@ -589,7 +590,12 @@ export default function MisCartones() {
 
               <Button 
                 onClick={() => setDialogoPagoAbierto(true)}
-                className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2.5 sm:py-3 h-auto rounded-lg mt-3 sm:mt-4 text-sm sm:text-base"
+                disabled={cartonesPendientes.length === 0}
+                className={`w-full font-bold py-2.5 sm:py-3 h-auto rounded-lg mt-3 sm:mt-4 text-sm sm:text-base ${
+                  cartonesPendientes.length > 0 
+                    ? 'bg-green-600 hover:bg-green-700 text-white' 
+                    : 'bg-slate-300 text-slate-500 cursor-not-allowed'
+                }`}
               >
                 💳 Pagar ${totalCosto.toFixed(2)}
               </Button>
@@ -613,8 +619,8 @@ export default function MisCartones() {
             <div className="space-y-3">
               <button
                 onClick={async () => {
-                  // Marcar todos los cartones como pagados
-                  const promesas = todosLosCartones.map(carton => 
+                  // Marcar solo los cartones pendientes como pagados
+                  const promesas = cartonesPendientes.map(carton => 
                     base44.entities.Carton.update(carton.id, { pagado: true })
                   );
                   await Promise.all(promesas);
@@ -638,8 +644,8 @@ export default function MisCartones() {
 
               <button
                 onClick={async () => {
-                  // Marcar todos los cartones como pagados
-                  const promesas = todosLosCartones.map(carton => 
+                  // Marcar solo los cartones pendientes como pagados
+                  const promesas = cartonesPendientes.map(carton => 
                     base44.entities.Carton.update(carton.id, { pagado: true })
                   );
                   await Promise.all(promesas);
