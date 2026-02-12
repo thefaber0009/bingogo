@@ -405,39 +405,42 @@ export default function ComprarCartones() {
                   <p className="text-slate-600">No hay cartones disponibles</p>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                   {cartonesParaMostrar.map((carton) => {
                   return (
                     <div
                       key={carton.id}
                       onClick={() => toggleCartonSeleccionado(carton.id)}
-                      className={`relative border-2 rounded-lg p-3 cursor-pointer transition-all ${
+                      className={`relative border-2 rounded-xl p-4 cursor-pointer transition-all ${
                         cartonesSeleccionados.includes(carton.id)
-                          ? 'border-blue-600 bg-blue-50 shadow-md'
-                          : 'border-slate-300 hover:border-blue-400'
+                          ? 'border-blue-600 bg-blue-50 shadow-lg'
+                          : 'border-slate-300 hover:border-blue-400 bg-white'
                       }`}
                     >
                       {cartonesSeleccionados.includes(carton.id) && (
-                        <div className="absolute -top-3 -right-3 w-7 h-7 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold shadow-lg">
+                        <div className="absolute -top-2 -right-2 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold shadow-lg">
                           ✓
                         </div>
                       )}
-                      <div className="bg-blue-100 rounded p-1 mb-2">
-                        <p className="font-bold text-blue-700 text-center text-xs">BINGO MANÍA</p>
+                      <div className="bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg p-2 mb-3">
+                        <p className="font-bold text-white text-center text-sm">BINGO MANÍA</p>
                       </div>
-                      <p className="text-red-600 font-bold text-xs text-center mb-2">Cartón No. {carton.numeroVirtual}</p>
-                      <div className="grid grid-cols-5 gap-0.5 text-center text-xs mb-1">
-                        <div className="font-bold text-slate-600">B</div>
-                        <div className="font-bold text-slate-600">I</div>
-                        <div className="font-bold text-slate-600">N</div>
-                        <div className="font-bold text-slate-600">G</div>
-                        <div className="font-bold text-slate-600">O</div>
+                      <p className="text-red-600 font-bold text-sm text-center mb-3">Cartón No. {carton.numeroVirtual}</p>
+                      <div className="grid grid-cols-5 gap-1 text-center text-xs mb-2">
+                        <div className="font-bold text-blue-600 py-1">B</div>
+                        <div className="font-bold text-blue-600 py-1">I</div>
+                        <div className="font-bold text-blue-600 py-1">N</div>
+                        <div className="font-bold text-blue-600 py-1">G</div>
+                        <div className="font-bold text-blue-600 py-1">O</div>
                       </div>
-                      <div className="grid grid-cols-5 gap-0.5 text-center text-xs">
+                      <div className="grid grid-cols-5 gap-1">
                         {carton.numeros?.map((fila, row) =>
                           fila.map((num, col) => (
-                            <div key={`${row}-${col}`} className={`${num === 0 ? 'bg-yellow-300' : 'bg-slate-100'} rounded p-0.5 font-semibold text-slate-700 text-xs`}>
-                              {num === 0 ? '✓' : num}
+                            <div 
+                              key={`${row}-${col}`} 
+                              className={`aspect-square flex items-center justify-center ${num === 0 ? 'bg-yellow-400' : 'bg-slate-100'} rounded-md font-bold text-slate-700 text-sm shadow-sm`}
+                            >
+                              {num === 0 ? '★' : num}
                             </div>
                           ))
                         )}
