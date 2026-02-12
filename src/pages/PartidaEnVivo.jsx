@@ -92,26 +92,38 @@ export default function PartidaEnVivo() {
             <CardContent className="p-8">
               <div className="space-y-6">
                 <div className="flex flex-wrap items-center gap-4">
-                  <div className="flex-1 min-w-48">
-                    <label className="text-xs font-semibold text-slate-600 block mb-2">Modo automático</label>
-                    <div className="flex items-center gap-3">
-                      <span className="text-sm text-slate-700 font-medium">Intervalo:</span>
-                      <select className="border border-slate-300 rounded px-3 py-2 text-sm">
-                        <option>3 segundos</option>
-                        <option>5 segundos</option>
-                        <option>10 segundos</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div className="flex items-end gap-2 flex-wrap">
-                    <Button className="bg-blue-600 hover:bg-blue-700 h-10">
-                      Activar
-                    </Button>
-                    <Button className="bg-red-600 hover:bg-red-700 h-10">
-                      Desactivar
-                    </Button>
-                  </div>
-                </div>
+                   <div className="flex-1 min-w-48">
+                     <label className="text-xs font-semibold text-slate-600 block mb-2">Modo automático</label>
+                     <div className="flex items-center gap-3">
+                       <span className="text-sm text-slate-700 font-medium">Intervalo:</span>
+                       <select 
+                         value={tiempoSorteo} 
+                         onChange={(e) => setTiempoSorteo(parseInt(e.target.value))}
+                         className="border border-slate-300 rounded px-3 py-2 text-sm"
+                       >
+                         <option value={3}>3 segundos</option>
+                         <option value={5}>5 segundos</option>
+                         <option value={10}>10 segundos</option>
+                       </select>
+                     </div>
+                   </div>
+                   <div className="flex items-end gap-2 flex-wrap">
+                     <Button 
+                       onClick={() => setAutoSort(true)}
+                       disabled={autoSort || !selectedPartidaId}
+                       className="bg-blue-600 hover:bg-blue-700 h-10"
+                     >
+                       Activar
+                     </Button>
+                     <Button 
+                       onClick={() => setAutoSort(false)}
+                       disabled={!autoSort}
+                       className="bg-red-600 hover:bg-red-700 h-10"
+                     >
+                       Desactivar
+                     </Button>
+                   </div>
+                 </div>
 
                 <div className="flex flex-wrap items-center gap-3 pt-4 border-t border-slate-200">
                   <Button className="bg-yellow-500 hover:bg-yellow-600 text-slate-900 font-bold h-10">
