@@ -448,80 +448,90 @@ export default function ComprarCartones() {
                 </div>
               )}
 
-              {/* Paginación Mejorada */}
+              {/* Paginación Responsiva */}
               {totalPaginas > 1 && (
-                <div className="flex items-center justify-center gap-3 mt-8 pt-6 border-t border-slate-200">
-                  <button
-                    onClick={() => setPaginaActual(1)}
-                    disabled={paginaActual === 1}
-                    className={`px-3 py-2 rounded-lg font-bold text-sm transition-all ${
-                      paginaActual === 1
-                        ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
-                        : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
-                    }`}
-                  >
-                    ⟨⟨
-                  </button>
-                  <button
-                    onClick={() => setPaginaActual(Math.max(1, paginaActual - 1))}
-                    disabled={paginaActual === 1}
-                    className={`px-3 py-2 rounded-lg font-bold text-sm transition-all ${
-                      paginaActual === 1
-                        ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
-                        : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
-                    }`}
-                  >
-                    ⟨
-                  </button>
-                  
-                  <div className="flex gap-1">
-                    {Array.from({length: totalPaginas}, (_, i) => i + 1).map((page) => {
-                      if (totalPaginas <= 7 || Math.abs(page - paginaActual) <= 2 || page === 1 || page === totalPaginas) {
-                        return (
-                          <button
-                            key={page}
-                            onClick={() => setPaginaActual(page)}
-                            className={`px-3 py-2 rounded-lg font-bold text-sm transition-all ${
-                              paginaActual === page
-                                ? 'bg-purple-600 text-white shadow-lg'
-                                : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
-                            }`}
-                          >
-                            {page}
-                          </button>
-                        );
-                      } else if (Math.abs(page - paginaActual) === 3) {
-                        return <span key={page} className="text-slate-500">...</span>;
-                      }
-                      return null;
-                    })}
-                  </div>
+                <div className="mt-8 pt-6 border-t border-slate-200">
+                  <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+                    {/* Botones de navegación */}
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => setPaginaActual(1)}
+                        disabled={paginaActual === 1}
+                        className={`hidden sm:block px-2 py-2 rounded-lg font-bold text-xs transition-all ${
+                          paginaActual === 1
+                            ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                            : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                        }`}
+                      >
+                        ⟨⟨
+                      </button>
+                      <button
+                        onClick={() => setPaginaActual(Math.max(1, paginaActual - 1))}
+                        disabled={paginaActual === 1}
+                        className={`px-3 py-2 rounded-lg font-bold text-sm transition-all ${
+                          paginaActual === 1
+                            ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                            : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                        }`}
+                      >
+                        ‹
+                      </button>
 
-                  <button
-                    onClick={() => setPaginaActual(Math.min(totalPaginas, paginaActual + 1))}
-                    disabled={paginaActual === totalPaginas}
-                    className={`px-3 py-2 rounded-lg font-bold text-sm transition-all ${
-                      paginaActual === totalPaginas
-                        ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
-                        : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
-                    }`}
-                  >
-                    ⟩
-                  </button>
-                  <button
-                    onClick={() => setPaginaActual(totalPaginas)}
-                    disabled={paginaActual === totalPaginas}
-                    className={`px-3 py-2 rounded-lg font-bold text-sm transition-all ${
-                      paginaActual === totalPaginas
-                        ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
-                        : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
-                    }`}
-                  >
-                    ⟩⟩
-                  </button>
+                      {/* Números de página - adaptativo */}
+                      <div className="flex gap-1">
+                        {Array.from({length: totalPaginas}, (_, i) => i + 1).map((page) => {
+                          const showOnMobile = Math.abs(page - paginaActual) <= 1 || page === 1 || page === totalPaginas;
+                          const showOnDesktop = totalPaginas <= 7 || Math.abs(page - paginaActual) <= 2 || page === 1 || page === totalPaginas;
 
-                  <div className="text-slate-600 font-bold text-sm">
-                    Página {paginaActual} de {totalPaginas}
+                          if (isMobile ? showOnMobile : showOnDesktop) {
+                            return (
+                              <button
+                                key={page}
+                                onClick={() => setPaginaActual(page)}
+                                className={`px-2 sm:px-3 py-2 rounded-lg font-bold text-xs sm:text-sm transition-all ${
+                                  paginaActual === page
+                                    ? 'bg-purple-600 text-white shadow-lg'
+                                    : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                                }`}
+                              >
+                                {page}
+                              </button>
+                            );
+                          } else if (Math.abs(page - paginaActual) === (isMobile ? 2 : 3)) {
+                            return <span key={page} className="text-slate-500 self-center">...</span>;
+                          }
+                          return null;
+                        })}
+                      </div>
+
+                      <button
+                        onClick={() => setPaginaActual(Math.min(totalPaginas, paginaActual + 1))}
+                        disabled={paginaActual === totalPaginas}
+                        className={`px-3 py-2 rounded-lg font-bold text-sm transition-all ${
+                          paginaActual === totalPaginas
+                            ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                            : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                        }`}
+                      >
+                        ›
+                      </button>
+                      <button
+                        onClick={() => setPaginaActual(totalPaginas)}
+                        disabled={paginaActual === totalPaginas}
+                        className={`hidden sm:block px-2 py-2 rounded-lg font-bold text-xs transition-all ${
+                          paginaActual === totalPaginas
+                            ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                            : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                        }`}
+                      >
+                        ⟩⟩
+                      </button>
+                    </div>
+
+                    {/* Contador de página */}
+                    <div className="text-slate-600 font-bold text-xs sm:text-sm">
+                      Página {paginaActual} de {totalPaginas}
+                    </div>
                   </div>
                 </div>
               )}
