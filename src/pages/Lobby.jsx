@@ -187,41 +187,25 @@ export default function Lobby() {
                   {/* Contenido */}
                   <div className="p-3 sm:p-4 space-y-2 sm:space-y-3">
                     {/* Stats */}
-                    <div className="space-y-2 text-xs">
-                      <div className="flex items-center justify-between">
-                        <span className="text-slate-600">🎫 Cartones</span>
-                        <span className="font-bold text-slate-900">{partida.cantidad_total_cartones}</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-slate-600">🏆 Premio</span>
-                        <span className="font-bold text-slate-900">${partida.modos_juego?.reduce((sum, m) => sum + (m.premio || 0), 0).toFixed(2) || '0.00'}</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-slate-600">📅 Inicio</span>
-                        <span className="font-bold text-slate-900">{partida.fecha_inicio ? new Date(partida.fecha_inicio).toLocaleDateString('es-ES', {month: '2-digit', day: '2-digit'}) : 'N/A'}</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-slate-600">🕐 Hora</span>
-                        <span className="font-bold text-slate-900">{partida.fecha_inicio ? new Date(partida.fecha_inicio).toLocaleTimeString('es-ES', {hour: '2-digit', minute:'2-digit'}) : 'N/A'}</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-slate-600">⏱️ Duración</span>
-                        <span className="font-bold text-slate-900">30 min</span>
-                      </div>
+                    <div className="space-y-1.5 text-xs text-slate-700">
+                      <p>🎫 Cartones: <span className="font-bold text-slate-900">{partida.cantidad_total_cartones}</span></p>
+                      <p>🏆 Premio: <span className="font-bold text-slate-900">${partida.modos_juego?.reduce((sum, m) => sum + (m.premio || 0), 0).toFixed(2) || '0.00'}</span></p>
+                      <p>📅 Inicio: <span className="font-bold text-slate-900">{partida.fecha_inicio ? new Date(partida.fecha_inicio).toLocaleDateString('es-ES', {day: '2-digit', month: '2-digit', year: 'numeric'}) + ' ' + new Date(partida.fecha_inicio).toLocaleTimeString('es-ES', {hour: '2-digit', minute:'2-digit'}) : 'N/A'}</span></p>
+                      <p>⏱️ Duración: <span className="font-bold text-slate-900">30 min</span></p>
                     </div>
 
                     {/* Modos de juego */}
-                    <div className="pt-2 border-t border-slate-200">
-                      <p className="text-xs text-slate-600 mb-1">🎮 Modos ({partida.modos_juego?.length || 0})</p>
+                    <div className="pt-1.5 border-t border-slate-200">
+                      <p className="text-xs text-slate-700 font-semibold mb-1">🎮 Modos de Juego ({partida.modos_juego?.length || 0}):</p>
                       {partida.modos_juego && partida.modos_juego.length > 0 && (
-                        <div className="flex flex-wrap gap-1">
+                        <div className="flex flex-wrap gap-2 text-xs">
                           {partida.modos_juego.slice(0, 2).map((modo, idx) => (
-                            <span key={idx} className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded">
+                            <span key={idx} className="text-blue-600">
                               {modo.nombre} - ${modo.premio}
                             </span>
                           ))}
                           {partida.modos_juego.length > 2 && (
-                            <span className="text-xs bg-slate-100 text-slate-700 px-2 py-0.5 rounded">
+                            <span className="text-slate-500">
                               +{partida.modos_juego.length - 2} más
                             </span>
                           )}
@@ -230,18 +214,7 @@ export default function Lobby() {
                     </div>
 
                     {/* Combos */}
-                    {partida.combos && partida.combos.length > 0 && (
-                      <div className="text-xs">
-                        <p className="text-slate-600 mb-1">💚 Combos</p>
-                        <div className="space-y-0.5">
-                          {partida.combos.slice(0, 2).map((combo, idx) => (
-                            <div key={idx} className="text-xs text-slate-700 bg-slate-50 px-2 py-1 rounded">
-                              <span className="font-semibold">{combo.cantidad} cart.</span> ${combo.precio?.toFixed(2)} {combo.descuento ? <span className="text-green-600">({combo.descuento}%)</span> : ''}
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
+                    <p className="text-xs text-slate-700">🎫 {partida.combos && partida.combos.length > 0 ? partida.combos.length : 0} combos disponibles</p>
 
                     {/* Botón */}
                     <Link to={createPageUrl('ComprarCartones') + `?partida=${partida.id}`} className="block pt-2">
