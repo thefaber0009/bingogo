@@ -11,11 +11,13 @@ import {
   Gem,
   Edit2,
   Trash2,
-  Power
+  Power,
+  Settings
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import PanelAdminPartida from '@/components/partidas/PanelAdminPartida';
+import DashboardSettingsDialog from '@/components/dashboard/DashboardSettingsDialog';
 
 export default function Home() {
   const [panelOpen, setPanelOpen] = useState(false);
