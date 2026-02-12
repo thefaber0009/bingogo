@@ -252,13 +252,15 @@ export default function PanelAdminPartida({ partida, open, onOpenChange }) {
                           )}
                         </div>
                         <div className="scale-75 origin-top">
-                          <CartonBingo
-                            carton={carton}
-                            marcados={numerosSorteados}
-                            onMarcar={() => {}}
-                            autoMarcar={false}
-                          />
-                        </div>
+                           <CartonBingo
+                             carton={carton}
+                             marcados={numerosSorteados}
+                             onMarcar={() => {}}
+                             autoMarcar={false}
+                             modoSeleccionado={modoSeleccionado}
+                             ultimoNumero={ultimoNumero}
+                           />
+                         </div>
                       </div>
                     ))
                 )}
