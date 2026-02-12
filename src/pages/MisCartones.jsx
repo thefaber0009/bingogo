@@ -21,6 +21,7 @@ import {
 import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '../utils';
 import CartonBingo from '../components/bingo/CartonBingo';
+import BolasDisplay from '../components/bingo/BolasDisplay';
 import { Switch } from '@/components/ui/switch';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { CreditCard, Wallet } from 'lucide-react';
