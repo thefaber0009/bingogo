@@ -47,20 +47,20 @@ export default function CartonBingo({ carton, marcados = [], onMarcar, autoMarca
   };
 
   return (
-    <div className="bg-white border-2 border-green-400 rounded-lg shadow-md overflow-hidden w-full">
-      {/* Status Badge */}
-      <div className="bg-green-500 text-white text-center text-xs font-bold py-1">
-        ✓ Vendido
+    <div className="bg-white border-2 border-blue-400 rounded-lg shadow-lg overflow-hidden w-full">
+      {/* Header */}
+      <div className="bg-white border-b-2 border-blue-400 p-2.5 text-center">
+        <div className="text-blue-600 font-bold text-sm mb-1">BINGO MANÍA</div>
+        <div className="text-xs text-slate-600 font-semibold">Cartón No. <span className="text-blue-600 font-bold">1</span></div>
       </div>
 
-      {/* Header con Modo */}
-      <div className="bg-purple-500 text-white p-2 text-center">
-        <div className="text-xs font-bold mb-1.5">MODO: Letra L</div>
-        <div className="grid grid-cols-5 gap-0.5">
-          {letras.map((letra) => (
-            <div key={letra} className="font-bold text-sm bg-purple-600 py-0.5 rounded-sm">{letra}</div>
-          ))}
-        </div>
+      {/* Letras */}
+      <div className="grid grid-cols-5 gap-0.5 px-2 pt-2">
+        {letras.map((letra) => (
+          <div key={letra} className="text-center text-xs font-bold text-blue-600">
+            {letra}
+          </div>
+        ))}
       </div>
 
       {/* Grid de números estilo bingo */}
@@ -78,13 +78,17 @@ export default function CartonBingo({ carton, marcados = [], onMarcar, autoMarca
                     <div
                       key={`${i}-${j}`}
                       className={cn(
-                        "aspect-square flex items-center justify-center rounded text-sm font-semibold transition-all border",
-                        esCentro && "bg-gray-300 text-white border-gray-400",
-                        !esCentro && !marcado && "bg-white text-slate-800 border-slate-200",
-                        !esCentro && marcado && "bg-blue-500 text-white border-blue-600 ring-1 ring-blue-400"
+                        "aspect-square flex items-center justify-center rounded text-xs font-bold transition-all",
+                        esCentro && "bg-gray-300 text-white relative",
+                        !esCentro && !marcado && "bg-yellow-100 text-slate-800",
+                        !esCentro && marcado && "bg-yellow-100 text-slate-800 ring-2 ring-blue-500"
                       )}
                     >
-                      {esCentro ? '★' : numero}
+                      {esCentro ? (
+                        <div className="w-4 h-4 bg-blue-400 rounded-full"></div>
+                      ) : (
+                        numero
+                      )}
                     </div>
                   );
                 })}
