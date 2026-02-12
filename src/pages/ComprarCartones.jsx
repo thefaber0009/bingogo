@@ -258,7 +258,7 @@ export default function ComprarCartones() {
     <div className="min-h-screen bg-gradient-to-br from-blue-400 to-purple-500 p-3 sm:p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 mb-6 flex items-center justify-between">
+        <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 mb-4 sm:mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <div className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-bold ${partida?.estado === 'en_curso' ? 'bg-green-500' : 'bg-slate-400'}`}>
               ◆
