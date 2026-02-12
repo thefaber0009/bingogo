@@ -142,7 +142,7 @@ export default function ComprarCartones() {
           jugador_id: user.id,
           partida_id: partidaId,
           numero_carton: cartonVirtual.numeroVirtual,
-          numeros: generarCartonDeterminista(cartonVirtual.numeroVirtual),
+          numeros: cartonVirtual.numeros,
           estado: 'activo',
           comprado: true,
           pagado: false,
