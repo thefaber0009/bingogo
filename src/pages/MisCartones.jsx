@@ -535,8 +535,10 @@ export default function MisCartones() {
                             marcados={bolasCantadas.map(b => b.numero)}
                             onMarcar={() => {}}
                             autoMarcar={true}
-                            modoSeleccionado={part.modos_juego?.[0]?.nombre}
+                            modoSeleccionado={modoSeleccionadoPorPartida[part.id] || null}
                             ultimoNumero={bolasCantadas[bolasCantadas.length - 1]?.numero}
+                            numeroCarton={carton.numero_carton}
+                            mostrarBotones={false}
                           />
                         </div>
                       </CardContent>
