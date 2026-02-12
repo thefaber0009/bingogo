@@ -67,22 +67,26 @@ export default function MisCartones() {
   });
 
   const { data: bolasCantadas = [] } = useQuery({
-    queryKey: ['bolasCantadas', partidaId],
-    queryFn: () => base44.entities.BolaCantada.filter({ partida_id: partidaId }),
-    enabled: !!partidaId,
+    queryKey: ['bolasCantadas', 'todas'],
+    queryFn: async () => {
+      const partidas = await base44.entities.Partida.filter({ estado: 'en_curso' });
+      if (partidas.length === 0) return [];
+      const bolasPromesas = partidas.map(p => 
+        base44.entities.BolaCantada.filter({ partida_id: p.id })
+      );
+      const bolasArrays = await Promise.all(bolasPromesas);
+      return bolasArrays.flat().sort((a, b) => a.orden - b.orden);
+    },
     refetchInterval: 500,
   });
 
   // Subscribe para actualizaciones en tiempo real
   React.useEffect(() => {
-    if (!partidaId) return;
-    const unsubscribe = base44.entities.BolaCantada.subscribe((event) => {
-      if (event.data?.partida_id === partidaId) {
-        queryClient.invalidateQueries({ queryKey: ['bolasCantadas', partidaId] });
-      }
+    const unsubscribe = base44.entities.BolaCantada.subscribe(() => {
+      queryClient.invalidateQueries({ queryKey: ['bolasCantadas', 'todas'] });
     });
     return unsubscribe;
-  }, [partidaId, queryClient]);
+  }, [queryClient]);
 
   // Agrupar cartones por partida
   const cartonAgrupadosPorPartida = todosLosCartones.reduce((acc, carton) => {
