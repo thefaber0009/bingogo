@@ -212,11 +212,21 @@ export default function MisCartones() {
                 </p>
               </div>
             </div>
-            <Link to={createPageUrl('Lobby')}>
-              <Button variant="outline" className="bg-white/20 border-white/30 hover:bg-white/30 text-white font-semibold">
-                Salir
+            <div className="flex items-center gap-2">
+              <Button 
+                onClick={() => setDialogoConfiguracionAbierto(true)}
+                variant="outline" 
+                size="icon" 
+                className="h-9 w-9 sm:h-10 sm:w-10 bg-white/20 border-white/30 hover:bg-white/30"
+              >
+                <Settings className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
               </Button>
-            </Link>
+              <Link to={createPageUrl('Lobby')}>
+                <Button variant="outline" className="bg-white/20 border-white/30 hover:bg-white/30 text-white font-semibold">
+                  Salir
+                </Button>
+              </Link>
+            </div>
             <div className="hidden sm:block text-right">
               <p className="text-3xl font-bold">${saldoDisponible.toFixed(3)}</p>
               <p className="text-sm text-white/90">Total Gastado</p>
