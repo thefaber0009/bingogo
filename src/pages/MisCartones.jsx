@@ -213,21 +213,14 @@ export default function MisCartones() {
                 </p>
               </div>
             </div>
-            <div className="flex items-center gap-2 flex-shrink-0">
-              <Button 
-                onClick={() => setDialogoConfiguracionAbierto(true)}
-                variant="outline" 
-                size="icon" 
-                className="h-8 w-8 sm:h-10 sm:w-10 bg-white/20 border-white/30 hover:bg-white/30"
-              >
-                <Settings className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-              </Button>
-              <Link to={createPageUrl('Lobby')}>
-                <Button variant="outline" className="bg-white/20 border-white/30 hover:bg-white/30 text-white font-semibold text-xs sm:text-sm px-2 sm:px-4 h-8 sm:h-10">
-                  Salir
-                </Button>
-              </Link>
-            </div>
+            <Button 
+              onClick={() => setDialogoConfiguracionAbierto(true)}
+              variant="outline" 
+              size="icon" 
+              className="h-8 w-8 sm:h-10 sm:w-10 bg-white/20 border-white/30 hover:bg-white/30 flex-shrink-0"
+            >
+              <Settings className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+            </Button>
           </div>
           <div className="hidden lg:flex items-center gap-2 mt-3 pt-3 border-t border-white/20">
             <Trophy className="w-4 h-4" />

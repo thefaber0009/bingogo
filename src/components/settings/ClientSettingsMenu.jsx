@@ -80,7 +80,7 @@ export default function ClientSettingsMenu({ open, onOpenChange, user }) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-sm sm:max-w-md w-full">
+      <DialogContent className="max-w-xs sm:max-w-md w-[90vw] sm:w-full">
         <DialogHeader className="pb-4 border-b">
           <DialogTitle className="flex items-center gap-2 text-lg sm:text-xl">
             <Settings className="w-5 h-5" />
