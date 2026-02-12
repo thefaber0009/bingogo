@@ -51,6 +51,23 @@ export default function PartidaEnVivo() {
   const partidasActivas = partidas.filter(p => p.estado === 'en_curso' || p.estado === 'pendiente');
   const partidaActual = partidas.find(p => p.id === selectedPartidaId);
 
+  React.useEffect(() => {
+    if (!autoSort || !selectedPartidaId) return;
+    const intervalo = setInterval(async () => {
+      const disponibles = Array.from({length: 75}, (_, i) => i + 1)
+        .filter(n => !bolas.map(b => b.numero).includes(n));
+      if (disponibles.length > 0) {
+        const nuevoNumero = disponibles[Math.floor(Math.random() * disponibles.length)];
+        await base44.entities.BolaCantada.create({
+          partida_id: selectedPartidaId,
+          numero: nuevoNumero,
+          orden: bolas.length + 1
+        });
+      }
+    }, tiempoSorteo * 1000);
+    return () => clearInterval(intervalo);
+  }, [autoSort, selectedPartidaId, tiempoSorteo, bolas]);
+
   return (
     <div className="space-y-8 pb-8">
       <div className="flex items-center justify-between">
