@@ -83,24 +83,26 @@ export default function CartonBingo({ carton, marcados = [], onMarcar, autoMarca
               numeros.map((fila, i) => 
                 (Array.isArray(fila) ? fila : []).map((numero, j) => {
                   const esCentro = i === 2 && j === 2;
-                  const marcado = isNumeroMarcado(numero);
-                  
-                  return (
-                    <button
-                      key={`${i}-${j}`}
-                      onClick={() => handleClickCelda(numero)}
-                      disabled={esCentro}
-                      className={cn(
-                        "aspect-square rounded-lg font-bold text-lg transition-all duration-200",
-                        "flex items-center justify-center",
-                        esCentro && "bg-amber-100 text-amber-600 cursor-not-allowed",
-                        !esCentro && !marcado && "bg-slate-50 hover:bg-slate-100 text-slate-900 hover:scale-105 cursor-pointer",
-                        !esCentro && marcado && "bg-gradient-to-br from-green-500 to-emerald-600 text-white shadow-lg scale-95"
-                      )}
-                    >
-                      {esCentro ? '★' : numero}
-                    </button>
-                  );
+                   const marcado = isNumeroMarcado(numero, j);
+                   const esUltima = numero === ultimoNumero;
+
+                   return (
+                     <button
+                       key={`${i}-${j}`}
+                       onClick={() => handleClickCelda(numero)}
+                       disabled={esCentro}
+                       className={cn(
+                         "aspect-square rounded-lg font-bold text-lg transition-all duration-200",
+                         "flex items-center justify-center",
+                         esCentro && "bg-amber-100 text-amber-600 cursor-not-allowed",
+                         !esCentro && !marcado && "bg-slate-50 hover:bg-slate-100 text-slate-900 hover:scale-105 cursor-pointer",
+                         !esCentro && marcado && "bg-gradient-to-br from-green-500 to-emerald-600 text-white shadow-lg scale-95",
+                         esUltima && "ring-4 ring-yellow-400"
+                       )}
+                     >
+                       {esCentro ? '★' : numero}
+                     </button>
+                   );
                 })
               )
             ) : (
