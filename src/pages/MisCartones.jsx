@@ -91,6 +91,12 @@ export default function MisCartones() {
         Object.keys(nuevo).forEach(cartonId => {
           if (nuevo[cartonId] > 0) {
             nuevo[cartonId] -= 1;
+          } else if (nuevo[cartonId] === 0) {
+            // Liberar cartón cuando expire el tiempo
+            const carton = cartones.find(c => c.id === cartonId);
+            if (carton && !carton.pagado) {
+              deleteCartonMutation.mutate(cartonId);
+            }
           }
         });
         return nuevo;
@@ -98,7 +104,7 @@ export default function MisCartones() {
     }, 1000);
 
     return () => clearInterval(intervalo);
-  }, []);
+  }, [cartones]);
 
   const toggleCarton = (cartonId) => {
     setCartonesHabilitados(prev => ({
@@ -461,9 +467,16 @@ export default function MisCartones() {
             </DialogHeader>
             <div className="space-y-3">
               <button
-                onClick={() => {
-                  // Lógica para pago en línea
+                onClick={async () => {
+                  // Marcar todos los cartones como pagados
+                  const promesas = todosLosCartones.map(carton => 
+                    base44.entities.Carton.update(carton.id, { pagado: true })
+                  );
+                  await Promise.all(promesas);
+                  queryClient.invalidateQueries(['misCartones']);
+                  queryClient.invalidateQueries(['todosLosCartones']);
                   setDialogoPagoAbierto(false);
+                  alert('Pago procesado exitosamente');
                 }}
                 className="w-full border-2 border-indigo-300 hover:bg-indigo-50 hover:border-indigo-600 rounded-lg p-4 text-left transition-all"
               >
@@ -479,9 +492,16 @@ export default function MisCartones() {
               </button>
 
               <button
-                onClick={() => {
-                  // Lógica para transferencia a billetera virtual
+                onClick={async () => {
+                  // Marcar todos los cartones como pagados
+                  const promesas = todosLosCartones.map(carton => 
+                    base44.entities.Carton.update(carton.id, { pagado: true })
+                  );
+                  await Promise.all(promesas);
+                  queryClient.invalidateQueries(['misCartones']);
+                  queryClient.invalidateQueries(['todosLosCartones']);
                   setDialogoPagoAbierto(false);
+                  alert('Pago procesado exitosamente');
                 }}
                 className="w-full border-2 border-purple-300 hover:bg-purple-50 hover:border-purple-600 rounded-lg p-4 text-left transition-all"
               >
