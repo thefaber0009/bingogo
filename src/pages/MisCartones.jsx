@@ -13,7 +13,9 @@ import {
   Info,
   Trash2,
   Clock,
-  Lock
+  Lock,
+  Trophy,
+  DollarSign
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '../utils';
@@ -53,6 +55,12 @@ export default function MisCartones() {
     queryKey: ['todasPartidas'],
     queryFn: () => base44.entities.Partida.list(),
     refetchInterval: 5000,
+  });
+
+  const { data: premios = [] } = useQuery({
+    queryKey: ['misPremios', user?.id],
+    queryFn: () => base44.entities.Premio.filter({ jugador_id: user.id }),
+    enabled: !!user?.id,
   });
 
   // Agrupar cartones por partida
@@ -147,6 +155,15 @@ export default function MisCartones() {
     return sum + (partida?.precio_carton || 0);
   }, 0);
 
+  // Estadísticas del usuario
+  const cartonesEnJuego = todosLosCartones.filter(c => c.estado === 'activo').length;
+  const cartonesGanadores = todosLosCartones.filter(c => c.estado === 'ganador').length;
+  const totalPremios = premios.reduce((sum, p) => sum + (p.valor || 0), 0);
+  const saldoDisponible = totalPremios; // En una implementación real, restaríamos las compras
+
+  // Salas activas disponibles
+  const salasActivas = todasLasPartidas.filter(p => p.estado === 'en_curso');
+
   if (loadingCartones) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -180,36 +197,141 @@ export default function MisCartones() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
       <div className="max-w-7xl mx-auto p-3 sm:p-6 space-y-4 sm:space-y-6">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
-          <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
-            <Link to={createPageUrl('Lobby')}>
-              <Button variant="outline" size="icon" className="h-9 w-9 sm:h-10 sm:w-10">
-                <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
-              </Button>
-            </Link>
-            <div>
-              <h1 className="text-xl sm:text-3xl font-bold text-slate-900">Mis Cartones</h1>
-              <p className="text-xs sm:text-base text-slate-600">Visualiza tus cartones por sala</p>
+        {/* Header con Bienvenida */}
+        <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl shadow-xl p-4 sm:p-6 text-white">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <Link to={createPageUrl('Lobby')}>
+                <Button variant="outline" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 bg-white/20 border-white/30 hover:bg-white/30">
+                  <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                </Button>
+              </Link>
+              <div>
+                <h1 className="text-xl sm:text-2xl font-bold">¡Bienvenido, {user?.full_name || 'Jugador'}!</h1>
+                <p className="text-xs sm:text-sm text-white/90 flex items-center gap-2">
+                  <span>📅 {new Date().toLocaleDateString('es-ES', {weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'})}</span>
+                  <span>•</span>
+                  <span>🕐 {new Date().toLocaleTimeString('es-ES', {hour: '2-digit', minute: '2-digit'})}</span>
+                </p>
+              </div>
+            </div>
+            <div className="hidden sm:block text-right">
+              <p className="text-3xl font-bold">${saldoDisponible.toFixed(3)}</p>
+              <p className="text-sm text-white/90">Total Gastado</p>
             </div>
           </div>
         </div>
 
-        {/* Información */}
-        <Card className="border-0 shadow-xl bg-gradient-to-r from-blue-50 to-indigo-50">
-          <CardContent className="p-4 sm:p-6">
-            <div className="flex items-start gap-2 sm:gap-3">
-              <Info className="w-5 h-5 sm:w-6 sm:h-6 text-indigo-600 mt-0.5 sm:mt-1 flex-shrink-0" />
-              <div>
-                <p className="font-semibold text-sm sm:text-base text-slate-900 mb-1">Habilita tus cartones para jugar</p>
-                <p className="text-xs sm:text-sm text-slate-600">
-                  Activa o desactiva los cartones que deseas usar en cada sala. 
-                  Solo los cartones habilitados estarán activos durante el juego.
-                </p>
+        {/* Estadísticas del Usuario */}
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 sm:gap-4">
+          <Card className="border-0 shadow-lg bg-white">
+            <CardContent className="p-4 text-center">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-2 bg-blue-100 rounded-xl flex items-center justify-center">
+                <Ticket className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
               </div>
-            </div>
-          </CardContent>
-        </Card>
+              <p className="text-2xl sm:text-3xl font-bold text-slate-900">{totalCartones}</p>
+              <p className="text-xs text-slate-600">Cartones Totales</p>
+            </CardContent>
+          </Card>
+
+          <Card className="border-0 shadow-lg bg-white">
+            <CardContent className="p-4 text-center">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-2 bg-green-100 rounded-xl flex items-center justify-center">
+                <Circle className="w-5 h-5 sm:w-6 sm:h-6 text-green-600" />
+              </div>
+              <p className="text-2xl sm:text-3xl font-bold text-slate-900">{cartonesEnJuego}</p>
+              <p className="text-xs text-slate-600">En Juego</p>
+            </CardContent>
+          </Card>
+
+          <Card className="border-0 shadow-lg bg-white">
+            <CardContent className="p-4 text-center">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-2 bg-yellow-100 rounded-xl flex items-center justify-center">
+                <Trophy className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-600" />
+              </div>
+              <p className="text-2xl sm:text-3xl font-bold text-slate-900">{cartonesGanadores}</p>
+              <p className="text-xs text-slate-600">Cartones Ganadores</p>
+            </CardContent>
+          </Card>
+
+          <Card className="border-0 shadow-lg bg-white">
+            <CardContent className="p-4 text-center">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-2 bg-purple-100 rounded-xl flex items-center justify-center">
+                <DollarSign className="w-5 h-5 sm:w-6 sm:h-6 text-purple-600" />
+              </div>
+              <p className="text-2xl sm:text-3xl font-bold text-slate-900">${totalCosto.toFixed(3)}</p>
+              <p className="text-xs text-slate-600">Total Gastado</p>
+            </CardContent>
+          </Card>
+
+          <Card className="border-0 shadow-lg bg-gradient-to-br from-green-500 to-emerald-600">
+            <CardContent className="p-4 text-center">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-2 bg-white/20 rounded-xl flex items-center justify-center">
+                <Trophy className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+              </div>
+              <p className="text-2xl sm:text-3xl font-bold text-white">${totalPremios.toFixed(3)}</p>
+              <p className="text-xs text-white/90">Premios Ganados</p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Salas Disponibles */}
+        {salasActivas.length > 0 && (
+          <Card className="border-0 shadow-xl">
+            <CardHeader className="pb-3 sm:pb-4">
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                  <Play className="w-5 h-5 text-indigo-600" />
+                  Salas Disponibles
+                </CardTitle>
+                <span className="text-xs sm:text-sm font-bold px-3 py-1 bg-green-100 text-green-700 rounded-full">
+                  {salasActivas.length} salas activas
+                </span>
+              </div>
+            </CardHeader>
+            <CardContent className="p-3 sm:p-6">
+              <div className="space-y-3">
+                {salasActivas.map((sala) => (
+                  <div key={sala.id} className="border-2 border-green-300 bg-green-50 rounded-xl p-3 sm:p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                    <div className="flex-1 w-full sm:w-auto">
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center text-white font-bold">
+                          ◆
+                        </div>
+                        <div>
+                          <h3 className="font-bold text-slate-900">{sala.nombre}</h3>
+                          <span className="text-xs font-bold px-2 py-0.5 bg-green-100 text-green-700 rounded-full">
+                            ● Activa
+                          </span>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-3 gap-2 text-xs">
+                        <div>
+                          <p className="text-slate-500">🏆 Premio Total</p>
+                          <p className="font-bold text-green-700">${sala.modos_juego?.reduce((sum, m) => sum + (m.premio || 0), 0).toFixed(3) || '0'}</p>
+                        </div>
+                        <div>
+                          <p className="text-slate-500">💰 Por cartón</p>
+                          <p className="font-bold text-slate-900">$ {sala.precio_carton?.toFixed(3)}</p>
+                        </div>
+                        <div>
+                          <p className="text-slate-500">🎫 Disponibles</p>
+                          <p className="font-bold text-blue-600">{(sala.cantidad_total_cartones || 0) - (sala.cartones_vendidos || 0)}</p>
+                        </div>
+                      </div>
+                    </div>
+                    <Link to={createPageUrl('ComprarCartones') + `?partida=${sala.id}`} className="w-full sm:w-auto">
+                      <Button className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-bold whitespace-nowrap">
+                        <ShoppingCart className="w-4 h-4 mr-2" />
+                        Comprar
+                      </Button>
+                    </Link>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Salas con Cartones */}
         <div className="space-y-6 sm:space-y-8">
@@ -265,7 +387,7 @@ export default function MisCartones() {
                 </div>
 
                 {/* Cartones de la Sala */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                <div className="grid grid-cols-1 gap-4 sm:gap-6">
                   {cartonesPartida.sort((a, b) => a.numero_carton - b.numero_carton).map((carton) => {
                     const tiempoRestante = tiemposCarton[carton.id] || 300;
                     const tiempoAgotado = tiempoRestante === 0;
@@ -319,13 +441,15 @@ export default function MisCartones() {
                           </button>
                         </div>
                       </CardHeader>
-                      <CardContent>
-                        <CartonBingo 
-                          carton={carton}
-                          marcados={[]}
-                          onMarcar={() => {}}
-                          autoMarcar={true}
-                        />
+                      <CardContent className="p-3 sm:p-6">
+                        <div className="max-w-md mx-auto">
+                          <CartonBingo 
+                            carton={carton}
+                            marcados={[]}
+                            onMarcar={() => {}}
+                            autoMarcar={true}
+                          />
+                        </div>
                       </CardContent>
                     </Card>
                     );
