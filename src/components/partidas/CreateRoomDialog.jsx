@@ -6,7 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Gem, Crown, Ticket, Users, Zap, Sprout, Wand2, Star,
-  Plus, Trash2, ChevronDown
+  Plus, Trash2, ChevronDown, Upload
 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 
@@ -44,8 +44,12 @@ export default function CreateRoomDialog({ open, onOpenChange, onSubmit, isLoadi
     horaRecurrencia: '',
     combos: [{ nombre: '', cantidad: '', precio: '' }],
     modos: {},
-    modosPrecio: {}
+    modosPrecio: {},
+    imagen_url: ''
   });
+
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [previewImage, setPreviewImage] = useState(null);
 
   const calcularValorPremioTotal = () => {
     return Object.keys(formData.modos).reduce((total, mode) => {
@@ -90,6 +94,21 @@ export default function CreateRoomDialog({ open, onOpenChange, onSubmit, isLoadi
     }));
   };
 
+  const handleImageUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setUploadingImage(true);
+      try {
+        setPreviewImage(URL.createObjectURL(file));
+        const { file_url } = await base44.integrations.Core.UploadFile({ file });
+        setFormData({ ...formData, imagen_url: file_url });
+      } catch (error) {
+        alert('Error al subir la imagen');
+      }
+      setUploadingImage(false);
+    }
+  };
+
   const handleSubmit = async () => {
     if (!formData.nombre || !selectedType || !formData.cantidadCartones || !formData.fechaInicio) {
       alert('Por favor completa los campos requeridos (nombre, tipo, cantidad, fecha)');
@@ -109,6 +128,7 @@ export default function CreateRoomDialog({ open, onOpenChange, onSubmit, isLoadi
       max_cartones_por_jugador: formData.maxCartonesPorJugador ? parseInt(formData.maxCartonesPorJugador) : null,
       max_jugadores: formData.maxJugadores ? parseInt(formData.maxJugadores) : null,
       duracion_maxima: formData.duracionMaxima ? parseInt(formData.duracionMaxima) : null,
+      imagen_url: formData.imagen_url,
       combos: formData.combos.filter(c => c.nombre && c.cantidad && c.precio),
       modos_juego: Object.keys(formData.modos).filter(m => formData.modos[m]).map(m => ({
         tipo: m,
@@ -136,9 +156,11 @@ export default function CreateRoomDialog({ open, onOpenChange, onSubmit, isLoadi
       horaRecurrencia: '',
       combos: [{ nombre: '', cantidad: '', precio: '' }],
       modos: {},
-      modosPrecio: {}
+      modosPrecio: {},
+      imagen_url: ''
     });
     setSelectedType(null);
+    setPreviewImage(null);
   };
 
   return (
@@ -149,14 +171,38 @@ export default function CreateRoomDialog({ open, onOpenChange, onSubmit, isLoadi
         </DialogHeader>
 
         <div className="space-y-6">
-          {/* Nombre */}
-          <div>
-            <Label>Nombre de la Sala</Label>
-            <Input
-              placeholder="Ej: Sala Diamante"
-              value={formData.nombre}
-              onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
-            />
+          {/* Nombre y Imagen */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label>Nombre de la Sala</Label>
+              <Input
+                placeholder="Ej: Sala Diamante"
+                value={formData.nombre}
+                onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
+              />
+            </div>
+
+            {/* Imagen de la Sala */}
+            <div>
+              <Label>Imagen de la Sala</Label>
+              <label className="border-2 border-dashed border-slate-300 rounded-lg p-3 text-center cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-all flex flex-col items-center justify-center h-10">
+                {previewImage || formData.imagen_url ? (
+                  <div className="text-xs text-blue-600 font-semibold">✓ Imagen cargada</div>
+                ) : (
+                  <>
+                    <Upload className="w-4 h-4 text-slate-400 mx-auto" />
+                    <p className="text-xs text-slate-600">Subir imagen</p>
+                  </>
+                )}
+                <input 
+                  type="file" 
+                  accept="image/*" 
+                  onChange={handleImageUpload}
+                  disabled={uploadingImage}
+                  className="hidden" 
+                />
+              </label>
+            </div>
           </div>
 
           {/* Tipos de Sala */}
