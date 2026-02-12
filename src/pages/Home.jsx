@@ -107,11 +107,22 @@ export default function Home() {
           onOpenChange={setPanelOpen}
         />
       )}
+      <DashboardSettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} />
       <div className="space-y-8">
-        <div>
-        <h1 className="text-4xl font-bold text-slate-900 mb-2">Dashboard</h1>
-        <p className="text-slate-600">Resumen general de la plataforma BingoGo</p>
-      </div>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-4xl font-bold text-slate-900 mb-2">Dashboard</h1>
+            <p className="text-slate-600">Resumen general de la plataforma BingoManía</p>
+          </div>
+          <Button 
+            onClick={() => setSettingsOpen(true)}
+            variant="outline"
+            size="icon"
+            className="h-10 w-10"
+          >
+            <Settings className="w-5 h-5" />
+          </Button>
+        </div>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
