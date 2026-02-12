@@ -94,6 +94,9 @@ export default function MisCartones() {
 
   useEffect(() => {
     const intervalo = setInterval(() => {
+      // Forzar re-render para actualizar relojes regresivos de salas
+      queryClient.invalidateQueries(['todasPartidas']);
+      
       setTiemposCarton(prev => {
         const nuevo = { ...prev };
         Object.keys(nuevo).forEach(cartonId => {
@@ -112,7 +115,7 @@ export default function MisCartones() {
     }, 1000);
 
     return () => clearInterval(intervalo);
-  }, [cartones]);
+  }, [cartones, queryClient]);
 
   const toggleCarton = (cartonId) => {
     setCartonesHabilitados(prev => ({
@@ -305,20 +308,37 @@ export default function MisCartones() {
                           </span>
                         </div>
                       </div>
-                      <div className="grid grid-cols-3 gap-2 text-xs">
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
                         <div>
-                          <p className="text-slate-500">🏆 Premio Total</p>
-                          <p className="font-bold text-green-700">${sala.modos_juego?.reduce((sum, m) => sum + (m.premio || 0), 0).toFixed(3) || '0'}</p>
+                          <p className="text-slate-500">📅 Inicio</p>
+                          <p className="font-bold text-slate-900">{sala.fecha_inicio ? new Date(sala.fecha_inicio).toLocaleDateString('es-ES', {day: '2-digit', month: '2-digit', year: 'numeric'}) : 'N/A'}</p>
                         </div>
                         <div>
-                          <p className="text-slate-500">💰 Por cartón</p>
-                          <p className="font-bold text-slate-900">$ {sala.precio_carton?.toFixed(3)}</p>
+                          <p className="text-slate-500">🕐 Hora</p>
+                          <p className="font-bold text-slate-900">{sala.fecha_inicio ? new Date(sala.fecha_inicio).toLocaleTimeString('es-ES', {hour: '2-digit', minute:'2-digit'}) : 'N/A'}</p>
+                        </div>
+                        <div>
+                          <p className="text-slate-500">🏆 Premio</p>
+                          <p className="font-bold text-green-700">${sala.modos_juego?.reduce((sum, m) => sum + (m.premio || 0), 0).toFixed(3) || '0'}</p>
                         </div>
                         <div>
                           <p className="text-slate-500">🎫 Disponibles</p>
                           <p className="font-bold text-blue-600">{(sala.cantidad_total_cartones || 0) - (sala.cartones_vendidos || 0)}</p>
                         </div>
                       </div>
+                      {sala.fecha_inicio && new Date(sala.fecha_inicio) > new Date() && (
+                        <div className="mt-2 text-center">
+                          <div className="inline-flex items-center gap-2 px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-xs font-bold">
+                            ⏱️ Inicia en: {(() => {
+                              const diff = Math.max(0, Math.floor((new Date(sala.fecha_inicio) - new Date()) / 1000));
+                              const horas = Math.floor(diff / 3600);
+                              const minutos = Math.floor((diff % 3600) / 60);
+                              const segundos = diff % 60;
+                              return `${horas}h ${minutos}m ${segundos}s`;
+                            })()}
+                          </div>
+                        </div>
+                      )}
                     </div>
                     <Link to={createPageUrl('ComprarCartones') + `?partida=${sala.id}`} className="w-full sm:w-auto">
                       <Button className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-bold whitespace-nowrap">
@@ -370,6 +390,17 @@ export default function MisCartones() {
                     <div>
                       <p className="text-xs text-slate-500">📅 Hora Inicio</p>
                       <p className="font-semibold text-sm sm:text-base text-slate-900">{part.fecha_inicio ? new Date(part.fecha_inicio).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'N/A'}</p>
+                      {part.fecha_inicio && new Date(part.fecha_inicio) > new Date() && (
+                        <div className="mt-1 inline-flex items-center gap-1 px-2 py-0.5 bg-amber-100 text-amber-700 rounded-full text-xs font-bold">
+                          ⏱️ {(() => {
+                            const diff = Math.max(0, Math.floor((new Date(part.fecha_inicio) - new Date()) / 1000));
+                            const horas = Math.floor(diff / 3600);
+                            const minutos = Math.floor((diff % 3600) / 60);
+                            const segundos = diff % 60;
+                            return `${horas}h ${minutos}m ${segundos}s`;
+                          })()}
+                        </div>
+                      )}
                     </div>
                     <div>
                       <p className="text-xs text-slate-500">🎫 Total</p>
@@ -402,9 +433,15 @@ export default function MisCartones() {
                     }`}>
                       {!estaPagado && (
                         <div className="absolute inset-0 bg-black bg-opacity-30 rounded-lg flex items-center justify-center z-10">
-                          <div className="bg-white rounded-lg px-4 py-2 flex items-center gap-2 shadow-lg">
-                            <Lock className="w-5 h-5 text-amber-600" />
-                            <span className="font-bold text-amber-700 text-sm">Pendiente de pago</span>
+                          <div className="bg-white rounded-lg px-4 py-3 text-center shadow-lg">
+                            <div className="flex items-center gap-2 mb-2">
+                              <Lock className="w-5 h-5 text-amber-600" />
+                              <span className="font-bold text-amber-700 text-sm">Pendiente de pago</span>
+                            </div>
+                            <div className="flex items-center justify-center gap-1 px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-bold">
+                              <Clock className="w-3 h-3" />
+                              {formatearTiempo(tiempoRestante)}
+                            </div>
                           </div>
                         </div>
                       )}
