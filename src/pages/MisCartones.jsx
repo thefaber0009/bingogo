@@ -79,6 +79,7 @@ export default function MisCartones() {
 
   const [cartonesHabilitados, setCartonesHabilitados] = useState({});
   const [dialogoPagoAbierto, setDialogoPagoAbierto] = useState(false);
+  const [dialogoConfiguracionAbierto, setDialogoConfiguracionAbierto] = useState(false);
   const [tiempoActual, setTiempoActual] = useState(Date.now());
 
   // Calcular tiempo restante basado en fecha_compra del cartón
