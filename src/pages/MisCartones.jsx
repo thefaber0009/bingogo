@@ -77,12 +77,13 @@ export default function MisCartones() {
 
   const [cartonesHabilitados, setCartonesHabilitados] = useState({});
   const [dialogoPagoAbierto, setDialogoPagoAbierto] = useState(false);
+  const [tiempoActual, setTiempoActual] = useState(Date.now());
 
-  // Calcular tiempo restante basado en updated_date del cartón (fecha de compra)
+  // Calcular tiempo restante basado en created_date del cartón
   const calcularTiempoRestante = (carton) => {
     if (carton.pagado) return null;
-    const fechaCompra = new Date(carton.updated_date);
-    const ahora = new Date();
+    const fechaCompra = new Date(carton.created_date);
+    const ahora = new Date(tiempoActual);
     const tiempoTranscurrido = Math.floor((ahora - fechaCompra) / 1000);
     const tiempoRestante = Math.max(0, 300 - tiempoTranscurrido);
     return tiempoRestante;
@@ -90,8 +91,7 @@ export default function MisCartones() {
 
   useEffect(() => {
     const intervalo = setInterval(() => {
-      // Forzar re-render para actualizar relojes regresivos
-      queryClient.invalidateQueries(['todasPartidas']);
+      setTiempoActual(Date.now());
       
       // Verificar cartones expirados
       cartones.forEach(carton => {
@@ -105,7 +105,7 @@ export default function MisCartones() {
     }, 1000);
 
     return () => clearInterval(intervalo);
-  }, [cartones, queryClient]);
+  }, [cartones]);
 
   const toggleCarton = (cartonId) => {
     setCartonesHabilitados(prev => ({
