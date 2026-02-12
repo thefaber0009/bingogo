@@ -364,6 +364,16 @@ export default function ComprarCartones() {
             <div className="bg-white rounded-2xl shadow-lg p-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-bold text-slate-900">⊞ Seleccionar Cartones ({cartonesTodosConFiltro.length} disponibles)</h3>
+              </div>
+
+              {/* Debug info */}
+              <div className="mb-4 p-3 bg-yellow-50 rounded-lg text-xs">
+                <p>Debug: Total cartones en BD: {todosLosCartones.length}</p>
+                <p>Disponibles: {cartonesDisponiblesDB.length}</p>
+                <p>Vendidos: {cartonesVendidos.length}</p>
+              </div>
+              
+              <div className="flex items-center justify-between mb-4">
                 <div className="flex gap-2">
                   <button 
                     onClick={() => setCartonesSeleccionados([...cartonesSeleccionados, ...cartonesParaMostrar.map(c => c.id).filter(id => !cartonesSeleccionados.includes(id))])}
