@@ -151,20 +151,22 @@ export default function ComprarCartones() {
       }
 
       // Actualizar los cartones existentes en lugar de crear nuevos
-      const promesas = [];
-      for (const cartonVirtual of cartonesVirtuales) {
-        if (!cartonVirtual?.id) {
-          console.error('Cartón sin ID:', cartonVirtual);
-          continue;
-        }
-        promesas.push(
-          base44.entities.Carton.update(cartonVirtual.id, {
-            jugador_id: user.id,
-            comprado: true,
-            pagado: false
-          })
-        );
-      }
+       const promesas = [];
+       const ahora = new Date().toISOString();
+       for (const cartonVirtual of cartonesVirtuales) {
+         if (!cartonVirtual?.id) {
+           console.error('Cartón sin ID:', cartonVirtual);
+           continue;
+         }
+         promesas.push(
+           base44.entities.Carton.update(cartonVirtual.id, {
+             jugador_id: user.id,
+             comprado: true,
+             pagado: false,
+             fecha_compra: ahora
+           })
+         );
+       }
       const result = await Promise.all(promesas);
 
       await base44.entities.Partida.update(partidaId, {
