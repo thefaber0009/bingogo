@@ -134,11 +134,17 @@ export default function Layout({ children, currentPageName }) {
       </aside>
 
       {/* Main Content */}
-      <main className="ml-72 min-h-screen">
-        <div className="p-8">
+      <main className="ml-72 min-h-screen flex flex-col">
+        <div className="p-8 flex-1">
           {children}
         </div>
+
+        {/* Footer */}
+        <footer className="bg-slate-800 text-slate-300 py-6 px-8 text-center border-t border-slate-700">
+          <p className="text-sm font-medium text-white">Copyright © 2026 BingoManía. Todos los derechos reservados.</p>
+          <p className="text-xs mt-1">Sitio creado por: 360 Ingenierías</p>
+        </footer>
       </main>
-    </div>
-  );
-}
+      </div>
+      );
+      }
