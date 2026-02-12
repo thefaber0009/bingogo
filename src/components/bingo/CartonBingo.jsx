@@ -64,12 +64,12 @@ export default function CartonBingo({ carton, marcados = [], onMarcar, autoMarca
       </div>
 
       {/* Grid de números estilo bingo */}
-      <div className="px-3 pb-3 pt-2 bg-white space-y-1">
+      <div className="px-2.5 pb-2 pt-1.5 bg-white space-y-0.5">
         {numeros.length > 0 ? (
           numeros.map((fila, i) => {
             const arrayFila = Array.isArray(fila) ? fila : [];
             return (
-              <div key={i} className="grid grid-cols-5 gap-1">
+              <div key={i} className="grid grid-cols-5 gap-0.5">
                 {arrayFila.map((numero, j) => {
                   const esCentro = i === 2 && j === 2;
                   const marcado = isNumeroMarcado(numero, j);
@@ -78,14 +78,14 @@ export default function CartonBingo({ carton, marcados = [], onMarcar, autoMarca
                     <div
                       key={`${i}-${j}`}
                       className={cn(
-                        "aspect-square flex items-center justify-center font-bold transition-all border-2",
-                        esCentro && "bg-white border-yellow-300",
-                        !esCentro && "bg-yellow-100 text-slate-800 border-yellow-300 rounded text-sm",
-                        !esCentro && marcado && "ring-2 ring-blue-500 ring-inset"
+                        "aspect-square flex items-center justify-center font-bold transition-all text-sm",
+                        esCentro && "bg-white",
+                        !esCentro && "bg-yellow-100 text-slate-900 rounded",
+                        !esCentro && marcado && "ring-2 ring-blue-500"
                       )}
                     >
                       {esCentro ? (
-                        <div className="w-5 h-5 bg-blue-400 rounded-full"></div>
+                        <div className="w-4 h-4 bg-cyan-400 rounded-full"></div>
                       ) : (
                         numero
                       )}
