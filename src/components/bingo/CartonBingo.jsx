@@ -16,28 +16,29 @@ export default function CartonBingo({ carton, marcados = [], onMarcar, autoMarca
     return 'O';
   };
 
-  const getLetrasAlMarcar = (modo) => {
+  // Mapeo de modos a posiciones específicas en el grid (fila, columna)
+  const getModoPositiones = (modo) => {
     const modoMap = {
-      'Marco Grande': ['B', 'I'],
-      'Letra H': ['B', 'I'],
-      'Letra L': ['B', 'O'],
-      'Letra T': ['B', 'I', 'N', 'G'],
-      'Letra X': ['B', 'G', 'N', 'O'],
-      '4 Esquinas': ['B', 'O'],
-      'Casa Llena': ['B', 'I', 'N', 'G', 'O'],
-      '1 Línea': ['B', 'I', 'N', 'G', 'O'],
-      '2 Líneas': ['B', 'I', 'N', 'G', 'O'],
-      'Zig-Zag': ['B', 'I', 'N', 'G', 'O'],
-      'Pirámide': ['B', 'I', 'N', 'G', 'O']
+      'Letra L': [[0,0], [1,0], [2,0], [3,0], [4,0], [4,1], [4,2], [4,3], [4,4]],
+      'Letra H': [[0,0], [1,0], [2,0], [3,0], [4,0], [0,4], [1,4], [2,4], [3,4], [4,4]],
+      'Letra T': [[0,0], [0,1], [0,2], [0,3], [0,4], [1,2], [2,2], [3,2], [4,2]],
+      'Letra X': [[0,0], [1,1], [2,2], [3,3], [4,4], [0,4], [1,3], [3,1], [4,0]],
+      '4 Esquinas': [[0,0], [0,4], [4,0], [4,4]],
+      'Casa Llena': [[0,0], [0,1], [0,2], [0,3], [0,4], [1,0], [1,1], [1,2], [1,3], [1,4], [2,0], [2,1], [2,2], [2,3], [2,4], [3,0], [3,1], [3,2], [3,3], [3,4], [4,0], [4,1], [4,2], [4,3], [4,4]]
     };
     return modoMap[modo] || [];
   };
 
-  const isNumeroMarcado = (numero, columna) => {
+  const perteneceModo = (fila, columna) => {
+    if (!modoSeleccionado) return false;
+    const posiciones = getModoPositiones(modoSeleccionado);
+    return posiciones.some(([f, c]) => f === fila && c === columna);
+  };
+
+  const isNumeroMarcado = (numero, fila, columna) => {
     if (numero === 0) return true;
-    const letra = obtenerLetra(numero);
-    const letrasAlMarcar = getLetrasAlMarcar(modoSeleccionado);
-    return marcados.includes(numero) && letrasAlMarcar.includes(letra);
+    if (!modoSeleccionado) return false;
+    return marcados.includes(numero) && perteneceModo(fila, columna);
   };
 
   const handleClickCelda = (numero) => {
