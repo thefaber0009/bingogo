@@ -66,6 +66,13 @@ export default function MisCartones() {
     enabled: !!user?.id,
   });
 
+  const { data: bolasCantadas = [] } = useQuery({
+    queryKey: ['bolasCantadas', partidaId],
+    queryFn: () => base44.entities.BolaCantada.filter({ partida_id: partidaId }),
+    enabled: !!partidaId,
+    refetchInterval: 2000,
+  });
+
   // Agrupar cartones por partida
   const cartonAgrupadosPorPartida = todosLosCartones.reduce((acc, carton) => {
     if (!acc[carton.partida_id]) {
