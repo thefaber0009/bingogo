@@ -31,6 +31,7 @@ export default function CreateRoomDialog({ open, onOpenChange, onSubmit, isLoadi
     nombre: '',
     tipo: '',
     cantidadCartones: '',
+    precioCarton: '1',
     duracionMaxima: '',
     capacidad: 'ilimitada',
     limiteJugadores: '',
@@ -102,7 +103,7 @@ export default function CreateRoomDialog({ open, onOpenChange, onSubmit, isLoadi
       tipo: selectedType,
       cantidad_total_cartones: parseInt(formData.cantidadCartones),
       fecha_inicio: new Date(fechaHora).toISOString(),
-      precio_carton: 1,
+      precio_carton: parseFloat(formData.precioCarton) || 1,
       duracion_maxima: formData.duracionMaxima ? parseInt(formData.duracionMaxima) : null,
       combos: formData.combos.filter(c => c.nombre && c.cantidad && c.precio),
       modos_juego: Object.keys(formData.modos).filter(m => formData.modos[m]).map(m => ({
@@ -172,6 +173,7 @@ export default function CreateRoomDialog({ open, onOpenChange, onSubmit, isLoadi
       nombre: '',
       tipo: '',
       cantidadCartones: '',
+      precioCarton: '1',
       duracionMaxima: '',
       capacidad: 'ilimitada',
       limiteJugadores: '',
@@ -230,17 +232,31 @@ export default function CreateRoomDialog({ open, onOpenChange, onSubmit, isLoadi
             </div>
           </div>
 
-          {/* Cantidad de Cartones */}
-          <div>
-            <Label>Cantidad de Cartones</Label>
-            <Input
-              type="number"
-              placeholder="Ej: 100"
-              min="1"
-              value={formData.cantidadCartones}
-              onChange={(e) => setFormData({ ...formData, cantidadCartones: e.target.value })}
-            />
-            <p className="text-xs text-slate-500 mt-1">Número máximo de cartones disponibles</p>
+          {/* Cantidad de Cartones y Precio */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label>Cantidad de Cartones</Label>
+              <Input
+                type="number"
+                placeholder="Ej: 100"
+                min="1"
+                value={formData.cantidadCartones}
+                onChange={(e) => setFormData({ ...formData, cantidadCartones: e.target.value })}
+              />
+              <p className="text-xs text-slate-500 mt-1">Número máximo de cartones disponibles</p>
+            </div>
+            <div>
+              <Label>Precio por Cartón ($)</Label>
+              <Input
+                type="number"
+                placeholder="Ej: 5"
+                min="0.01"
+                step="0.01"
+                value={formData.precioCarton}
+                onChange={(e) => setFormData({ ...formData, precioCarton: e.target.value })}
+              />
+              <p className="text-xs text-slate-500 mt-1">Precio individual de cada cartón</p>
+            </div>
           </div>
 
           {/* Configuración Avanzada */}
