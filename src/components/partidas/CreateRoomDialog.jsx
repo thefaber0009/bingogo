@@ -117,61 +117,7 @@ export default function CreateRoomDialog({ open, onOpenChange, onSubmit, isLoadi
       })),
     };
 
-    const partidaCreada = await onSubmit(submitData);
-    
-    // Generar cartones automáticamente después de crear la partida
-    if (partidaCreada?.id) {
-      const seededRandom = (seed) => {
-        let state = seed;
-        return () => {
-          state = (state * 1103515245 + 12345) & 0x7fffffff;
-          return state / 0x7fffffff;
-        };
-      };
-
-      const generarCartonDeterminista = (numeroCarton) => {
-        const random = seededRandom(numeroCarton * 9999);
-        const rangos = [[1, 15], [16, 30], [31, 45], [46, 60], [61, 75]];
-        const carton = [];
-        const numerosUsadosPorColumna = [[], [], [], [], []];
-        for (let row = 0; row < 5; row++) {
-          const fila = [];
-          for (let col = 0; col < 5; col++) {
-            if (col === 2 && row === 2) {
-              fila.push(0);
-            } else {
-              const [min, max] = rangos[col];
-              const numerosDisponibles = Array.from(
-                { length: max - min + 1 },
-                (_, i) => i + min
-              ).filter(n => !numerosUsadosPorColumna[col].includes(n));
-              const num = numerosDisponibles[Math.floor(random() * numerosDisponibles.length)];
-              numerosUsadosPorColumna[col].push(num);
-              fila.push(num);
-            }
-          }
-          carton.push(fila);
-        }
-        return carton;
-      };
-
-      const cartones = [];
-      for (let i = 1; i <= parseInt(formData.cantidadCartones); i++) {
-        cartones.push({
-          partida_id: partidaCreada.id,
-          numero_carton: i,
-          numeros: generarCartonDeterminista(i),
-          estado: 'activo',
-          comprado: false,
-          pagado: false,
-          marcados: []
-        });
-      }
-      
-      console.log('Creando', cartones.length, 'cartones para partida:', partidaCreada.id);
-      const cartonesCreados = await base44.entities.Carton.bulkCreate(cartones);
-      console.log('Cartones creados exitosamente:', cartonesCreados?.length || 'desconocido');
-    }
+    await onSubmit(submitData);
     
     setFormData({
       nombre: '',
