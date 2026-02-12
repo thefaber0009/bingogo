@@ -49,9 +49,9 @@ export default function CartonBingo({ carton, marcados = [], onMarcar, autoMarca
   return (
     <div className="bg-white border-4 border-blue-500 rounded-2xl shadow-xl overflow-hidden w-full max-w-sm">
       {/* Header */}
-      <div className="bg-white border-b-2 border-blue-400 p-3 text-center">
+      <div className="bg-white border-b-2 border-blue-300 p-3 text-center">
         <div className="text-blue-600 font-bold text-lg mb-0.5">BINGO MANÍA</div>
-        <div className="text-xs text-slate-600 font-semibold">Cartón No. <span className="text-red-600 font-bold text-sm">1</span></div>
+        <div className="text-xs text-slate-500 font-semibold">Cartón No. <span className="text-red-600 font-bold text-sm">{numeroCarton}</span></div>
       </div>
 
       {/* Letras */}
