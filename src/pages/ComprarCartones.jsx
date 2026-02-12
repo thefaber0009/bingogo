@@ -57,8 +57,18 @@ export default function ComprarCartones() {
     enabled: !!partidaId,
   });
 
+  // Generador de números pseudoaleatorios determinista (usando numero_carton como semilla)
+  const seededRandom = (seed) => {
+    let state = seed;
+    return () => {
+      state = (state * 1103515245 + 12345) & 0x7fffffff;
+      return state / 0x7fffffff;
+    };
+  };
+
   // Generar cartones disponibles (virtualmente, sin persistir aún)
-  const generarCartonVirtual = (numero) => {
+  const generarCartonVirtual = (numeroCarton) => {
+    const random = seededRandom(numeroCarton * 9999); // Semilla basada en el número del cartón
     const rangos = [
       [1, 15],   // B
       [16, 30],  // I
@@ -82,8 +92,8 @@ export default function ComprarCartones() {
             { length: max - min + 1 },
             (_, i) => i + min
           ).filter(n => !numerosUsadosPorColumna[col].includes(n));
-          
-          const num = numerosDisponibles[Math.floor(Math.random() * numerosDisponibles.length)];
+
+          const num = numerosDisponibles[Math.floor(random() * numerosDisponibles.length)];
           numerosUsadosPorColumna[col].push(num);
           fila.push(num);
         }
@@ -113,8 +123,8 @@ export default function ComprarCartones() {
     return disponibles;
   }, [partida?.cantidad_total_cartones, cartonesVendidos]);
 
-  const generarCarton = () => {
-    const carton = [];
+  const generarCarton = (numeroCarton) => {
+    const random = seededRandom(numeroCarton * 9999); // Usar la misma semilla que generarCartonVirtual
     const rangos = [
       [1, 15],   // B
       [16, 30],  // I
@@ -123,45 +133,49 @@ export default function ComprarCartones() {
       [61, 75]   // O
     ];
 
-    for (let col = 0; col < 5; col++) {
-      const columna = [];
-      const [min, max] = rangos[col];
-      const numerosDisponibles = Array.from({ length: max - min + 1 }, (_, i) => i + min);
-      
-      for (let row = 0; row < 5; row++) {
+    const carton = [];
+    const numerosUsadosPorColumna = [[], [], [], [], []];
+
+    for (let row = 0; row < 5; row++) {
+      const fila = [];
+      for (let col = 0; col < 5; col++) {
         if (col === 2 && row === 2) {
-          columna.push(0); // Centro libre
+          fila.push(0); // Centro libre
         } else {
-          const idx = Math.floor(Math.random() * numerosDisponibles.length);
-          columna.push(numerosDisponibles.splice(idx, 1)[0]);
+          const [min, max] = rangos[col];
+          const numerosDisponibles = Array.from(
+            { length: max - min + 1 },
+            (_, i) => i + min
+          ).filter(n => !numerosUsadosPorColumna[col].includes(n));
+
+          const num = numerosDisponibles[Math.floor(random() * numerosDisponibles.length)];
+          numerosUsadosPorColumna[col].push(num);
+          fila.push(num);
         }
       }
-      carton.push(columna);
+      carton.push(fila);
     }
 
-    return carton[0].map((_, i) => carton.map(col => col[i]));
+    return carton;
   };
 
   const crearCartonMutation = useMutation({
-    mutationFn: async (cantidad) => {
-      if (misCartones.length + cantidad > (partida?.max_cartones_por_jugador || 4)) {
+    mutationFn: async (cartonesVirtuales) => {
+      if (misCartones.length + cartonesVirtuales.length > (partida?.max_cartones_por_jugador || 4)) {
         throw new Error(`No puedes comprar más de ${partida?.max_cartones_por_jugador} cartones`);
       }
 
-      if (cartonesVendidos.length + cantidad > (partida?.cantidad_total_cartones || 0)) {
+      if (cartonesVendidos.length + cartonesVirtuales.length > (partida?.cantidad_total_cartones || 0)) {
         throw new Error('No hay suficientes cartones disponibles');
       }
 
-      // Obtener el siguiente número de cartón para este jugador en esta partida
-      const proximoNumero = misCartones.length + 1;
-
       const promesas = [];
-      for (let i = 0; i < cantidad; i++) {
+      for (const cartonVirtual of cartonesVirtuales) {
         const nuevoCarton = {
           jugador_id: user.id,
           partida_id: partidaId,
-          numero_carton: proximoNumero + i,
-          numeros: generarCarton(),
+          numero_carton: cartonVirtual.numeroVirtual,
+          numeros: generarCarton(cartonVirtual.numeroVirtual),
           estado: 'activo',
           comprado: true,
           pagado: false,
@@ -172,7 +186,7 @@ export default function ComprarCartones() {
       const result = await Promise.all(promesas);
 
       await base44.entities.Partida.update(partidaId, {
-        cartones_vendidos: cartonesVendidos.length + cantidad
+        cartones_vendidos: cartonesVendidos.length + cartonesVirtuales.length
       });
 
       return result;
@@ -188,13 +202,15 @@ export default function ComprarCartones() {
   });
 
   const comprarYEntrar = async (cantidad) => {
-    await crearCartonMutation.mutateAsync(cantidad);
+    const cartonesAComprar = cartonesDisponiblesParaComprar.slice(0, cantidad);
+    await crearCartonMutation.mutateAsync(cartonesAComprar);
     navigate(createPageUrl('MisCartones') + `?partida=${partidaId}`);
   };
 
   const handleComprarSeleccionados = async () => {
     if (cartonesSeleccionados.length > 0) {
-      await crearCartonMutation.mutateAsync(cartonesSeleccionados.length);
+      const cartonesAComprar = cartonesDisponiblesParaComprar.filter(c => cartonesSeleccionados.includes(c.id));
+      await crearCartonMutation.mutateAsync(cartonesAComprar);
       navigate(createPageUrl('MisCartones') + `?partida=${partidaId}`);
     }
   };
