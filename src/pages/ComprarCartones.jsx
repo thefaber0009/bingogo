@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '../utils';
+import AuthDialog from '../components/auth/AuthDialog';
 
 // Generador de números pseudoaleatorios determinista (fuera del componente)
 const seededRandom = (seed) => {
@@ -70,6 +71,7 @@ export default function ComprarCartones() {
   const [paginaActual, setPaginaActual] = useState(1);
   const [busquedaNumero, setBusquedaNumero] = useState('');
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const [mostrarAuth, setMostrarAuth] = useState(false);
   const CARTONES_POR_PAGINA = isMobile ? 5 : 25;
 
   React.useEffect(() => {
@@ -188,11 +190,20 @@ export default function ComprarCartones() {
   };
 
   const handleComprarSeleccionados = async () => {
+    if (!user) {
+      setMostrarAuth(true);
+      return;
+    }
     if (cartonesSeleccionados.length > 0) {
       const cartonesAComprar = cartonesDisponiblesParaComprar.filter(c => cartonesSeleccionados.includes(c.id));
       await crearCartonMutation.mutateAsync(cartonesAComprar);
       navigate(createPageUrl('MisCartones') + `?partida=${partidaId}`);
     }
+  };
+
+  const handleAuthSuccess = () => {
+    setMostrarAuth(false);
+    queryClient.invalidateQueries(['currentUser']);
   };
 
   const toggleCartonSeleccionado = (cartonId) => {
@@ -266,6 +277,11 @@ export default function ComprarCartones() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-400 to-purple-500 p-3 sm:p-6">
+      <AuthDialog 
+        open={mostrarAuth} 
+        onClose={() => setMostrarAuth(false)}
+        onSuccess={handleAuthSuccess}
+      />
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 mb-4 sm:mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
