@@ -99,11 +99,11 @@ export default function CartonBingo({ carton, marcados = [], onMarcar, autoMarca
       </div>
 
       {/* Botones */}
-      <div className="flex gap-2 px-3 pb-3 pt-1">
-        <button className="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-1.5 px-3 rounded text-xs transition-all">
+      <div className="flex gap-2 px-2.5 pb-2.5 pt-1.5 bg-gray-50">
+        <button className="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-1 px-2 rounded text-xs transition-all">
           Seleccionar
         </button>
-        <button className="flex-1 bg-cyan-400 hover:bg-cyan-500 text-white font-bold py-1.5 px-3 rounded text-xs transition-all">
+        <button className="flex-1 bg-cyan-400 hover:bg-cyan-500 text-white font-bold py-1 px-2 rounded text-xs transition-all">
           Verificar
         </button>
       </div>
