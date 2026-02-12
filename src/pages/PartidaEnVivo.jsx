@@ -126,17 +126,38 @@ export default function PartidaEnVivo() {
                  </div>
 
                 <div className="flex flex-wrap items-center gap-3 pt-4 border-t border-slate-200">
-                  <Button className="bg-yellow-500 hover:bg-yellow-600 text-slate-900 font-bold h-10">
-                    🎲 Sacar nuevo número
-                  </Button>
-                  <Button variant="outline" className="h-10">
-                    <RotateCcw className="w-4 h-4 mr-2" />
-                    Reiniciar
-                  </Button>
-                  <Button className="bg-indigo-600 hover:bg-indigo-700 h-10">
-                    <Zap className="w-4 h-4 mr-2" />
-                    Iniciar sorteo automático
-                  </Button>
+                   <Button 
+                     onClick={async () => {
+                       if (!selectedPartidaId) return;
+                       const disponibles = Array.from({length: 75}, (_, i) => i + 1)
+                         .filter(n => !bolas.map(b => b.numero).includes(n));
+                       if (disponibles.length > 0) {
+                         const nuevoNumero = disponibles[Math.floor(Math.random() * disponibles.length)];
+                         await base44.entities.BolaCantada.create({
+                           partida_id: selectedPartidaId,
+                           numero: nuevoNumero,
+                           orden: bolas.length + 1
+                         });
+                       }
+                     }}
+                     disabled={!selectedPartidaId}
+                     className="bg-yellow-500 hover:bg-yellow-600 text-slate-900 font-bold h-10"
+                   >
+                     🎲 Sacar nuevo número
+                   </Button>
+                   <Button 
+                     onClick={async () => {
+                       if (!selectedPartidaId) return;
+                       await Promise.all(bolas.map(b => base44.entities.BolaCantada.delete(b.id)));
+                       setAutoSort(false);
+                     }}
+                     disabled={!selectedPartidaId || bolas.length === 0}
+                     variant="outline" 
+                     className="h-10"
+                   >
+                     <RotateCcw className="w-4 h-4 mr-2" />
+                     Reiniciar
+                   </Button>
                 </div>
               </div>
             </CardContent>
