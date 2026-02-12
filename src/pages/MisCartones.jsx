@@ -195,42 +195,44 @@ export default function MisCartones() {
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
       <div className="max-w-7xl mx-auto p-3 sm:p-6 space-y-4 sm:space-y-6">
         {/* Header con Bienvenida */}
-        <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl shadow-xl p-4 sm:p-6 text-white">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3 sm:gap-4 flex-1">
+        <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl shadow-xl p-3 sm:p-6 text-white">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
+            <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
               <Link to={createPageUrl('Lobby')}>
-                <Button variant="outline" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 bg-white/20 border-white/30 hover:bg-white/30 flex-shrink-0">
+                <Button variant="outline" size="icon" className="h-8 w-8 sm:h-10 sm:w-10 bg-white/20 border-white/30 hover:bg-white/30 flex-shrink-0">
                   <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                 </Button>
               </Link>
-              <div className="min-w-0">
-                <h1 className="text-xl sm:text-2xl font-bold truncate">¡Bienvenido, {user?.full_name || 'Jugador'}!</h1>
-                <p className="text-xs sm:text-sm text-white/90 flex items-center gap-2 flex-wrap">
-                  <span>📅 {new Date().toLocaleDateString('es-ES', {weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'})}</span>
+              <div className="min-w-0 flex-1">
+                <h1 className="text-base sm:text-2xl font-bold truncate leading-tight">¡Bienvenido, {user?.full_name?.split(' ')[0] || 'Jugador'}!</h1>
+                <p className="text-xs sm:text-sm text-white/90 flex items-center gap-1 sm:gap-2 flex-wrap mt-0.5">
+                  <span className="hidden sm:inline">📅 {new Date().toLocaleDateString('es-ES', {day: 'numeric', month: '2-digit'})}</span>
+                  <span className="sm:hidden">📅 {new Date().toLocaleDateString('es-ES', {month: 'short', day: 'numeric'})}</span>
                   <span className="hidden sm:inline">•</span>
                   <span>🕐 {new Date().toLocaleTimeString('es-ES', {hour: '2-digit', minute: '2-digit'})}</span>
                 </p>
               </div>
             </div>
-            <div className="flex items-center gap-2 ml-auto flex-shrink-0">
+            <div className="flex items-center gap-2 flex-shrink-0">
               <Button 
                 onClick={() => setDialogoConfiguracionAbierto(true)}
                 variant="outline" 
                 size="icon" 
-                className="h-9 w-9 sm:h-10 sm:w-10 bg-white/20 border-white/30 hover:bg-white/30 flex-shrink-0"
+                className="h-8 w-8 sm:h-10 sm:w-10 bg-white/20 border-white/30 hover:bg-white/30"
               >
                 <Settings className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
               </Button>
-              <Link to={createPageUrl('Lobby')} className="flex-shrink-0">
-                <Button variant="outline" className="bg-white/20 border-white/30 hover:bg-white/30 text-white font-semibold text-xs sm:text-sm">
+              <Link to={createPageUrl('Lobby')}>
+                <Button variant="outline" className="bg-white/20 border-white/30 hover:bg-white/30 text-white font-semibold text-xs sm:text-sm px-2 sm:px-4 h-8 sm:h-10">
                   Salir
                 </Button>
               </Link>
             </div>
-            <div className="hidden lg:block text-right ml-auto flex-shrink-0">
-              <p className="text-3xl font-bold">${saldoDisponible.toFixed(3)}</p>
-              <p className="text-sm text-white/90">Total Gastado</p>
-            </div>
+          </div>
+          <div className="hidden lg:flex items-center gap-2 mt-3 pt-3 border-t border-white/20">
+            <Trophy className="w-4 h-4" />
+            <p className="text-sm text-white/90">Saldo disponible:</p>
+            <p className="text-xl sm:text-2xl font-bold">${saldoDisponible.toFixed(3)}</p>
           </div>
         </div>
 
