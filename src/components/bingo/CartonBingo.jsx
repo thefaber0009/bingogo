@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 
-export default function CartonBingo({ carton, marcados = [], onMarcar, autoMarcar = false }) {
+export default function CartonBingo({ carton, marcados = [], onMarcar, autoMarcar = false, modoSeleccionado = null, ultimoNumero = null }) {
   const letras = ['B', 'I', 'N', 'G', 'O'];
   
   // Convertir el array plano a matriz 5x5 si es necesario
@@ -10,8 +10,38 @@ export default function CartonBingo({ carton, marcados = [], onMarcar, autoMarca
     ? carton.numeros 
     : carton?.numeros || [];
 
-  const isNumeroMarcado = (numero) => {
-    return marcados.includes(numero) || numero === 0; // 0 es el centro libre
+  const obtenerLetra = (numero) => {
+    if (numero <= 15) return 'B';
+    if (numero <= 30) return 'I';
+    if (numero <= 45) return 'N';
+    if (numero <= 60) return 'G';
+    return 'O';
+  };
+
+  const getLetrasAlMarcar = (modo) => {
+    const modoMap = {
+      'Marco Grande': ['B', 'I'],
+      'Letra H': ['B', 'I'],
+      'Letra L': ['B', 'O'],
+      'Letra T': ['B', 'I', 'N', 'G'],
+      'Letra X': ['B', 'G', 'N', 'O'],
+      '4 Esquinas': ['B', 'O'],
+      'Casa Llena': ['B', 'I', 'N', 'G', 'O'],
+      '1 Línea': ['B', 'I', 'N', 'G', 'O'],
+      '2 Líneas': ['B', 'I', 'N', 'G', 'O'],
+      'Zig-Zag': ['B', 'I', 'N', 'G', 'O'],
+      'Pirámide': ['B', 'I', 'N', 'G', 'O']
+    };
+    return modoMap[modo] || [];
+  };
+
+  const isNumeroMarcado = (numero, columna) => {
+    if (numero === 0) return true; // Siempre marcar centro
+    const letra = obtenerLetra(numero);
+    const letrasAlMarcar = getLetrasAlMarcar(modoSeleccionado);
+    
+    // Solo marcar si está en marcados Y está en las letras del modo
+    return marcados.includes(numero) && letrasAlMarcar.includes(letra);
   };
 
   const handleClickCelda = (numero) => {
