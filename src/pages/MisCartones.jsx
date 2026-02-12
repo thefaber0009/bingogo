@@ -211,7 +211,7 @@ export default function MisCartones() {
         {/* Header con Bienvenida */}
         <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl shadow-xl p-4 sm:p-6 text-white">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3 sm:gap-4">
+            <div className="flex items-center gap-3 sm:gap-4 flex-1">
               <Link to={createPageUrl('Lobby')}>
                 <Button variant="outline" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 bg-white/20 border-white/30 hover:bg-white/30">
                   <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
@@ -226,6 +226,11 @@ export default function MisCartones() {
                 </p>
               </div>
             </div>
+            <Link to={createPageUrl('Lobby')}>
+              <Button variant="outline" className="bg-white/20 border-white/30 hover:bg-white/30 text-white font-semibold">
+                Salir
+              </Button>
+            </Link>
             <div className="hidden sm:block text-right">
               <p className="text-3xl font-bold">${saldoDisponible.toFixed(3)}</p>
               <p className="text-sm text-white/90">Total Gastado</p>
