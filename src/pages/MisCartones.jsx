@@ -70,8 +70,19 @@ export default function MisCartones() {
     queryKey: ['bolasCantadas', partidaId],
     queryFn: () => base44.entities.BolaCantada.filter({ partida_id: partidaId }),
     enabled: !!partidaId,
-    refetchInterval: 2000,
+    refetchInterval: 500,
   });
+
+  // Subscribe para actualizaciones en tiempo real
+  React.useEffect(() => {
+    if (!partidaId) return;
+    const unsubscribe = base44.entities.BolaCantada.subscribe((event) => {
+      if (event.data?.partida_id === partidaId) {
+        queryClient.invalidateQueries({ queryKey: ['bolasCantadas', partidaId] });
+      }
+    });
+    return unsubscribe;
+  }, [partidaId, queryClient]);
 
   // Agrupar cartones por partida
   const cartonAgrupadosPorPartida = todosLosCartones.reduce((acc, carton) => {
