@@ -408,10 +408,10 @@ export default function MisCartones() {
                           </div>
                         </div>
                       )}
-                      <CardHeader className="pb-2 sm:pb-3">
-                        <div className="flex items-start justify-between gap-2">
+                      <CardHeader className="pb-3 sm:pb-4">
+                        <div className="flex items-center justify-between gap-2">
                           <CardTitle className="text-sm sm:text-base lg:text-lg flex items-center gap-2 flex-1">
-                            <Ticket className={`w-4 h-4 sm:w-5 sm:h-5 ${cartonesHabilitados[carton.id] && estaPagado ? 'text-green-600' : 'text-slate-400'}`} />
+                            <Ticket className={`w-4 h-4 sm:w-5 sm:h-5 ${estaPagado ? 'text-indigo-600' : 'text-amber-600'}`} />
                             <span className="truncate">Cartón #{carton.numero_carton} - {carton.id.substring(0, 6).toUpperCase()}</span>
                           </CardTitle>
                           <button
