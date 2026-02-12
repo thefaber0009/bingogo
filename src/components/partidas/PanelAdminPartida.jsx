@@ -94,19 +94,39 @@ export default function PanelAdminPartida({ partida, open, onOpenChange }) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-6xl max-h-[95vh] overflow-y-auto bg-slate-100 p-0">
-        <DialogHeader className="bg-white border-b p-4">
+      <DialogContent className={`${expandido ? 'max-w-full max-h-full' : 'max-w-6xl max-h-[95vh]'} overflow-y-auto bg-slate-100 p-0`}>
+        <DialogHeader className="bg-white border-b p-4 sticky top-0 z-10">
           <div className="flex items-center justify-between">
             <DialogTitle className="text-2xl">Panel de Administración - {partida.nombre}</DialogTitle>
-            <Button 
-              onClick={() => onOpenChange(false)}
-              variant="outline"
-              size="sm"
-              className="gap-2"
-            >
-              <X className="w-4 h-4" />
-              Salir
-            </Button>
+            <div className="flex gap-2">
+              <Button 
+                onClick={() => setExpandido(!expandido)}
+                variant="outline"
+                size="sm"
+                className="gap-2"
+              >
+                {expandido ? (
+                  <>
+                    <Minimize2 className="w-4 h-4" />
+                    Contraer
+                  </>
+                ) : (
+                  <>
+                    <Maximize2 className="w-4 h-4" />
+                    Expandir
+                  </>
+                )}
+              </Button>
+              <Button 
+                onClick={() => onOpenChange(false)}
+                variant="outline"
+                size="sm"
+                className="gap-2"
+              >
+                <X className="w-4 h-4" />
+                Salir
+              </Button>
+            </div>
           </div>
         </DialogHeader>
 
