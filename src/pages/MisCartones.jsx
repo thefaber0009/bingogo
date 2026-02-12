@@ -76,48 +76,31 @@ export default function MisCartones() {
   const cartones = partidaId ? todosLosCartones.filter(c => c.partida_id === partidaId) : todosLosCartones;
 
   const [cartonesHabilitados, setCartonesHabilitados] = useState({});
-  const [tiemposCarton, setTiemposCarton] = useState({});
   const [dialogoPagoAbierto, setDialogoPagoAbierto] = useState(false);
 
-  useEffect(() => {
-    // Inicializar tiempos de los cartones (5 minutos = 300 segundos)
-    setTiemposCarton(prev => {
-      const nuevo = { ...prev };
-      cartones.forEach(carton => {
-        if (!carton.pagado && !nuevo[carton.id]) {
-          nuevo[carton.id] = 300;
-        }
-      });
-      // Limpiar tiempos de cartones que ya no existen
-      Object.keys(nuevo).forEach(cartonId => {
-        if (!cartones.find(c => c.id === cartonId)) {
-          delete nuevo[cartonId];
-        }
-      });
-      return nuevo;
-    });
-  }, [cartones]);
+  // Calcular tiempo restante basado en created_date del cartón
+  const calcularTiempoRestante = (carton) => {
+    if (carton.pagado) return null;
+    const createdDate = new Date(carton.created_date);
+    const ahora = new Date();
+    const tiempoTranscurrido = Math.floor((ahora - createdDate) / 1000);
+    const tiempoRestante = Math.max(0, 300 - tiempoTranscurrido);
+    return tiempoRestante;
+  };
 
   useEffect(() => {
     const intervalo = setInterval(() => {
-      // Forzar re-render para actualizar relojes regresivos de salas
+      // Forzar re-render para actualizar relojes regresivos
       queryClient.invalidateQueries(['todasPartidas']);
       
-      setTiemposCarton(prev => {
-        const nuevo = { ...prev };
-        Object.keys(nuevo).forEach(cartonId => {
-          if (nuevo[cartonId] > 0) {
-            nuevo[cartonId] -= 1;
-          } else if (nuevo[cartonId] === 0) {
-            // Liberar cartón cuando expire el tiempo
-            const carton = cartones.find(c => c.id === cartonId);
-            if (carton && !carton.pagado) {
-              deleteCartonMutation.mutate(cartonId);
-              delete nuevo[cartonId]; // Limpiar el tiempo del estado
-            }
+      // Verificar cartones expirados
+      cartones.forEach(carton => {
+        if (!carton.pagado) {
+          const tiempoRestante = calcularTiempoRestante(carton);
+          if (tiempoRestante === 0) {
+            deleteCartonMutation.mutate(carton.id);
           }
-        });
-        return nuevo;
+        }
       });
     }, 1000);
 
@@ -435,7 +418,7 @@ export default function MisCartones() {
                 {/* Cartones de la Sala */}
                 <div className="grid grid-cols-1 gap-4 sm:gap-6">
                   {cartonesPartida.sort((a, b) => a.numero_carton - b.numero_carton).map((carton) => {
-                    const tiempoRestante = tiemposCarton[carton.id] || 300;
+                    const tiempoRestante = calcularTiempoRestante(carton) || 0;
                     const tiempoAgotado = tiempoRestante === 0;
                     const estaPagado = carton.pagado === true;
                     return (
