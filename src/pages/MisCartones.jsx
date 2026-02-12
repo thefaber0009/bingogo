@@ -407,8 +407,10 @@ export default function MisCartones() {
                       <p className="font-semibold text-sm sm:text-base text-slate-900">{cartonesPartida.length}</p>
                     </div>
                     <div>
-                      <p className="text-xs text-slate-500">✓ Habilitados</p>
-                      <p className="font-semibold text-sm sm:text-base text-green-600">{cartonesHabilitadosPartida}</p>
+                      <p className="text-xs text-slate-500">{cartonesPartida.filter(c => c.pagado).length > 0 ? '✓ Habilitados' : '✗ Desabilitado'}</p>
+                      <p className={`font-semibold text-sm sm:text-base ${cartonesPartida.filter(c => c.pagado).length > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                        {cartonesPartida.filter(c => c.pagado).length || 0}
+                      </p>
                     </div>
                     <div>
                       <p className="text-xs text-slate-500">💰 Precio</p>
