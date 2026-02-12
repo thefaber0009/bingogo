@@ -161,7 +161,6 @@ export default function CreateRoomDialog({ open, onOpenChange, onSubmit, isLoadi
           partida_id: partidaCreada.id,
           numero_carton: i,
           numeros: generarCartonDeterminista(i),
-          jugador_id: null,
           estado: 'activo',
           comprado: false,
           pagado: false,
