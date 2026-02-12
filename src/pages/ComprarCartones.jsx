@@ -101,8 +101,13 @@ export default function ComprarCartones() {
         partida_id: partidaId
       });
 
-      // Si no hay cartones pre-generados, crearlos
-      if (cartones.length === 0 && partida) {
+      // Contar cartones disponibles (no comprados)
+      const disponibles = cartones.filter(c => !c.comprado);
+      const totalEsperado = partida?.cantidad_total_cartones || 0;
+
+      // Si faltan cartones disponibles, generarlos
+      if (disponibles.length < totalEsperado) {
+        const numerosExistentes = new Set(cartones.map(c => c.numero_carton));
         const seededRandom = (seed) => {
           let state = seed;
           return () => {
@@ -138,20 +143,25 @@ export default function ComprarCartones() {
         };
 
         const nuevosCartones = [];
-        for (let i = 1; i <= partida.cantidad_total_cartones; i++) {
-          nuevosCartones.push({
-            partida_id: partidaId,
-            numero_carton: i,
-            numeros: generarCartonDeterminista(i),
-            jugador_id: null,
-            estado: 'activo',
-            comprado: false,
-            pagado: false,
-            marcados: []
-          });
+        for (let i = 1; i <= totalEsperado; i++) {
+          if (!numerosExistentes.has(i)) {
+            nuevosCartones.push({
+              partida_id: partidaId,
+              numero_carton: i,
+              numeros: generarCartonDeterminista(i),
+              jugador_id: null,
+              estado: 'activo',
+              comprado: false,
+              pagado: false,
+              marcados: []
+            });
+          }
         }
-        await base44.entities.Carton.bulkCreate(nuevosCartones);
-        return nuevosCartones;
+        
+        if (nuevosCartones.length > 0) {
+          await base44.entities.Carton.bulkCreate(nuevosCartones);
+          return [...cartones, ...nuevosCartones];
+        }
       }
 
       return cartones;
