@@ -156,17 +156,8 @@ export default function PanelAdminPartida({ partida, open, onOpenChange }) {
           {/* Números Sorteados */}
           <div className="bg-white rounded-lg p-4">
             <div className="text-sm font-semibold text-slate-700 mb-3">Números sorteados: {numerosSorteados.length}</div>
-            <div className="flex items-center gap-4 mb-4">
-              {ultimoNumero && (
-                <div className="flex items-center gap-2">
-                  <div className="w-16 h-16 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-2xl border-4 border-blue-800">
-                    {ultimoNumero}
-                  </div>
-                  <div className="text-sm">
-                    <span className="font-bold text-slate-900 text-lg">Última bola</span>
-                  </div>
-                </div>
-              )}
+            <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg p-4 mb-4">
+              <BolasDisplay numerosSorteados={numerosSorteados} ultimoNumero={ultimoNumero} />
             </div>
 
             {/* Grilla de Números BINGO */}
