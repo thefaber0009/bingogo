@@ -69,7 +69,14 @@ export default function ComprarCartones() {
   const [filtroCartones, setFiltroCartones] = useState('disponibles');
   const [paginaActual, setPaginaActual] = useState(1);
   const [busquedaNumero, setBusquedaNumero] = useState('');
-  const CARTONES_POR_PAGINA = 25;
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const CARTONES_POR_PAGINA = isMobile ? 5 : 25;
+
+  React.useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
   const urlParams = new URLSearchParams(window.location.search);
   const partidaId = urlParams.get('partida');
 
