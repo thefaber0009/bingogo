@@ -271,9 +271,8 @@ export default function PanelAdminPartida({ partida, open, onOpenChange }) {
                   cartonesSala
                     .sort((a, b) => a.numero_carton - b.numero_carton)
                     .map((carton) => (
-                      <div key={carton.id} className={`border-2 rounded-lg p-2 ${
-                        carton.comprado ? 'border-green-400 bg-green-50' : 'border-slate-200 bg-white'
-                      }`}>
+                      <div key={carton.id} className="border-0 rounded-lg p-0">
+                        <div className="flex items-start gap-1 mb-1">
                         <div className="text-xs font-bold text-center mb-1 flex items-center justify-between">
                           <span className="text-indigo-600">#{carton.numero_carton}</span>
                           {carton.comprado && (
