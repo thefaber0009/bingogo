@@ -47,53 +47,51 @@ export default function CartonBingo({ carton, marcados = [], onMarcar, autoMarca
   };
 
   return (
-    <div className="bg-white border-2 border-green-400 rounded-lg shadow-md overflow-hidden w-full max-w-xs">
+    <div className="bg-white border-2 border-green-400 rounded-lg shadow-md overflow-hidden w-full">
       {/* Status Badge */}
-      <div className="bg-green-400 text-white text-center text-xs font-bold py-1">
+      <div className="bg-green-500 text-white text-center text-xs font-bold py-1">
         ✓ Vendido
       </div>
 
       {/* Header con Modo */}
-      <div className="bg-gradient-to-r from-purple-500 to-purple-600 text-white p-3 text-center">
-        <div className="text-xs font-bold">Modo: Letra L</div>
-        <div className="grid grid-cols-5 gap-1 mt-2">
+      <div className="bg-purple-500 text-white p-2 text-center">
+        <div className="text-xs font-bold mb-1.5">MODO: Letra L</div>
+        <div className="grid grid-cols-5 gap-0.5">
           {letras.map((letra) => (
-            <div key={letra} className="font-bold text-base">{letra}</div>
+            <div key={letra} className="font-bold text-sm bg-purple-600 py-0.5 rounded-sm">{letra}</div>
           ))}
         </div>
       </div>
 
-      {/* Números en filas */}
-      <div className="p-3 bg-white">
-        <div className="space-y-1.5">
-          {numeros.length > 0 ? (
-            numeros.map((fila, i) => {
-              const arrayFila = Array.isArray(fila) ? fila : [];
-              return (
-                <div key={i} className="flex gap-1 justify-between text-xs font-semibold">
-                  {arrayFila.map((numero, j) => {
-                    const esCentro = i === 2 && j === 2;
-                    const marcado = isNumeroMarcado(numero, j);
+      {/* Grid de números estilo bingo */}
+      <div className="p-2 bg-white space-y-0.5">
+        {numeros.length > 0 ? (
+          numeros.map((fila, i) => {
+            const arrayFila = Array.isArray(fila) ? fila : [];
+            return (
+              <div key={i} className="grid grid-cols-5 gap-0.5">
+                {arrayFila.map((numero, j) => {
+                  const esCentro = i === 2 && j === 2;
+                  const marcado = isNumeroMarcado(numero, j);
 
-                    return (
-                      <span
-                        key={`${i}-${j}`}
-                        className={cn(
-                          "w-8 h-8 flex items-center justify-center rounded",
-                          esCentro && "bg-gray-300 text-white",
-                          !esCentro && !marcado && "text-slate-700",
-                          !esCentro && marcado && "bg-blue-500 text-white rounded-full"
-                        )}
-                      >
-                        {esCentro ? '★' : numero}
-                      </span>
-                    );
-                  })}
-                </div>
-              );
-            })
-          ) : null}
-        </div>
+                  return (
+                    <div
+                      key={`${i}-${j}`}
+                      className={cn(
+                        "aspect-square flex items-center justify-center rounded text-sm font-semibold transition-all border",
+                        esCentro && "bg-gray-300 text-white border-gray-400",
+                        !esCentro && !marcado && "bg-white text-slate-800 border-slate-200",
+                        !esCentro && marcado && "bg-blue-500 text-white border-blue-600 ring-1 ring-blue-400"
+                      )}
+                    >
+                      {esCentro ? '★' : numero}
+                    </div>
+                  );
+                })}
+              </div>
+            );
+          })
+        ) : null}
       </div>
     </div>
   );
