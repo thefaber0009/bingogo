@@ -267,7 +267,7 @@ export default function MisCartones() {
                         : 'border-slate-200 shadow-lg bg-white'
                     }`}>
                       {!estaPagado && (
-                        <div className="absolute inset-0 bg-black bg-opacity-30 rounded-lg flex items-center justify-center z-10">
+                        <div className="absolute inset-0 bg-black bg-opacity-30 rounded-lg flex items-center justify-center pointer-events-none z-10">
                           <div className="bg-white rounded-lg px-4 py-2 flex items-center gap-2 shadow-lg">
                             <Lock className="w-5 h-5 text-amber-600" />
                             <span className="font-bold text-amber-700 text-sm">Pendiente de pago</span>
@@ -300,7 +300,7 @@ export default function MisCartones() {
                           </div>
                           <button
                             onClick={() => handleEliminarCarton(carton.id)}
-                            className="p-1.5 hover:bg-red-200 text-red-600 rounded-lg transition-colors"
+                            className="p-1.5 hover:bg-red-200 text-red-600 rounded-lg transition-colors relative z-20"
                             title="Eliminar cartón"
                           >
                             <Trash2 className="w-4 h-4" />
