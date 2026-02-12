@@ -1,7 +1,7 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 
-export default function CartonBingo({ carton, marcados = [], onMarcar, autoMarcar = false, modoSeleccionado = null, ultimoNumero = null, numeroCarton = 1 }) {
+export default function CartonBingo({ carton, marcados = [], onMarcar, autoMarcar = false, modoSeleccionado = null, ultimoNumero = null, numeroCarton = 1, mostrarBotones = false }) {
   const letras = ['B', 'I', 'N', 'G', 'O'];
 
   const numeros = Array.isArray(carton?.numeros?.[0]) 
