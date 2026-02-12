@@ -22,6 +22,7 @@ import DashboardSettingsDialog from '@/components/dashboard/DashboardSettingsDia
 export default function Home() {
   const [panelOpen, setPanelOpen] = useState(false);
   const [partidaSeleccionada, setPartidaSeleccionada] = useState(null);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const queryClient = useQueryClient();
 
   const { data: partidas = [] } = useQuery({
