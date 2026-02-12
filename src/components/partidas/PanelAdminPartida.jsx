@@ -33,7 +33,7 @@ export default function PanelAdminPartida({ partida, open, onOpenChange }) {
     O: Array.from({ length: 15 }, (_, i) => i + 61),
   };
 
-  const sacarNumero = () => {
+  const sacarNumero = async () => {
     const disponibles = [];
     Object.values(NUMEROS_BINGO).flat().forEach(num => {
       if (!numerosSorteados.includes(num)) {
@@ -43,8 +43,16 @@ export default function PanelAdminPartida({ partida, open, onOpenChange }) {
     
     if (disponibles.length > 0) {
       const nuevoNumero = disponibles[Math.floor(Math.random() * disponibles.length)];
-      setNumerosSorteados([...numerosSorteados, nuevoNumero]);
+      const nuevoArray = [...numerosSorteados, nuevoNumero];
+      setNumerosSorteados(nuevoArray);
       setUltimoNumero(nuevoNumero);
+      
+      // Guardar en BD
+      await base44.entities.BolaCantada.create({
+        partida_id: partida.id,
+        numero: nuevoNumero,
+        orden: nuevoArray.length
+      });
     }
   };
 
