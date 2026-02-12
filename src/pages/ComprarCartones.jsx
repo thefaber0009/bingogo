@@ -255,7 +255,7 @@ export default function ComprarCartones() {
   const precioSeleccionados = cartonesSeleccionados.length * (partida?.precio_carton || 0);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-400 to-purple-500 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-blue-400 to-purple-500 p-3 sm:p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="bg-white rounded-2xl shadow-lg p-6 mb-6 flex items-center justify-between">
