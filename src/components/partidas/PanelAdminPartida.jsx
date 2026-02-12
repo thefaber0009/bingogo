@@ -3,7 +3,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { X, Play, Square, RotateCcw } from 'lucide-react';
+import { X, Play, Square, RotateCcw, Ticket } from 'lucide-react';
+import { base44 } from '@/api/base44Client';
+import { useQuery } from '@tanstack/react-query';
+import CartonBingo from '../bingo/CartonBingo';
 
 export default function PanelAdminPartida({ partida, open, onOpenChange }) {
   const [numerosSorteados, setNumerosSorteados] = useState([]);
@@ -12,6 +15,14 @@ export default function PanelAdminPartida({ partida, open, onOpenChange }) {
   const [modoSeleccionado, setModoSeleccionado] = useState('Letra L');
   const [autoSort, setAutoSort] = useState(false);
   const [ultimoNumero, setUltimoNumero] = useState(null);
+  const [mostrarCartones, setMostrarCartones] = useState(false);
+
+  const { data: cartonesSala = [] } = useQuery({
+    queryKey: ['cartonesSala', partida?.id],
+    queryFn: () => base44.entities.Carton.filter({ partida_id: partida.id }),
+    enabled: !!partida?.id && open,
+    refetchInterval: 5000,
+  });
 
   const NUMEROS_BINGO = {
     B: Array.from({ length: 15 }, (_, i) => i + 1),
@@ -173,18 +184,22 @@ export default function PanelAdminPartida({ partida, open, onOpenChange }) {
           </div>
 
           {/* Info del Juego */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
             <div className="bg-white rounded-lg p-4 text-center">
               <p className="text-xs text-slate-600 font-semibold">Números sorteados</p>
               <p className="text-3xl font-bold text-slate-900 mt-2">{numerosSorteados.length}</p>
             </div>
             <div className="bg-white rounded-lg p-4 text-center">
+              <p className="text-xs text-slate-600 font-semibold">Cartones totales</p>
+              <p className="text-3xl font-bold text-slate-900 mt-2">{partida.cantidad_total_cartones || 0}</p>
+            </div>
+            <div className="bg-white rounded-lg p-4 text-center">
               <p className="text-xs text-slate-600 font-semibold">Cartones vendidos</p>
-              <p className="text-3xl font-bold text-slate-900 mt-2">{partida.cartones_vendidos || 0}</p>
+              <p className="text-3xl font-bold text-slate-900 mt-2">{cartonesSala.filter(c => c.comprado).length}</p>
             </div>
             <div className="bg-white rounded-lg p-4 text-center">
               <p className="text-xs text-slate-600 font-semibold">Ingresos</p>
-              <p className="text-3xl font-bold text-slate-900 mt-2">${((partida.cartones_vendidos || 0) * partida.precio_carton).toLocaleString()}</p>
+              <p className="text-3xl font-bold text-slate-900 mt-2">${(cartonesSala.filter(c => c.comprado).length * partida.precio_carton).toLocaleString()}</p>
             </div>
             <div className="bg-white rounded-lg p-4 text-center">
               <p className="text-xs text-slate-600 font-semibold">Estado</p>
@@ -192,6 +207,60 @@ export default function PanelAdminPartida({ partida, open, onOpenChange }) {
                 {partida.estado === 'en_curso' ? 'Activa' : 'Inactiva'}
               </p>
             </div>
+          </div>
+
+          {/* Cartones de la Sala */}
+          <div className="bg-white rounded-lg p-4">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <Ticket className="w-5 h-5 text-indigo-600" />
+                <h3 className="font-bold text-lg text-slate-900">Cartones de esta Sala</h3>
+                <span className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-sm font-semibold">
+                  {cartonesSala.length} / {partida.cantidad_total_cartones}
+                </span>
+              </div>
+              <Button
+                onClick={() => setMostrarCartones(!mostrarCartones)}
+                variant="outline"
+                size="sm"
+              >
+                {mostrarCartones ? 'Ocultar' : 'Ver'} Cartones
+              </Button>
+            </div>
+
+            {mostrarCartones && (
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3 max-h-96 overflow-y-auto">
+                {cartonesSala.length === 0 ? (
+                  <div className="col-span-full text-center py-8">
+                    <Ticket className="w-12 h-12 text-slate-300 mx-auto mb-2" />
+                    <p className="text-slate-500 text-sm">No hay cartones generados para esta sala</p>
+                  </div>
+                ) : (
+                  cartonesSala
+                    .sort((a, b) => a.numero_carton - b.numero_carton)
+                    .map((carton) => (
+                      <div key={carton.id} className={`border-2 rounded-lg p-2 ${
+                        carton.comprado ? 'border-green-400 bg-green-50' : 'border-slate-200 bg-white'
+                      }`}>
+                        <div className="text-xs font-bold text-center mb-1 flex items-center justify-between">
+                          <span className="text-indigo-600">#{carton.numero_carton}</span>
+                          {carton.comprado && (
+                            <span className="bg-green-500 text-white px-2 py-0.5 rounded text-xs">Vendido</span>
+                          )}
+                        </div>
+                        <div className="scale-75 origin-top">
+                          <CartonBingo
+                            carton={carton}
+                            marcados={numerosSorteados}
+                            onMarcar={() => {}}
+                            autoMarcar={false}
+                          />
+                        </div>
+                      </div>
+                    ))
+                )}
+              </div>
+            )}
           </div>
         </div>
       </DialogContent>
