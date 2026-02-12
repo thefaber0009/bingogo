@@ -94,15 +94,24 @@ export default function ComprarCartones() {
     return carton;
   };
 
-  const cartonesDisponiblesParaComprar = useMemo(() => Array.from(
-    { length: Math.max(0, (partida?.cantidad_total_cartones || 0) - cartonesVendidos.length) },
-    (_, idx) => ({
-      id: `virtual_${idx}`,
-      numeroVirtual: idx + 1,
-      numeros: generarCartonVirtual(idx),
-      comprado: false
-    })
-  ), [partida?.cantidad_total_cartones, cartonesVendidos.length]);
+  const cartonesDisponiblesParaComprar = useMemo(() => {
+    const totalCartones = partida?.cantidad_total_cartones || 0;
+    const numerosVendidos = new Set(cartonesVendidos.map(c => c.numero_carton));
+    const disponibles = [];
+
+    for (let i = 1; i <= totalCartones; i++) {
+      if (!numerosVendidos.has(i)) {
+        disponibles.push({
+          id: `virtual_${i}`,
+          numeroVirtual: i,
+          numeros: generarCartonVirtual(i),
+          comprado: false
+        });
+      }
+    }
+
+    return disponibles;
+  }, [partida?.cantidad_total_cartones, cartonesVendidos]);
 
   const generarCarton = () => {
     const carton = [];
