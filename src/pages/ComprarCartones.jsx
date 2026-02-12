@@ -69,7 +69,7 @@ export default function ComprarCartones() {
   const [filtroCartones, setFiltroCartones] = useState('disponibles');
   const [paginaActual, setPaginaActual] = useState(1);
   const [busquedaNumero, setBusquedaNumero] = useState('');
-  const CARTONES_POR_PAGINA = 5;
+  const CARTONES_POR_PAGINA = 25;
   const urlParams = new URLSearchParams(window.location.search);
   const partidaId = urlParams.get('partida');
 
@@ -94,7 +94,7 @@ export default function ComprarCartones() {
     enabled: !!partidaId && !!user?.id,
   });
 
-  const { data: todosLosCartones = [] } = useQuery({
+  const { data: todosLosCartones = [], isLoading: loadingCartones } = useQuery({
     queryKey: ['todosLosCartones', partidaId],
     queryFn: async () => {
       const cartones = await base44.entities.Carton.filter({ 
@@ -157,6 +157,7 @@ export default function ComprarCartones() {
       return cartones;
     },
     enabled: !!partidaId && !!partida,
+    refetchInterval: 3000,
   });
 
   const cartonesVendidos = todosLosCartones.filter(c => c.comprado);
@@ -437,8 +438,19 @@ export default function ComprarCartones() {
                 </div>
               </div>
               
-              <div className="grid grid-cols-5 gap-3">
-                {cartonesParaMostrar.map((carton, idx) => {
+              {loadingCartones && cartonesParaMostrar.length === 0 ? (
+                <div className="col-span-5 text-center py-12">
+                  <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mb-4"></div>
+                  <p className="text-slate-600">Cargando cartones...</p>
+                </div>
+              ) : cartonesParaMostrar.length === 0 ? (
+                <div className="col-span-5 text-center py-12">
+                  <Ticket className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+                  <p className="text-slate-600">No hay cartones disponibles</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-5 gap-3">
+                  {cartonesParaMostrar.map((carton, idx) => {
                   const numeroCarton = indiceInicio + idx + 1;
                   return (
                     <div
@@ -478,7 +490,8 @@ export default function ComprarCartones() {
                     </div>
                   );
                 })}
-              </div>
+                </div>
+              )}
 
               {/* Paginación Mejorada */}
               {totalPaginas > 1 && (
