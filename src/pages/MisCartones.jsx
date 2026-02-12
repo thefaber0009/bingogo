@@ -461,7 +461,7 @@ export default function MisCartones() {
                         ? 'border-green-400 shadow-xl bg-green-50' 
                         : !estaPagado ? 'border-amber-300 shadow-lg bg-amber-50 opacity-75'
                         : 'border-slate-200 shadow-lg bg-white'
-                    }`}>
+                    }`} data-carton-id={carton.id}>
                       {!estaPagado && (
                         <div className="absolute inset-0 bg-black bg-opacity-30 rounded-lg flex items-center justify-center z-10">
                           <div className="bg-white rounded-lg px-4 py-3 text-center shadow-lg">
