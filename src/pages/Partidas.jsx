@@ -210,7 +210,8 @@ export default function Partidas() {
   };
 
   const handleCreateRoom = async (data) => {
-    await createRoomMutation.mutateAsync(data);
+    const partida = await createRoomMutation.mutateAsync(data);
+    return partida;
   };
 
   const getEstadoBadge = (estado) => {
