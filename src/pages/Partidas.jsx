@@ -116,7 +116,6 @@ export default function Partidas() {
           partida_id: partida.id,
           numero_carton: i,
           numeros: generarCartonDeterminista(i),
-          jugador_id: null,
           estado: 'activo',
           comprado: false,
           pagado: false,
