@@ -15,7 +15,8 @@ import {
   Clock,
   Lock,
   Trophy,
-  DollarSign
+  DollarSign,
+  Settings
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '../utils';
@@ -23,6 +24,7 @@ import CartonBingo from '../components/bingo/CartonBingo';
 import { Switch } from '@/components/ui/switch';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { CreditCard, Wallet } from 'lucide-react';
+import ClientSettingsMenu from '../components/settings/ClientSettingsMenu';
 
 export default function MisCartones() {
   const navigate = useNavigate();
