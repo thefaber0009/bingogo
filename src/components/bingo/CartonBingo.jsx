@@ -47,25 +47,23 @@ export default function CartonBingo({ carton, marcados = [], onMarcar, autoMarca
   };
 
   return (
-    <div className="bg-white border-2 border-blue-400 rounded-xl shadow-lg overflow-hidden w-full max-w-xs">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-3">
-        <div className="text-center text-sm font-bold mb-2">BINGO MANÍA</div>
-        <div className="text-center text-xs mb-2">
-          {carton?.numero_carton && <span>Cartón No. {carton.numero_carton}</span>}
-        </div>
-        <div className="grid grid-cols-5 gap-1">
+    <div className="bg-white border-2 border-blue-300 rounded-lg shadow-md overflow-hidden w-full max-w-[160px]">
+      {/* Header compacto */}
+      <div className="bg-blue-500 text-white p-2">
+        <div className="text-center text-xs font-bold mb-1">BINGO MANÍA</div>
+        {carton?.numero_carton && (
+          <div className="text-center text-xs mb-1">Cartón No. {carton.numero_carton}</div>
+        )}
+        <div className="grid grid-cols-5 gap-0.5 text-center">
           {letras.map((letra) => (
-            <div key={letra} className="text-center font-bold text-sm">
-              {letra}
-            </div>
+            <div key={letra} className="font-bold text-xs">{letra}</div>
           ))}
         </div>
       </div>
 
-      {/* Grid de números */}
-      <div className="p-3 bg-blue-50">
-        <div className="grid grid-cols-5 gap-1">
+      {/* Grid compacto */}
+      <div className="p-1.5 bg-blue-50">
+        <div className="grid grid-cols-5 gap-0.5">
           {numeros.length > 0 ? (
             numeros.map((fila, i) => 
               (Array.isArray(fila) ? fila : []).map((numero, j) => {
@@ -79,11 +77,11 @@ export default function CartonBingo({ carton, marcados = [], onMarcar, autoMarca
                     onClick={() => handleClickCelda(numero)}
                     disabled={esCentro}
                     className={cn(
-                      "aspect-square rounded-lg font-bold text-sm transition-all duration-200 flex items-center justify-center relative",
-                      esCentro && "bg-blue-400 text-white cursor-not-allowed",
-                      !esCentro && !marcado && "bg-amber-100 text-slate-900 hover:bg-amber-200 cursor-pointer",
-                      !esCentro && marcado && "bg-blue-400 text-white shadow-lg",
-                      esUltima && "ring-2 ring-yellow-400"
+                      "aspect-square rounded font-bold text-xs transition-all duration-150 flex items-center justify-center",
+                      esCentro && "bg-blue-400 text-white",
+                      !esCentro && !marcado && "bg-yellow-100 text-slate-800",
+                      !esCentro && marcado && "bg-blue-400 text-white",
+                      esUltima && "ring-1 ring-yellow-400"
                     )}
                   >
                     {esCentro ? '●' : numero}
@@ -91,20 +89,9 @@ export default function CartonBingo({ carton, marcados = [], onMarcar, autoMarca
                 );
               })
             )
-          ) : (
-            <div className="col-span-5 text-center py-4 text-slate-500 text-xs">
-              Sin números
-            </div>
-          )}
+          ) : null}
         </div>
       </div>
-
-      {/* Footer con modo */}
-      {modoSeleccionado && (
-        <div className="bg-blue-100 px-3 py-2 text-center text-xs font-semibold text-blue-700 border-t border-blue-200">
-          Modo: {modoSeleccionado}
-        </div>
-      )}
     </div>
   );
 }
