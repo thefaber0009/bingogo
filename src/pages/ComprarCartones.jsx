@@ -396,8 +396,7 @@ export default function ComprarCartones() {
                 </div>
               ) : (
                 <div className="grid grid-cols-5 gap-3">
-                  {cartonesParaMostrar.map((carton, idx) => {
-                  const numeroCarton = indiceInicio + idx + 1;
+                  {cartonesParaMostrar.map((carton) => {
                   return (
                     <div
                       key={carton.id}
@@ -416,7 +415,7 @@ export default function ComprarCartones() {
                       <div className="bg-blue-100 rounded p-1 mb-2">
                         <p className="font-bold text-blue-700 text-center text-xs">BINGO MANÍA</p>
                       </div>
-                      <p className="text-red-600 font-bold text-xs text-center mb-2">Cartón No. {numeroCarton}</p>
+                      <p className="text-red-600 font-bold text-xs text-center mb-2">Cartón No. {carton.numeroVirtual}</p>
                       <div className="grid grid-cols-5 gap-0.5 text-center text-xs mb-1">
                         <div className="font-bold text-slate-600">B</div>
                         <div className="font-bold text-slate-600">I</div>
