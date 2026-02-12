@@ -495,9 +495,11 @@ export default function MisCartones() {
                         <div className="max-w-md mx-auto">
                           <CartonBingo 
                             carton={carton}
-                            marcados={[]}
+                            marcados={bolasCantadas.map(b => b.numero)}
                             onMarcar={() => {}}
                             autoMarcar={true}
+                            modoSeleccionado={part.modos_juego?.[0]?.nombre}
+                            ultimoNumero={bolasCantadas[bolasCantadas.length - 1]?.numero}
                           />
                         </div>
                       </CardContent>
