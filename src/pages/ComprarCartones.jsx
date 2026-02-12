@@ -136,6 +136,10 @@ export default function ComprarCartones() {
 
   const crearCartonMutation = useMutation({
     mutationFn: async (cartonesVirtuales) => {
+      if (!user?.id) {
+        throw new Error('Usuario no autenticado');
+      }
+
       if (misCartones.length + cartonesVirtuales.length > (partida?.max_cartones_por_jugador || 4)) {
         throw new Error(`No puedes comprar más de ${partida?.max_cartones_por_jugador} cartones`);
       }
@@ -147,6 +151,10 @@ export default function ComprarCartones() {
       // Actualizar los cartones existentes en lugar de crear nuevos
       const promesas = [];
       for (const cartonVirtual of cartonesVirtuales) {
+        if (!cartonVirtual?.id) {
+          console.error('Cartón sin ID:', cartonVirtual);
+          continue;
+        }
         promesas.push(
           base44.entities.Carton.update(cartonVirtual.id, {
             jugador_id: user.id,
