@@ -375,7 +375,7 @@ export default function ComprarCartones() {
             </div>
 
             {/* Selector de Cartones */}
-            <div className="bg-white rounded-2xl shadow-lg p-6">
+            <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-bold text-slate-900">⊞ Seleccionar Cartones ({cartonesTodosConFiltro.length} disponibles)</h3>
                 <div className="flex gap-2">
