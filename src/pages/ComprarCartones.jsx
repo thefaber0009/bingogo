@@ -16,6 +16,52 @@ import {
 import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '../utils';
 
+// Generador de números pseudoaleatorios determinista (fuera del componente)
+const seededRandom = (seed) => {
+  let state = seed;
+  return () => {
+    state = (state * 1103515245 + 12345) & 0x7fffffff;
+    return state / 0x7fffffff;
+  };
+};
+
+// Generar cartón determinista basado en número de cartón (fuera del componente)
+const generarCartonDeterminista = (numeroCarton) => {
+  const random = seededRandom(numeroCarton * 9999);
+  const rangos = [
+    [1, 15],   // B
+    [16, 30],  // I
+    [31, 45],  // N
+    [46, 60],  // G
+    [61, 75]   // O
+  ];
+
+  const carton = [];
+  const numerosUsadosPorColumna = [[], [], [], [], []];
+
+  for (let row = 0; row < 5; row++) {
+    const fila = [];
+    for (let col = 0; col < 5; col++) {
+      if (col === 2 && row === 2) {
+        fila.push(0); // Centro libre
+      } else {
+        const [min, max] = rangos[col];
+        const numerosDisponibles = Array.from(
+          { length: max - min + 1 },
+          (_, i) => i + min
+        ).filter(n => !numerosUsadosPorColumna[col].includes(n));
+
+        const num = numerosDisponibles[Math.floor(random() * numerosDisponibles.length)];
+        numerosUsadosPorColumna[col].push(num);
+        fila.push(num);
+      }
+    }
+    carton.push(fila);
+  }
+
+  return carton;
+};
+
 export default function ComprarCartones() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -57,52 +103,7 @@ export default function ComprarCartones() {
     enabled: !!partidaId,
   });
 
-  // Generador de números pseudoaleatorios determinista (usando numero_carton como semilla)
-  const seededRandom = (seed) => {
-    let state = seed;
-    return () => {
-      state = (state * 1103515245 + 12345) & 0x7fffffff;
-      return state / 0x7fffffff;
-    };
-  };
 
-  // Generar cartones disponibles (virtualmente, sin persistir aún)
-  const generarCartonVirtual = (numeroCarton) => {
-    const random = seededRandom(numeroCarton * 9999); // Semilla basada en el número del cartón
-    const rangos = [
-      [1, 15],   // B
-      [16, 30],  // I
-      [31, 45],  // N
-      [46, 60],  // G
-      [61, 75]   // O
-    ];
-
-    // Crear matriz 5x5 con números únicos por columna
-    const carton = [];
-    const numerosUsadosPorColumna = [[], [], [], [], []];
-
-    for (let row = 0; row < 5; row++) {
-      const fila = [];
-      for (let col = 0; col < 5; col++) {
-        if (col === 2 && row === 2) {
-          fila.push(0); // Centro libre
-        } else {
-          const [min, max] = rangos[col];
-          const numerosDisponibles = Array.from(
-            { length: max - min + 1 },
-            (_, i) => i + min
-          ).filter(n => !numerosUsadosPorColumna[col].includes(n));
-
-          const num = numerosDisponibles[Math.floor(random() * numerosDisponibles.length)];
-          numerosUsadosPorColumna[col].push(num);
-          fila.push(num);
-        }
-      }
-      carton.push(fila);
-    }
-
-    return carton;
-  };
 
   const cartonesDisponiblesParaComprar = useMemo(() => {
     const totalCartones = partida?.cantidad_total_cartones || 0;
@@ -114,7 +115,7 @@ export default function ComprarCartones() {
         disponibles.push({
           id: `virtual_${i}`,
           numeroVirtual: i,
-          numeros: generarCartonVirtual(i),
+          numeros: generarCartonDeterminista(i),
           comprado: false
         });
       }
@@ -123,41 +124,7 @@ export default function ComprarCartones() {
     return disponibles;
   }, [partida?.cantidad_total_cartones, cartonesVendidos]);
 
-  const generarCarton = (numeroCarton) => {
-    const random = seededRandom(numeroCarton * 9999); // Usar la misma semilla que generarCartonVirtual
-    const rangos = [
-      [1, 15],   // B
-      [16, 30],  // I
-      [31, 45],  // N
-      [46, 60],  // G
-      [61, 75]   // O
-    ];
 
-    const carton = [];
-    const numerosUsadosPorColumna = [[], [], [], [], []];
-
-    for (let row = 0; row < 5; row++) {
-      const fila = [];
-      for (let col = 0; col < 5; col++) {
-        if (col === 2 && row === 2) {
-          fila.push(0); // Centro libre
-        } else {
-          const [min, max] = rangos[col];
-          const numerosDisponibles = Array.from(
-            { length: max - min + 1 },
-            (_, i) => i + min
-          ).filter(n => !numerosUsadosPorColumna[col].includes(n));
-
-          const num = numerosDisponibles[Math.floor(random() * numerosDisponibles.length)];
-          numerosUsadosPorColumna[col].push(num);
-          fila.push(num);
-        }
-      }
-      carton.push(fila);
-    }
-
-    return carton;
-  };
 
   const crearCartonMutation = useMutation({
     mutationFn: async (cartonesVirtuales) => {
@@ -175,7 +142,7 @@ export default function ComprarCartones() {
           jugador_id: user.id,
           partida_id: partidaId,
           numero_carton: cartonVirtual.numeroVirtual,
-          numeros: generarCarton(cartonVirtual.numeroVirtual),
+          numeros: generarCartonDeterminista(cartonVirtual.numeroVirtual),
           estado: 'activo',
           comprado: true,
           pagado: false,
