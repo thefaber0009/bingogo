@@ -32,6 +32,8 @@ export default function CreateRoomDialog({ open, onOpenChange, onSubmit, isLoadi
     tipo: '',
     cantidadCartones: '',
     precioCarton: '1',
+    maxCartonesPorJugador: '',
+    maxJugadores: '',
     duracionMaxima: '',
     capacidad: 'ilimitada',
     limiteJugadores: '',
@@ -104,6 +106,8 @@ export default function CreateRoomDialog({ open, onOpenChange, onSubmit, isLoadi
       cantidad_total_cartones: parseInt(formData.cantidadCartones),
       fecha_inicio: new Date(fechaHora).toISOString(),
       precio_carton: parseFloat(formData.precioCarton) || 1,
+      max_cartones_por_jugador: formData.maxCartonesPorJugador ? parseInt(formData.maxCartonesPorJugador) : null,
+      max_jugadores: formData.maxJugadores ? parseInt(formData.maxJugadores) : null,
       duracion_maxima: formData.duracionMaxima ? parseInt(formData.duracionMaxima) : null,
       combos: formData.combos.filter(c => c.nombre && c.cantidad && c.precio),
       modos_juego: Object.keys(formData.modos).filter(m => formData.modos[m]).map(m => ({
@@ -111,7 +115,6 @@ export default function CreateRoomDialog({ open, onOpenChange, onSubmit, isLoadi
         nombre: m,
         premio: parseInt(formData.modosPrecio[m]) || 0
       })),
-      max_jugadores: formData.capacidad === 'limitada' ? parseInt(formData.limiteJugadores) : null,
     };
 
     const partidaCreada = await onSubmit(submitData);
@@ -174,6 +177,8 @@ export default function CreateRoomDialog({ open, onOpenChange, onSubmit, isLoadi
       tipo: '',
       cantidadCartones: '',
       precioCarton: '1',
+      maxCartonesPorJugador: '',
+      maxJugadores: '',
       duracionMaxima: '',
       capacidad: 'ilimitada',
       limiteJugadores: '',
@@ -256,6 +261,32 @@ export default function CreateRoomDialog({ open, onOpenChange, onSubmit, isLoadi
                 onChange={(e) => setFormData({ ...formData, precioCarton: e.target.value })}
               />
               <p className="text-xs text-slate-500 mt-1">Precio individual de cada cartón</p>
+            </div>
+          </div>
+
+          {/* Límites (Opcionales) */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label>Máximo Cartones por Jugador (Opcional)</Label>
+              <Input
+                type="number"
+                placeholder="Ej: 4"
+                min="1"
+                value={formData.maxCartonesPorJugador}
+                onChange={(e) => setFormData({ ...formData, maxCartonesPorJugador: e.target.value })}
+              />
+              <p className="text-xs text-slate-500 mt-1">Límite de cartones que puede comprar cada jugador</p>
+            </div>
+            <div>
+              <Label>Máximo de Jugadores (Opcional)</Label>
+              <Input
+                type="number"
+                placeholder="Ej: 50"
+                min="1"
+                value={formData.maxJugadores}
+                onChange={(e) => setFormData({ ...formData, maxJugadores: e.target.value })}
+              />
+              <p className="text-xs text-slate-500 mt-1">Límite de jugadores en la sala</p>
             </div>
           </div>
 
