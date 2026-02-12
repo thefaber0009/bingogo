@@ -196,10 +196,10 @@ export default function MisCartones() {
       <div className="max-w-7xl mx-auto p-3 sm:p-6 space-y-4 sm:space-y-6">
         {/* Header con Bienvenida */}
         <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl shadow-xl p-3 sm:p-6 text-white">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
+          <div className="flex items-start sm:items-center justify-between gap-2 sm:gap-4">
             <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
               <Link to={createPageUrl('Lobby')}>
-                <Button variant="outline" size="icon" className="h-8 w-8 sm:h-10 sm:w-10 bg-white/20 border-white/30 hover:bg-white/30 flex-shrink-0">
+                <Button variant="outline" size="icon" className="h-8 w-8 sm:h-10 sm:w-10 bg-white/20 border-white/30 hover:bg-white/30 flex-shrink-0 mt-0.5">
                   <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                 </Button>
               </Link>
