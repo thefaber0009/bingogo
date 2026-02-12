@@ -97,17 +97,17 @@ export default function ComprarCartones() {
   const { data: todosLosCartones = [], isLoading: loadingCartones } = useQuery({
     queryKey: ['todosLosCartones', partidaId],
     queryFn: async () => {
+      if (!partida) return [];
+      
       const cartones = await base44.entities.Carton.filter({ 
         partida_id: partidaId
       });
 
-      // Contar cartones disponibles (no comprados)
-      const disponibles = cartones.filter(c => !c.comprado);
-      const totalEsperado = partida?.cantidad_total_cartones || 0;
+      const totalEsperado = partida.cantidad_total_cartones || 0;
+      const numerosExistentes = new Set(cartones.map(c => c.numero_carton));
 
-      // Si faltan cartones disponibles, generarlos
-      if (disponibles.length < totalEsperado) {
-        const numerosExistentes = new Set(cartones.map(c => c.numero_carton));
+      // Si faltan cartones (independiente de si están comprados o no), generarlos
+      if (cartones.length < totalEsperado) {
         const seededRandom = (seed) => {
           let state = seed;
           return () => {
@@ -167,7 +167,7 @@ export default function ComprarCartones() {
       return cartones;
     },
     enabled: !!partidaId && !!partida,
-    refetchInterval: 3000,
+    refetchInterval: 5000,
   });
 
   const cartonesVendidos = todosLosCartones.filter(c => c.comprado);
