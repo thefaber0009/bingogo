@@ -47,15 +47,15 @@ export default function CartonBingo({ carton, marcados = [], onMarcar, autoMarca
   };
 
   return (
-    <div className="bg-white border-2 border-blue-400 rounded-lg shadow-lg overflow-hidden w-full">
+    <div className="bg-white border-4 border-blue-500 rounded-2xl shadow-xl overflow-hidden w-full max-w-sm">
       {/* Header */}
-      <div className="bg-white border-b-2 border-blue-400 p-2.5 text-center">
-        <div className="text-blue-600 font-bold text-sm mb-1">BINGO MANÍA</div>
-        <div className="text-xs text-slate-600 font-semibold">Cartón No. <span className="text-blue-600 font-bold">1</span></div>
+      <div className="bg-white border-b-2 border-blue-400 p-3 text-center">
+        <div className="text-blue-600 font-bold text-lg mb-0.5">BINGO MANÍA</div>
+        <div className="text-xs text-slate-600 font-semibold">Cartón No. <span className="text-red-600 font-bold text-sm">1</span></div>
       </div>
 
       {/* Letras */}
-      <div className="grid grid-cols-5 gap-0.5 px-2 pt-2">
+      <div className="grid grid-cols-5 gap-1 px-3 pt-2 pb-1">
         {letras.map((letra) => (
           <div key={letra} className="text-center text-xs font-bold text-blue-600">
             {letra}
@@ -64,12 +64,12 @@ export default function CartonBingo({ carton, marcados = [], onMarcar, autoMarca
       </div>
 
       {/* Grid de números estilo bingo */}
-      <div className="p-2 bg-white space-y-0.5">
+      <div className="px-3 pb-3 pt-2 bg-white space-y-1">
         {numeros.length > 0 ? (
           numeros.map((fila, i) => {
             const arrayFila = Array.isArray(fila) ? fila : [];
             return (
-              <div key={i} className="grid grid-cols-5 gap-0.5">
+              <div key={i} className="grid grid-cols-5 gap-1">
                 {arrayFila.map((numero, j) => {
                   const esCentro = i === 2 && j === 2;
                   const marcado = isNumeroMarcado(numero, j);
@@ -78,14 +78,14 @@ export default function CartonBingo({ carton, marcados = [], onMarcar, autoMarca
                     <div
                       key={`${i}-${j}`}
                       className={cn(
-                        "aspect-square flex items-center justify-center rounded text-xs font-bold transition-all",
-                        esCentro && "bg-gray-300 text-white relative",
-                        !esCentro && !marcado && "bg-yellow-100 text-slate-800",
-                        !esCentro && marcado && "bg-yellow-100 text-slate-800 ring-2 ring-blue-500"
+                        "aspect-square flex items-center justify-center font-bold transition-all border-2",
+                        esCentro && "bg-white border-yellow-300",
+                        !esCentro && "bg-yellow-100 text-slate-800 border-yellow-300 rounded text-sm",
+                        !esCentro && marcado && "ring-2 ring-blue-500 ring-inset"
                       )}
                     >
                       {esCentro ? (
-                        <div className="w-4 h-4 bg-blue-400 rounded-full"></div>
+                        <div className="w-5 h-5 bg-blue-400 rounded-full"></div>
                       ) : (
                         numero
                       )}
@@ -96,6 +96,16 @@ export default function CartonBingo({ carton, marcados = [], onMarcar, autoMarca
             );
           })
         ) : null}
+      </div>
+
+      {/* Botones */}
+      <div className="flex gap-2 px-3 pb-3 pt-1">
+        <button className="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-1.5 px-3 rounded text-xs transition-all">
+          Seleccionar
+        </button>
+        <button className="flex-1 bg-cyan-400 hover:bg-cyan-500 text-white font-bold py-1.5 px-3 rounded text-xs transition-all">
+          Verificar
+        </button>
       </div>
     </div>
   );
