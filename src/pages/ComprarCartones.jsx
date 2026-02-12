@@ -340,7 +340,7 @@ export default function ComprarCartones() {
             </div>
 
             {/* Filtro y Búsqueda */}
-            <div className="bg-white rounded-2xl shadow-lg p-6 space-y-4">
+            <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 space-y-4">
               <h3 className="font-bold text-slate-900 mb-4">▼ Filtrar Cartones</h3>
               <div className="flex gap-2 flex-wrap">
                 {['disponibles', 'vendidos', 'seleccionados'].map((filtro) => (
