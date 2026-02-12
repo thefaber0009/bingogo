@@ -237,6 +237,23 @@ export default function MisCartones() {
           </div>
         </div>
 
+        {/* Balotas en Vivo */}
+        {bolasCantadas.length > 0 && (
+          <Card className="border-0 shadow-xl">
+            <CardHeader className="pb-3 sm:pb-4">
+              <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                🎰 Balotas en Vivo
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="bg-gradient-to-r from-indigo-600 to-purple-600 p-4 rounded-lg">
+              <BolasDisplay 
+                numerosSorteados={bolasCantadas.map(b => b.numero)} 
+                ultimoNumero={bolasCantadas[bolasCantadas.length - 1]?.numero}
+              />
+            </CardContent>
+          </Card>
+        )}
+
         {/* Estadísticas del Usuario */}
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 sm:gap-4">
           <Card className="border-0 shadow-lg bg-white">
