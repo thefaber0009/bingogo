@@ -49,16 +49,14 @@ export default function Layout({ children, currentPageName }) {
       <aside className="fixed left-0 top-0 h-screen w-72 bg-white border-r border-slate-200 shadow-xl z-50">
         <div className="p-8">
           <div className="flex items-center gap-3 mb-12">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center">
-              <span className="text-white font-bold text-xl">B</span>
+              <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69811affc30258284f5a5643/a24656e95_image.png" alt="BingoGo Logo" className="w-12 h-12 rounded-2xl" />
+              <div>
+                <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                  BingoGo
+                </h1>
+                <p className="text-xs text-slate-500 font-medium">Panel Administrativo</p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                BingoGo
-              </h1>
-              <p className="text-xs text-slate-500 font-medium">Panel Administrativo</p>
-            </div>
-          </div>
 
           <nav className="space-y-6">
             <div className="space-y-2">
