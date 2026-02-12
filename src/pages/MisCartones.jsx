@@ -108,9 +108,15 @@ export default function MisCartones() {
   };
 
   const deleteCartonMutation = useMutation({
-    mutationFn: (cartonId) => base44.entities.Carton.delete(cartonId),
+    mutationFn: (cartonId) => base44.entities.Carton.update(cartonId, {
+      jugador_id: null,
+      comprado: false,
+      pagado: false,
+      marcados: []
+    }),
     onSuccess: () => {
-      queryClient.invalidateQueries(['misCartones', partidaId, user?.id]);
+      queryClient.invalidateQueries(['misCartones', user?.id]);
+      queryClient.invalidateQueries(['todosLosCartones']);
     },
   });
 

@@ -63,12 +63,72 @@ export default function Partidas() {
   });
 
   const createRoomMutation = useMutation({
-    mutationFn: (data) => base44.entities.Partida.create({
-      ...data,
-      estado: 'pendiente',
-      cartones_vendidos: 0,
-      max_cartones_por_jugador: 4
-    }),
+    mutationFn: async (data) => {
+      // Primero crear la partida
+      const partida = await base44.entities.Partida.create({
+        ...data,
+        estado: 'pendiente',
+        cartones_vendidos: 0,
+        max_cartones_por_jugador: 4
+      });
+
+      // Generar función determinista
+      const seededRandom = (seed) => {
+        let state = seed;
+        return () => {
+          state = (state * 1103515245 + 12345) & 0x7fffffff;
+          return state / 0x7fffffff;
+        };
+      };
+
+      const generarCartonDeterminista = (numeroCarton) => {
+        const random = seededRandom(numeroCarton * 9999);
+        const rangos = [
+          [1, 15], [16, 30], [31, 45], [46, 60], [61, 75]
+        ];
+        const carton = [];
+        const numerosUsadosPorColumna = [[], [], [], [], []];
+        for (let row = 0; row < 5; row++) {
+          const fila = [];
+          for (let col = 0; col < 5; col++) {
+            if (col === 2 && row === 2) {
+              fila.push(0);
+            } else {
+              const [min, max] = rangos[col];
+              const numerosDisponibles = Array.from(
+                { length: max - min + 1 },
+                (_, i) => i + min
+              ).filter(n => !numerosUsadosPorColumna[col].includes(n));
+              const num = numerosDisponibles[Math.floor(random() * numerosDisponibles.length)];
+              numerosUsadosPorColumna[col].push(num);
+              fila.push(num);
+            }
+          }
+          carton.push(fila);
+        }
+        return carton;
+      };
+
+      // Pre-generar todos los cartones de la partida
+      const cartones = [];
+      for (let i = 1; i <= data.cantidad_total_cartones; i++) {
+        cartones.push({
+          partida_id: partida.id,
+          numero_carton: i,
+          numeros: generarCartonDeterminista(i),
+          jugador_id: null,
+          estado: 'activo',
+          comprado: false,
+          pagado: false,
+          marcados: []
+        });
+      }
+
+      // Crear todos los cartones en batch
+      await base44.entities.Carton.bulkCreate(cartones);
+
+      return partida;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries(['partidas']);
       setIsDialogOpen(false);

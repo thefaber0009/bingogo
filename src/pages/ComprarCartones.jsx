@@ -94,35 +94,27 @@ export default function ComprarCartones() {
     enabled: !!partidaId && !!user?.id,
   });
 
-  const { data: cartonesVendidos = [] } = useQuery({
-    queryKey: ['cartonesVendidos', partidaId],
+  const { data: todosLosCartones = [] } = useQuery({
+    queryKey: ['todosLosCartones', partidaId],
     queryFn: () => base44.entities.Carton.filter({ 
-      partida_id: partidaId,
-      comprado: true
+      partida_id: partidaId
     }),
     enabled: !!partidaId,
   });
 
+  const cartonesVendidos = todosLosCartones.filter(c => c.comprado);
+  const cartonesDisponiblesDB = todosLosCartones.filter(c => !c.comprado);
+
 
 
   const cartonesDisponiblesParaComprar = useMemo(() => {
-    const totalCartones = partida?.cantidad_total_cartones || 0;
-    const numerosVendidos = new Set(cartonesVendidos.map(c => c.numero_carton));
-    const disponibles = [];
-
-    for (let i = 1; i <= totalCartones; i++) {
-      if (!numerosVendidos.has(i)) {
-        disponibles.push({
-          id: `virtual_${i}`,
-          numeroVirtual: i,
-          numeros: generarCartonDeterminista(i),
-          comprado: false
-        });
-      }
-    }
-
-    return disponibles;
-  }, [partida?.cantidad_total_cartones, cartonesVendidos]);
+    return cartonesDisponiblesDB.map(c => ({
+      id: c.id,
+      numeroVirtual: c.numero_carton,
+      numeros: c.numeros,
+      comprado: false
+    }));
+  }, [cartonesDisponiblesDB]);
 
 
 
@@ -136,19 +128,16 @@ export default function ComprarCartones() {
         throw new Error('No hay suficientes cartones disponibles');
       }
 
+      // Actualizar los cartones existentes en lugar de crear nuevos
       const promesas = [];
       for (const cartonVirtual of cartonesVirtuales) {
-        const nuevoCarton = {
-          jugador_id: user.id,
-          partida_id: partidaId,
-          numero_carton: cartonVirtual.numeroVirtual,
-          numeros: cartonVirtual.numeros,
-          estado: 'activo',
-          comprado: true,
-          pagado: false,
-          marcados: []
-        };
-        promesas.push(base44.entities.Carton.create(nuevoCarton));
+        promesas.push(
+          base44.entities.Carton.update(cartonVirtual.id, {
+            jugador_id: user.id,
+            comprado: true,
+            pagado: false
+          })
+        );
       }
       const result = await Promise.all(promesas);
 
@@ -161,7 +150,7 @@ export default function ComprarCartones() {
     onSuccess: () => {
       queryClient.invalidateQueries(['misCartones', partidaId, user?.id]);
       queryClient.invalidateQueries(['partida', partidaId]);
-      queryClient.invalidateQueries(['cartonesVendidos', partidaId]);
+      queryClient.invalidateQueries(['todosLosCartones', partidaId]);
     },
     onError: (error) => {
       alert(error.message || 'Error al comprar cartones');
