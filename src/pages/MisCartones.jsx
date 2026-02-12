@@ -421,23 +421,13 @@ export default function MisCartones() {
                             </span>
                           </div>
                         </div>
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <span className={`text-xs sm:text-sm font-semibold ${cartonesHabilitados[carton.id] && estaPagado ? 'text-green-600' : 'text-slate-400'}`}>
-                              {cartonesHabilitados[carton.id] && estaPagado ? 'Habilitado' : estaPagado ? 'Deshabilitado' : 'Bloqueado'}
-                            </span>
-                            <Switch
-                              checked={cartonesHabilitados[carton.id] || false}
-                              onCheckedChange={() => estaPagado && toggleCarton(carton.id)}
-                              disabled={!estaPagado}
-                            />
-                          </div>
+                        <div className="flex items-center justify-end">
                           <button
                             onClick={() => handleEliminarCarton(carton.id)}
-                            className="p-1 sm:p-1.5 hover:bg-red-200 text-red-600 rounded-lg transition-colors relative z-20 pointer-events-auto"
+                            className="w-10 h-10 sm:w-12 sm:h-12 bg-red-100 hover:bg-red-200 text-red-600 rounded-full transition-all flex items-center justify-center relative z-20 pointer-events-auto shadow-md hover:shadow-lg"
                             title="Eliminar cartón"
                           >
-                            <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
+                            <Trash2 className="w-5 h-5 sm:w-6 sm:h-6" />
                           </button>
                         </div>
                       </CardHeader>
