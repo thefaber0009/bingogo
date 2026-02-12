@@ -71,26 +71,26 @@ export default function CartonBingo({ carton, marcados = [], onMarcar, autoMarca
             return (
               <div key={i} className="grid grid-cols-5 gap-0.5">
                 {arrayFila.map((numero, j) => {
-                  const esCentro = i === 2 && j === 2;
-                  const marcado = isNumeroMarcado(numero, j);
+                const esCentro = i === 2 && j === 2;
+                const marcado = isNumeroMarcado(numero, j);
 
-                  return (
-                    <div
-                      key={`${i}-${j}`}
-                      className={cn(
-                        "aspect-square flex items-center justify-center font-bold transition-all text-sm",
-                        esCentro && "bg-white",
-                        !esCentro && "bg-yellow-100 text-slate-900 rounded",
-                        !esCentro && marcado && "ring-2 ring-blue-500"
-                      )}
-                    >
-                      {esCentro ? (
-                        <div className="w-4 h-4 bg-cyan-400 rounded-full"></div>
-                      ) : (
-                        numero
-                      )}
-                    </div>
-                  );
+                return (
+                <div
+                key={`${i}-${j}`}
+                className={cn(
+                "aspect-square flex items-center justify-center font-bold transition-all text-sm rounded",
+                esCentro && "bg-white",
+                !esCentro && "bg-yellow-100 text-slate-900 border-2 border-dashed border-yellow-300",
+                !esCentro && marcado && "border-blue-500"
+                )}
+                >
+                {esCentro ? (
+                <div className="w-4 h-4 bg-cyan-400 rounded-full"></div>
+                ) : (
+                numero
+                )}
+                </div>
+                );
                 })}
               </div>
             );
