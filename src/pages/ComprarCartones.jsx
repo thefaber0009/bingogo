@@ -122,12 +122,14 @@ export default function ComprarCartones() {
 
 
   const cartonesDisponiblesParaComprar = useMemo(() => {
-    return cartonesDisponiblesDB.map(c => ({
-      id: c.id,
-      numeroVirtual: c.numero_carton,
-      numeros: c.numeros,
-      comprado: false
-    }));
+    return cartonesDisponiblesDB
+      .map(c => ({
+        id: c.id,
+        numeroVirtual: c.numero_carton,
+        numeros: c.numeros,
+        comprado: false
+      }))
+      .sort((a, b) => a.numeroVirtual - b.numeroVirtual);
   }, [cartonesDisponiblesDB]);
 
 
