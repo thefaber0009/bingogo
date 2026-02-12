@@ -17,23 +17,36 @@ import {
 
 export default function PartidaEnVivo() {
   const [selectedPartidaId, setSelectedPartidaId] = useState('');
+  const [autoSort, setAutoSort] = useState(false);
+  const [tiempoSorteo, setTiempoSorteo] = useState(5);
 
   const { data: partidas = [] } = useQuery({
     queryKey: ['partidas'],
     queryFn: () => base44.entities.Partida.list(),
+    refetchInterval: 2000,
   });
 
   const { data: cartones = [] } = useQuery({
     queryKey: ['cartones', selectedPartidaId],
     queryFn: () => base44.entities.Carton.filter({ partida_id: selectedPartidaId }),
     enabled: !!selectedPartidaId,
+    refetchInterval: 2000,
   });
 
   const { data: bolas = [] } = useQuery({
     queryKey: ['bolas', selectedPartidaId],
-    queryFn: () => base44.entities.BolaCantada.filter({ partida_id: selectedPartidaId }, 'orden'),
+    queryFn: () => base44.entities.BolaCantada.filter({ partida_id: selectedPartidaId }),
     enabled: !!selectedPartidaId,
+    refetchInterval: 500,
   });
+
+  React.useEffect(() => {
+    if (!selectedPartidaId) return;
+    const unsubscribe = base44.entities.BolaCantada.subscribe(() => {
+      // Actualizar bolas cuando cambien
+    });
+    return unsubscribe;
+  }, [selectedPartidaId]);
 
   const partidasActivas = partidas.filter(p => p.estado === 'en_curso' || p.estado === 'pendiente');
   const partidaActual = partidas.find(p => p.id === selectedPartidaId);
